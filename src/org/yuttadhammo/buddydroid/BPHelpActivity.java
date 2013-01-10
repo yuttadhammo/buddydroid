@@ -1,7 +1,5 @@
 package org.yuttadhammo.buddydroid;
 
-import org.yuttadhammo.bpdroid.R;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -31,7 +29,6 @@ public class BPHelpActivity extends Activity {
 		super.onOptionsItemSelected(item);
 		
 		//SharedPreferences.Editor editor = prefs.edit();
-		Intent intent;
 		switch (item.getItemId()) {
 	        case android.R.id.home:
 	            // app icon in action bar clicked; go home

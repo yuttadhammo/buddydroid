@@ -7,10 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
-import org.yuttadhammo.bpdroid.R;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -53,9 +51,6 @@ public class BPStatus {
 	private String mediaPaths;
 	private static Context context;
 	private static Activity activity;
-
-	private static NotificationManager nm;
-	private static int notificationID;
 
 	public Vector<String> imageUrl = new Vector<String>();
 	Vector<String> selectedCategories = new Vector<String>();

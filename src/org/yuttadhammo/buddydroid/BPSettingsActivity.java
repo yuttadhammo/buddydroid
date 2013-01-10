@@ -1,19 +1,11 @@
 package org.yuttadhammo.buddydroid;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
-import org.yuttadhammo.bpdroid.R;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -61,6 +53,23 @@ public class BPSettingsActivity extends PreferenceActivity {
 
 			public boolean onPreferenceChange(Preference preference,
 					final Object newValue) {
+				websitePref.setSummary((String) newValue);
+
+				return true;
+			}
+			
+		});
+
+		final EditTextPreference userPref = (EditTextPreference)findPreference("username");
+		if(userPref.getText() == null || userPref.getText().equals(""))
+			userPref.setText("");
+		userPref.setSummary(userPref.getText());
+		
+		userPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			public boolean onPreferenceChange(Preference preference,
+					final Object newValue) {
+				userPref.setSummary((String) newValue);
 
 				return true;
 			}
@@ -89,12 +98,6 @@ public class BPSettingsActivity extends PreferenceActivity {
 		if(api_key.length() > 0)
 			apiPref.setSummary(api_key);
 		
-		final EditTextPreference userPref = (EditTextPreference)findPreference("username");
-		userPref.setSummary(userPref.getText());
-
-		final EditTextPreference passPref = (EditTextPreference)findPreference("password");
-		passPref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-
 		final Preference helpPref = (Preference)findPreference("help");
 		helpPref.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 
@@ -118,8 +121,6 @@ public class BPSettingsActivity extends PreferenceActivity {
     private ProgressDialog downloadProgressDialog;
 
     private class ReadFile extends AsyncTask<URI, Integer, String> {
-		private String contentString;
-	    final byte[] sBuffer = new byte[512];
 		private Editor editor;
 		private String apikey;
 

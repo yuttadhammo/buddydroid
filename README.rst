@@ -22,6 +22,10 @@ Author: Yuttadhammo Bhikkhu <yuttadhammo@gmail.com>
 
 This software is free and open source, under the GPL v3 license, for more info please visit: http://www.gnu.org/copyleft/gpl.html
 
+Source code for this app is available on GitHub:
+
+https://github.com/yuttadhammo/buddydroid
+
 Changelog
 =================
 0.1 - first version, may have bugs!

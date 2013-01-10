@@ -1,18 +1,13 @@
 
 package org.yuttadhammo.buddydroid;
 
-import java.io.File;
 import java.net.URI;
-
-import org.yuttadhammo.bpdroid.R;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -104,6 +99,12 @@ public class Buddypress extends Activity {
 	            // app icon in action bar clicked; go home
 	            finish();
 	            return true;
+
+			case (int)R.id.menuStream:
+				intent = new Intent(this, BPStreamActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				break;
 
 			case (int)R.id.menuPrefs:
 				intent = new Intent(this, BPSettingsActivity.class);

@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item 
+		android:icon="@android:drawable/ic_menu_view"
+		android:title="@string/stream"
+  		android:showAsAction="ifRoom|withText" 
+        android:orderInCategory="2"
+		android:id="@+id/menuStream"/>
+    <item 
 		android:icon="@android:drawable/ic_menu_preferences"
 		android:title="@string/preferences"
-  		android:showAsAction="ifRoom" 
+  		android:showAsAction="ifRoom|withText" 
         android:orderInCategory="2"
 		android:id="@+id/menuPrefs"/>
 
