@@ -1,7 +1,7 @@
 
 BuddyDroid
 =================
-This is a very simple Buddypress client. If configured properly, it will allow you to post status updates to your Buddypress install.
+This is a very simple Buddypress client. If configured properly, it will allow you to post status updates to your Buddypress install.  It also has a simple RSS reader for your sitewide activity feed.
 
 Instructions
 =============
@@ -15,6 +15,7 @@ Now, if you have done these steps correctly, you should be able to post status u
 Features
 ========
 - posts updates to stream via xml-rpc
+- shows a feed of latest updates
 
 Technical Details
 =================
@@ -29,7 +30,9 @@ https://github.com/yuttadhammo/buddydroid
 Changelog
 =================
 0.1 - first version, may have bugs!
+0.2 - added RSS feed activity
 
 Credits
 =================
 - Wordpress, Buddypress, Android, et al
+- RSSReader modified from https://github.com/robhinds/AndroidRssReader
