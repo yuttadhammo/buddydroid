@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/userPref">
+   		<EditTextPreference 
+   		    android:key="website"
+			android:title="@string/website"
+			android:shouldDisableView="true"
+			android:singleLine="true"/>
+   		<EditTextPreference 
+   		    android:key="username"
+			android:title="@string/username"
+			android:shouldDisableView="true"
+			android:singleLine="true"/>
+   		<EditTextPreference 
+   		    android:key="password"
+			android:title="@string/password"
+			android:shouldDisableView="true"
+			android:singleLine="true"/>   		
+   		<Preference 
+   		    android:key="register"
+			android:title="@string/register"
+			/>
+   		<Preference 
+   		    android:key="api_key"
+			android:title="@string/api_key"
+			android:summary="@string/api_key_desc"
+			/>
+		<Preference 
+   		    android:key="help"
+			android:title="@string/help"
+			/>
+   	</PreferenceCategory>    
+</PreferenceScreen>
