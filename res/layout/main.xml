@@ -32,6 +32,8 @@
 				android:singleLine="false"
 				android:textSize="24sp"
 				android:background="#FFFFFF"
+				android:textColor="#000000"
+				android:textCursorDrawable="@null"
 				/>
 		</LinearLayout>
 	</ScrollView>
@@ -46,6 +48,8 @@
 		android:layout_margin="20dip" 
 		android:layout_alignParentBottom="true"
 		android:layout_centerInParent="true"
+		android:background="@drawable/button_back"
+		android:textColor="#000000"
 		/>
 	<ImageView
 		android:layout_width="match_parent" 

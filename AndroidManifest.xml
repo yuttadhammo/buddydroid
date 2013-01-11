@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.yuttadhammo.buddydroid"
-      android:versionName="0.3" 
-      android:versionCode="3">
+      android:versionName="0.4" 
+      android:versionCode="4">
     
 	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="16" />
 	<uses-permission android:name="android.permission.INTERNET" />
@@ -22,7 +22,7 @@
         >
         <activity android:label="@string/app_name" 
 			android:name=".Buddypress"
-			android:theme="@style/LightTheme"
+			android:theme="@style/DarkTheme"
  			android:logo="@drawable/actionbar_icon"
 	 		android:configChanges="orientation|screenSize|keyboardHidden"
 	 		android:launchMode="singleTask">

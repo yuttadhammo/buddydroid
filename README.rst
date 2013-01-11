@@ -7,15 +7,16 @@ Instructions
 =============
 Step 1: Install the BuddyPress XML-RPC receiver plugin here: https://github.com/yuttadhammo/buddypress-xmlrpc-receiver 
 Step 2: Activate and configure above plugin via wp-admin under Settings->BuddyPress XML-RPC
-Step 3: Add your website (root path, e.g. http://www.site.com/), username and password to the Preferences screen in this app, then click register.  Wait for the API key to show up under the API key heading.
-Step 4: Go to your BuddyPress profile settings under Remote Access and approve the BuddyPress app.
+Step 3: Add your website (root path, e.g. http://www.site.com/) and username to the Preferences screen in this app, then click register.  Wait for the API key to show up under the API key heading.
+Step 4: Go to your BuddyPress profile settings under Remote Access (should open automatically after last step) and approve the BuddyDroid app.
 
-Now, if you have done these steps correctly, you should be able to post status updates to your BuddyPress activity stream.  Yay :)
+Now, if you have done these steps correctly, you should be able to post status updates to your BuddyPress activity stream.
 
 Features
 ========
 - posts updates to stream via xml-rpc
 - shows a feed of latest updates
+- allows importing plain text / links from other apps
 
 Technical Details
 =================

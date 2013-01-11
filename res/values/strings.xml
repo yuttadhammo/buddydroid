@@ -11,7 +11,7 @@
 	<string name="help_1">Step 1: Install the BuddyPress XML-RPC receiver plugin for Wordpress here: https://github.com/yuttadhammo/buddypress-xmlrpc-receiver </string>
 	<string name="help_2">Step 2: Activate and configure above plugin via wp-admin under Settings->BuddyPress XML-RPC</string>
 	<string name="help_3">Step 3: Add your website (root path, e.g. http://www.site.com/) and username to the Preferences screen in this app, then click register.  Wait for the API key to show up under the API key heading.</string>
-	<string name="help_4">Step 4: Go to your BuddyPress profile settings under Remote Access and approve the BuddyPress app.</string>
+	<string name="help_4">Step 4: Go to your BuddyPress profile settings under Remote Access (should open automatically after last step) and approve the BuddyDroid app.</string>
 	<string name="help_5">Now, if you have done these steps correctly, you should be able to post status updates to your BuddyPress activity stream.  Yay :)</string>
 						
 	<string name="submit">Submit</string>
@@ -27,7 +27,10 @@
 	
 	<string name="preferences">Preferences</string>
 	<string name="userPref">User Preferences</string>
-
+	<string name="miscPref">Misc. Preferences</string>
+	<string name="memberSlug">Custom members slug</string>
+	<string name="memberSlugDesc">change this to match the path to your members section if not default "members"</string>
+		
 	<string name="error_upload">Sorry, an error occurred while uploading the %s. Please try again later.</string>
 	<string name="status">Status</string>
 						

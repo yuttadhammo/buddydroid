@@ -24,5 +24,14 @@
    		    android:key="help"
 			android:title="@string/help"
 			/>
-   	</PreferenceCategory>    
+   	</PreferenceCategory>   
+	<PreferenceCategory android:title="@string/miscPref">
+     	<EditTextPreference 
+   		    android:key="member_slug"
+			android:title="@string/memberSlug"
+			android:summary="@string/memberSlugDesc"
+			android:shouldDisableView="true"
+			android:singleLine="true"/>
+   	</PreferenceCategory>   
+   	    	
 </PreferenceScreen>

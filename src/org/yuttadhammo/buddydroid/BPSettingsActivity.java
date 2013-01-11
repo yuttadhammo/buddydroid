@@ -1,6 +1,7 @@
 package org.yuttadhammo.buddydroid;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.xmlrpc.android.XMLRPCClient;
@@ -11,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -114,6 +116,11 @@ public class BPSettingsActivity extends PreferenceActivity {
 		@SuppressWarnings("deprecation")
 		int api = Integer.parseInt(Build.VERSION.SDK);
 		
+		final EditTextPreference memberPref = (EditTextPreference)findPreference("member_slug");
+		if(memberPref.getText() == null || memberPref.getText().equals(""))
+			memberPref.setText("members");
+		
+		
 		if (api >= 14) {
 			getActionBar().setHomeButtonEnabled(true);
 		}		
@@ -161,9 +168,17 @@ public class BPSettingsActivity extends PreferenceActivity {
 			if(downloadProgressDialog.isShowing()) {
 				downloadProgressDialog.dismiss();
 			}
-			if(apikey != null)
+			if(apikey != null) {
 				apiPref.setSummary(apikey);
-			Log.i("BP","Contact success");
+				String website = prefs.getString("website", null);
+				String username = prefs.getString("username", null);
+				if(website != null && username != null) {
+					Uri url = Uri.parse(website+prefs.getString("member_slug", "members")+"/"+username+"/settings/remote-access/?time="+(new Date().getTime()));
+					Intent i = new Intent(Intent.ACTION_VIEW);
+					i.setData(url);
+					activity.startActivity(i);
+				}
+			}
 
         }
 
