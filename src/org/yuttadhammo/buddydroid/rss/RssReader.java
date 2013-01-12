@@ -87,7 +87,6 @@ public class RssReader {
 		sb.append(BOLD_OPEN).append(title).append(BOLD_CLOSE);
 		sb.append(description);
 		sb.append(SMALL_OPEN).append(ITALIC_OPEN).append(date).append(ITALIC_CLOSE).append(SMALL_CLOSE);
-		Log.i("string",sb.toString().replaceAll("\t"," "));
 		
 		current.put("text", Html.fromHtml(sb.toString().replaceAll("\t","")));
 		current.put("link", article.getUrl());

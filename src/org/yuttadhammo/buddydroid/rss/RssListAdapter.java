@@ -7,9 +7,11 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,7 @@ public class RssListAdapter extends ArrayAdapter<JSONObject> {
 	}
 
 
+	@SuppressLint("NewApi")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -65,6 +68,12 @@ public class RssListAdapter extends ArrayAdapter<JSONObject> {
     			}
     			
     		});
+    		@SuppressWarnings("deprecation")
+    		int api = Integer.parseInt(Build.VERSION.SDK);
+    		
+    		if (api >= 11) {
+    			textView.isTextSelectable();
+    		}
         }
         catch (JSONException e) {
         	textView.setText("JSON Exception");

@@ -45,6 +45,7 @@ public class Buddypress extends ListActivity {
 	private RssListAdapter adapter;
 	private boolean land;
 	private RelativeLayout listPane;
+	private String website;
 
 
 	@SuppressLint("NewApi")
@@ -71,7 +72,8 @@ public class Buddypress extends ListActivity {
 		Intent intent = this.getIntent();
 		
     	if(intent.hasExtra(Intent.EXTRA_TEXT)) {
-			textContent.setText(intent.getStringExtra(Intent.EXTRA_TEXT));
+    		Log.i("Buddypress","Got text: "+intent.getStringExtra(Intent.EXTRA_TEXT));
+			textContent.setText(textContent.getText()+intent.getStringExtra(Intent.EXTRA_TEXT));
     	}
     	
     	listPane = (RelativeLayout) findViewById(R.id.list_pane);
@@ -84,25 +86,41 @@ public class Buddypress extends ListActivity {
 
     	this.activity = this;
     	
-    	if(land && prefs.getString("website", "").length() > 0) {
+    	website = prefs.getString("website", "");
+    	if(land && website.length() > 0) {
     		listPane.setVisibility(View.VISIBLE);
-    		refreshStream();
+    		if(prefs.getBoolean("auto_update", true))
+    			refreshStream();
     	}
 	}
 	
 	@Override
 	public void onResume(){
 		super.onResume();
-    	land = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+	
+		land = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
     	this.activity = this;
-    	
-    	if(land && prefs.getString("website", "").length() > 0 && listPane.getVisibility() == View.GONE) {
+    	String newWebsite = prefs.getString("website", "");
+    	if(land && newWebsite.length() > 0 && (listPane.getVisibility() == View.GONE || !website.equals(newWebsite))) {
+    		website = newWebsite;
     		listPane.setVisibility(View.VISIBLE);
-    		refreshStream();
+    		if(prefs.getBoolean("auto_update", true))
+    			refreshStream();
     	}
 	}
-	
+	@Override
+	protected void onNewIntent(Intent intent){
+		super.onNewIntent(intent);
+    	if(intent.hasExtra(Intent.EXTRA_TEXT)) {
+    		String text = textContent.getText().toString();
+    		String add = "";
+    		if(text.length() > 0)
+    			add = "\n";
+			textContent.setText(text+add+intent.getStringExtra(Intent.EXTRA_TEXT));
+    	}
+    		
+	}
 
 	@Override
 	protected void onDestroy()

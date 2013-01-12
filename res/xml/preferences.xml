@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/userPref">
+	    <Preference 
+	 		android:key="help"
+			android:title="@string/help"
+			/>
    		<EditTextPreference 
    		    android:key="website"
 			android:title="@string/website"
@@ -20,10 +24,7 @@
 			android:title="@string/api_key"
 			android:summary="@string/api_key_desc"
 			/>
-		<Preference 
-   		    android:key="help"
-			android:title="@string/help"
-			/>
+
    	</PreferenceCategory>   
 	<PreferenceCategory android:title="@string/advPref">
      	<EditTextPreference 
@@ -38,6 +39,11 @@
 			android:summary="@string/memberSlugDesc"
 			android:shouldDisableView="true"
 			android:singleLine="true"/>
+	    <CheckBoxPreference
+	        android:key="auto_update"
+	        android:defaultValue="true"
+	        android:title="@string/autoUpdate"
+	        />
    	</PreferenceCategory>   
    	    	
 </PreferenceScreen>
