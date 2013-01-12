@@ -69,7 +69,7 @@ public class RssListAdapter extends ArrayAdapter<JSONObject> {
         catch (JSONException e) {
         	textView.setText("JSON Exception");
         }
-
+        textView.setTextColor(0xFF000000);
 		return rowView;
 
 	} 

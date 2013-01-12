@@ -14,6 +14,7 @@
 	<string name="help_4">Step 4: Go to your BuddyPress profile settings under Remote Access (should open automatically after last step) and approve the BuddyDroid app.</string>
 	<string name="help_5">Now, if you have done these steps correctly, you should be able to post status updates to your BuddyPress activity stream.  Yay :)</string>
 						
+	<string name="statusHint">Enter status update here…</string>
 	<string name="submit">Submit</string>
 
 	<string name="posted">Update Posted Successfully!</string>
@@ -21,17 +22,25 @@
 	
 	<string name="app_name">BuddyDroid</string>
 		
-	<string name="connecting">Connecting...</string>
-	
+	<string name="connecting">Connecting…</string>
+	<string name="updating">Updating Stream…</string>
+	<string name="posting">Posting Update…</string>
+	<string name="registering">Registering Service…</string>
+			
 	<string name="stream">Stream</string>
 	
 	<string name="preferences">Preferences</string>
 	<string name="userPref">User Preferences</string>
-	<string name="miscPref">Misc. Preferences</string>
-	<string name="memberSlug">Custom members slug</string>
-	<string name="memberSlugDesc">change this to match the path to your members section if not default "members"</string>
-		
+	<string name="advPref">Advanced Preferences</string>
+	<string name="memberSlug">Custom Members Slug</string>
+	<string name="memberSlugDesc">Change this to match the url to your site\' members section if not default \'members\'</string>
+	<string name="serviceName">Service Name</string>
+	<string name="serviceNameDesc">Change this if you want to register more than one service (e.g. on more than one device)</string>
+			
+	<string name="checkSetupInternet">Stream not available.  Please check your setup and Internet connection.</string>
 	<string name="error_upload">Sorry, an error occurred while uploading the %s. Please try again later.</string>
+	<string name="noWebsite">Please specify a website in preferences.</string>
+			
 	<string name="status">Status</string>
 						
 </resources>

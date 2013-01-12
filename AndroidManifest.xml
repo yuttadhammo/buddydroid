@@ -25,6 +25,7 @@
 			android:theme="@style/DarkTheme"
  			android:logo="@drawable/actionbar_icon"
 	 		android:configChanges="orientation|screenSize|keyboardHidden"
+	 		android:windowSoftInputMode="stateUnchanged"
 	 		android:launchMode="singleTask">
 		    <intent-filter>
 		        <action android:name="android.intent.action.SEND" />
@@ -38,7 +39,7 @@
         </activity>
         <activity android:label="@string/stream" 
             android:name=".BPStreamActivity"
- 			android:theme="@style/LightTheme"
+			android:theme="@style/DarkTheme"
    			android:logo="@drawable/actionbar_icon"
        		android:configChanges="orientation|screenSize|keyboardHidden"
             />   

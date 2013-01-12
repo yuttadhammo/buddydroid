@@ -25,8 +25,14 @@
 			android:title="@string/help"
 			/>
    	</PreferenceCategory>   
-	<PreferenceCategory android:title="@string/miscPref">
+	<PreferenceCategory android:title="@string/advPref">
      	<EditTextPreference 
+   		    android:key="service_name"
+			android:title="@string/serviceName"
+			android:summary="@string/serviceNameDesc"
+			android:shouldDisableView="true"
+			android:singleLine="true"/>
+	    <EditTextPreference 
    		    android:key="member_slug"
 			android:title="@string/memberSlug"
 			android:summary="@string/memberSlugDesc"

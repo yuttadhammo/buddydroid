@@ -79,23 +79,23 @@ public class RSSHandler extends DefaultHandler {
 
 		if (localName.equalsIgnoreCase("title"))
 		{
-			Log.d("LOGGING RSS XML", "Setting article title: " + chars.toString());
+			//Log.d("LOGGING RSS XML", "Setting article title: " + chars.toString());
 			currentArticle.setTitle(chars.toString());
 
 		}
 		else if (localName.equalsIgnoreCase("description"))
 		{
-			Log.d("LOGGING RSS XML", "Setting article description: " + chars.toString());
+//			Log.d("LOGGING RSS XML", "Setting article description: " + chars.toString());
 			currentArticle.setDescription(chars.toString());
 		}
 		else if (localName.equalsIgnoreCase("pubDate"))
 		{
-			Log.d("LOGGING RSS XML", "Setting article published date: " + chars.toString());
+//			Log.d("LOGGING RSS XML", "Setting article published date: " + chars.toString());
 			currentArticle.setPubDate(chars.toString());
 		}
 		else if (localName.equalsIgnoreCase("encoded"))
 		{
-			Log.d("LOGGING RSS XML", "Setting article content: " + chars.toString());
+//			Log.d("LOGGING RSS XML", "Setting article content: " + chars.toString());
 			currentArticle.setEncodedContent(chars.toString());
 		}
 		else if (localName.equalsIgnoreCase("item"))
@@ -105,7 +105,7 @@ public class RSSHandler extends DefaultHandler {
 		else if (localName.equalsIgnoreCase("link"))
 		{
 			try {
-				Log.d("LOGGING RSS XML", "Setting article link url: " + chars.toString());
+//				Log.d("LOGGING RSS XML", "Setting article link url: " + chars.toString());
 				currentArticle.setUrl(new URL(chars.toString()));
 			} catch (MalformedURLException e) {
 				Log.e("RSA Error", e.getMessage());

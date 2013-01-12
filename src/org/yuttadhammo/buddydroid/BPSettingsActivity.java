@@ -85,7 +85,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 			public boolean onPreferenceClick(Preference arg0) {
 		        downloadProgressDialog = new ProgressDialog(activity);
 		        downloadProgressDialog.setCancelable(true);
-		        downloadProgressDialog.setMessage(getString(R.string.connecting));
+		        downloadProgressDialog.setMessage(getString(R.string.registering));
 		        downloadProgressDialog.setIndeterminate(true);
 		        
 				ReadFile rf = new ReadFile();
@@ -113,13 +113,18 @@ public class BPSettingsActivity extends PreferenceActivity {
 			}
 			
 		});
-		@SuppressWarnings("deprecation")
-		int api = Integer.parseInt(Build.VERSION.SDK);
+		
+		final EditTextPreference servicePref = (EditTextPreference)findPreference("service_name");
+		if(servicePref.getText() == null || servicePref.getText().equals(""))
+			servicePref.setText(getString(R.string.app_name));
 		
 		final EditTextPreference memberPref = (EditTextPreference)findPreference("member_slug");
 		if(memberPref.getText() == null || memberPref.getText().equals(""))
 			memberPref.setText("members");
 		
+		
+		@SuppressWarnings("deprecation")
+		int api = Integer.parseInt(Build.VERSION.SDK);	
 		
 		if (api >= 14) {
 			getActionBar().setHomeButtonEnabled(true);
@@ -135,8 +140,8 @@ public class BPSettingsActivity extends PreferenceActivity {
         protected String doInBackground(URI... sUrl) {
             boolean success = false;
             HashMap<?, ?> result = null;
-    		
-			Object[] params = new Object[] {Buddypress.getUsername(), getString(R.string.app_name)};
+			
+			Object[] params = new Object[] {Buddypress.getUsername(), Buddypress.getServiceName()};
 			XMLRPCClient client = new XMLRPCClient(Buddypress.getUrl(),
 					Buddypress.getHttpuser(), Buddypress.getHttppassword());
 			try {

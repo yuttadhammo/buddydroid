@@ -2,17 +2,26 @@
 package org.yuttadhammo.buddydroid;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONObject;
+import org.yuttadhammo.buddydroid.rss.RssListAdapter;
+import org.yuttadhammo.buddydroid.rss.RssReader;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,22 +29,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-
-/**
- * The main activity which shows the timer and allows the user to set the time
- * @author Ralph Gootee (rgootee@gmail.com)
- */
-public class Buddypress extends Activity {
+public class Buddypress extends ListActivity {
 	
 
 	public static String versionName = "1";
 	private static SharedPreferences prefs;
 	private TextView textContent;
 	private Button submitButton;
+	private Buddypress activity;
+	private RssListAdapter adapter;
+	private boolean land;
+	private RelativeLayout listPane;
 
 
 	@SuppressLint("NewApi")
@@ -64,11 +73,34 @@ public class Buddypress extends Activity {
     	if(intent.hasExtra(Intent.EXTRA_TEXT)) {
 			textContent.setText(intent.getStringExtra(Intent.EXTRA_TEXT));
     	}
+    	
+    	listPane = (RelativeLayout) findViewById(R.id.list_pane);
+    	
+    	DisplayMetrics metrics = new DisplayMetrics();
+    	getWindowManager().getDefaultDisplay().getMetrics(metrics);
+    	int width = metrics.widthPixels; 
+    	
+    	land = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && width > 600;
+
+    	this.activity = this;
+    	
+    	if(land && prefs.getString("website", "").length() > 0) {
+    		listPane.setVisibility(View.VISIBLE);
+    		refreshStream();
+    	}
 	}
 	
 	@Override
 	public void onResume(){
 		super.onResume();
+    	land = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
+    	this.activity = this;
+    	
+    	if(land && prefs.getString("website", "").length() > 0 && listPane.getVisibility() == View.GONE) {
+    		listPane.setVisibility(View.VISIBLE);
+    		refreshStream();
+    	}
 	}
 	
 
@@ -101,6 +133,16 @@ public class Buddypress extends Activity {
 	            return true;
 
 			case (int)R.id.menuStream:
+		    	if(prefs.getString("website", "").length() == 0) {
+					Toast.makeText(this, getString(R.string.noWebsite),
+							Toast.LENGTH_LONG).show();
+					return true;
+		    	}
+				if(listPane.getVisibility() == View.VISIBLE){
+					refreshStream();
+		    		return true;
+				}
+				
 				intent = new Intent(this, BPStreamActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
@@ -151,7 +193,11 @@ public class Buddypress extends Activity {
    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    		listPane.setVisibility(View.VISIBLE);
+        }
+        else
+        	listPane.setVisibility(View.GONE);
     }
 
 	public static class MessageHandler extends Handler {
@@ -189,5 +235,48 @@ public class Buddypress extends Activity {
 	public static String getApiKey() {
 		return prefs.getString("api_key", "");
 	}
+
+	public static String getServiceName() {
+		return prefs.getString("service_name", "BuddyDroid");
+	}
 	
+	private ProgressDialog downloadProgressDialog;
+
+	private class ReadFile extends AsyncTask<String, Integer, String> {
+		List<JSONObject> jobs = new ArrayList<JSONObject>();
+		@Override
+        protected String doInBackground(String... sUrl) {
+            try {
+    			jobs = RssReader.getLatestRssFeed(getBaseContext());
+
+            } catch (Exception e) {
+            	e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+	        downloadProgressDialog = new ProgressDialog(activity);
+	        downloadProgressDialog.setCancelable(true);
+	        downloadProgressDialog.setMessage(activity.getString(R.string.updating));
+	        downloadProgressDialog.setIndeterminate(true);
+            downloadProgressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if(downloadProgressDialog.isShowing())
+            	downloadProgressDialog.dismiss();
+    		adapter = new RssListAdapter(activity,jobs);
+    		setListAdapter(adapter);
+        }
+    }
+	
+	public void refreshStream() {
+		ReadFile rf = new ReadFile();
+		rf.execute("");
+	}
+
 }

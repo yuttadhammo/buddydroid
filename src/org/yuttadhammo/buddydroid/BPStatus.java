@@ -9,11 +9,14 @@ import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
 
 import android.app.Activity;
+import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class BPStatus {
@@ -50,19 +53,13 @@ public class BPStatus {
 
 	private String mediaPaths;
 	private static Context context;
-	private static Activity activity;
+	private static Buddypress activity;
 
 	public Vector<String> imageUrl = new Vector<String>();
 	Vector<String> selectedCategories = new Vector<String>();
 
-	public BPStatus(int blog_id, long post_id, boolean isPage, Context ctx) {
-		// load an existing post
-		context = ctx;
-		this.id = -1;
 
-	}
-
-	public BPStatus(String content, Context ctx, Activity atv) {
+	public BPStatus(String content, Context ctx, Buddypress atv) {
 		// create a new post
 		context = ctx;
 		activity = atv;
@@ -71,9 +68,10 @@ public class BPStatus {
 
 	}
 
-    private static ProgressDialog downloadProgressDialog;
+	private static ProgressDialog downloadProgressDialog;
 
-	public static class uploadStatusTask extends AsyncTask<BPStatus, Boolean, Boolean> {
+	public static class uploadStatusTask extends
+			AsyncTask<BPStatus, Boolean, Boolean> {
 
 		private BPStatus bpstatus;
 		String error = "";
@@ -91,50 +89,53 @@ public class BPStatus {
 			if (posted) {
 				EditText et = (EditText) activity.findViewById(R.id.text_content);
 				et.setText("");
+				RelativeLayout rl = (RelativeLayout) activity.findViewById(R.id.list_pane);
+				if(rl.getVisibility() == View.VISIBLE)
+					activity.refreshStream();
+				
 			}
 		}
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-	        downloadProgressDialog = new ProgressDialog(activity);
-	        downloadProgressDialog.setCancelable(true);
-	        downloadProgressDialog.setMessage(activity.getString(R.string.connecting));
-	        downloadProgressDialog.setIndeterminate(true);
-            downloadProgressDialog.show();
-        }
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			downloadProgressDialog = new ProgressDialog(activity);
+			downloadProgressDialog.setCancelable(true);
+			downloadProgressDialog.setMessage(activity
+					.getString(R.string.posting));
+			downloadProgressDialog.setIndeterminate(true);
+			downloadProgressDialog.show();
+		}
+
 		@Override
 		protected Boolean doInBackground(BPStatus... statuses) {
 
 			bpstatus = statuses[0];
 
-
 			Object[] params;
-			
+
 			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("status",bpstatus.description);
-			
-			params = new Object[] { Buddypress.getUsername(), 
-					context.getString(R.string.app_name),
-					Buddypress.getApiKey(),
-					data
-				};
-			Log.e("BP","api key"+ params[2]);
+			data.put("status", bpstatus.description);
+
+			params = new Object[] { Buddypress.getUsername(),
+					activity.getServiceName(),
+					Buddypress.getApiKey(), data };
+			Log.e("BP", "api key" + params[2]);
 			XMLRPCClient client = new XMLRPCClient(Buddypress.getUrl(),
 					Buddypress.getHttpuser(), Buddypress.getHttppassword());
 			try {
 				client.call("bp.updateProfileStatus", params);
 				toast = activity.getString(R.string.posted);
-				posted  = true;
+				posted = true;
 				return true;
 			} catch (final XMLRPCException e) {
-				toast =	activity.getString(R.string.error);	
+				toast = activity.getString(R.string.error);
 				e.printStackTrace();
 			}
 			return false;
 		}
 
 	}
-	
 
 	public long getId() {
 		return id;
@@ -397,5 +398,4 @@ public class BPStatus {
 		this.isLocalChange = isLocalChange;
 	}
 
-	
 }

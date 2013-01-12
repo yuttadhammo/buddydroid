@@ -35,7 +35,7 @@ public class RssReader {
 	 * @return List<JSONObject> - suitable for the List View activity
 	 */
 	public static List<JSONObject> getLatestRssFeed(Context context){
-		String feed = PreferenceManager.getDefaultSharedPreferences(context).getString("website", "http://www.buddypress.org/")+"activity/feed/";
+		String feed = PreferenceManager.getDefaultSharedPreferences(context).getString("website", "")+"activity/feed/";
 		
 		
 		RSSHandler rh = new RSSHandler();
@@ -85,12 +85,11 @@ public class RssReader {
 		
 		StringBuffer sb = new StringBuffer();
 		sb.append(BOLD_OPEN).append(title).append(BOLD_CLOSE);
-		sb.append(BREAK);
 		sb.append(description);
-		sb.append(BREAK);
 		sb.append(SMALL_OPEN).append(ITALIC_OPEN).append(date).append(ITALIC_CLOSE).append(SMALL_CLOSE);
+		Log.i("string",sb.toString().replaceAll("\t"," "));
 		
-		current.put("text", Html.fromHtml(sb.toString()));
+		current.put("text", Html.fromHtml(sb.toString().replaceAll("\t","")));
 		current.put("link", article.getUrl());
 		current.put("imageLink", imgLink);
 	}
