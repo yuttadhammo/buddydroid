@@ -12,21 +12,18 @@
 		android:layout_height="fill_parent"
 		android:visibility="gone"
 		android:orientation="horizontal"
+		android:background="#DDDDDD"
 	    >
 	    <ListView android:id="@+id/android:list"
 	        android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:padding="20dp"
-			android:dividerHeight="3dp"
+			android:layout_marginLeft="10dp"
+			android:layout_marginRight="10dp"
+			android:dividerHeight="10dp"
 			android:background="#FFFFFF"
 	        android:divider="@drawable/divider"
         	/>
-	    <ImageView
-			android:layout_width="6dp" 
-			android:layout_height="match_parent"
-			android:src="@drawable/divider_h"
-			android:layout_alignParentRight="true"
-			/>
+
 	</RelativeLayout>
 	<RelativeLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
