@@ -41,7 +41,15 @@
 	<string name="checkSetupInternet">Stream not available.  Please check your setup and Internet connection.</string>
 	<string name="error_upload">Sorry, an error occurred while uploading the %s. Please try again later.</string>
 	<string name="noWebsite">Please specify a website in preferences.</string>
-			
-	<string name="status">Status</string>
+	<string name="websiteSyntaxError">Invalid website URL</string>
+	<string name="connectionRejected">Connection rejected - check username</string>
 						
+	<string name="status">Status</string>
+
+	<string name="post_options">Post Options</string>
+	<string name="delete">Delete Status</string>
+	<string name="deleting">Deleting Status Update...</string>
+	<string name="really_delete">Do you want to delete this item?</string>
+		
+							
 </resources>

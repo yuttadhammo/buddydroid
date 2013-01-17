@@ -25,6 +25,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 public class BPSettingsActivity extends PreferenceActivity {
@@ -50,12 +51,19 @@ public class BPSettingsActivity extends PreferenceActivity {
 		if(websitePref.getText() == null || websitePref.getText().equals(""))
 			websitePref.setText("");
 		websitePref.setSummary(websitePref.getText());
-		
+		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
 		websitePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 			public boolean onPreferenceChange(Preference preference,
 					final Object newValue) {
-				websitePref.setSummary((String) newValue);
+				String website = (String) newValue;
+				if(!website.matches("^https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$")) {
+					Toast.makeText(BPSettingsActivity.this, getString(R.string.websiteSyntaxError),
+							Toast.LENGTH_LONG).show();
+					return false;
+				}
+					
+				websitePref.setSummary(website);
 
 				return true;
 			}
@@ -71,7 +79,9 @@ public class BPSettingsActivity extends PreferenceActivity {
 
 			public boolean onPreferenceChange(Preference preference,
 					final Object newValue) {
-				userPref.setSummary((String) newValue);
+				String username = (String) newValue;
+
+				userPref.setSummary(username);
 
 				return true;
 			}
@@ -134,7 +144,8 @@ public class BPSettingsActivity extends PreferenceActivity {
 
     private class ReadFile extends AsyncTask<URI, Integer, String> {
 		private Editor editor;
-		private String apikey;
+		private String apikey = null;
+		private String error = null;
 
 		@Override
         protected String doInBackground(URI... sUrl) {
@@ -145,10 +156,19 @@ public class BPSettingsActivity extends PreferenceActivity {
 			XMLRPCClient client = new XMLRPCClient(Buddypress.getUrl(),
 					Buddypress.getHttpuser(), Buddypress.getHttppassword());
 			try {
-				result = (HashMap<?, ?>) client.call("bp.requestApiKey", params);
+				Object obj = client.call("bp.requestApiKey", params);
+				if(obj.equals(false)) {
+					error = activity.getString(R.string.connectionRejected);
+				}
+					
+				result = (HashMap<?, ?>) obj;
 				success = true;
 			} catch (final XMLRPCException e) {
 				e.printStackTrace();
+				error = e.getMessage();
+			} catch (Exception e) {
+				e.printStackTrace();
+				error = e.getMessage();
 			}
 			if(success) {
 				String confirm = result.get("confirmation").toString();
@@ -184,7 +204,10 @@ public class BPSettingsActivity extends PreferenceActivity {
 					activity.startActivity(i);
 				}
 			}
-
+			else if(error != null) {
+    			Toast.makeText(activity, error,
+    					Toast.LENGTH_LONG).show();
+			}
         }
 
     }
