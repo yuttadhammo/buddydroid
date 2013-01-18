@@ -231,7 +231,7 @@ public class Buddypress extends ListActivity {
 	}
 
 	public static URI getUrl() {
-		return URI.create(prefs.getString("website", "")+"wp-content/plugins/bpxmlrpc/bp-xmlrpc.php");
+		return URI.create(prefs.getString("website", "")+"index.php?bp_xmlrpc=true");
 	}
 
 	public static String getHttpuser() {
