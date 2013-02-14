@@ -46,6 +46,7 @@ public class Buddypress extends ListActivity {
 	private boolean land;
 	private RelativeLayout listPane;
 	private String website;
+	private boolean manualRefresh;
 
 
 	@SuppressLint("NewApi")
@@ -158,6 +159,7 @@ public class Buddypress extends ListActivity {
 		    	}
 				if(listPane.getVisibility() == View.VISIBLE){
 					refreshStream();
+					manualRefresh = true;
 		    		return true;
 				}
 				
@@ -285,6 +287,11 @@ public class Buddypress extends ListActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            if(jobs.size() == 0 && manualRefresh) {
+            	manualRefresh = false;
+				Toast.makeText(Buddypress.this, "Problem retrieving feed!",
+						Toast.LENGTH_LONG).show();
+            }
             if(downloadProgressDialog.isShowing())
             	downloadProgressDialog.dismiss();
     		adapter = new RssListAdapter(activity,jobs);
