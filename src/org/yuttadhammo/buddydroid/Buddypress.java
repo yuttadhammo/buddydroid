@@ -3,6 +3,7 @@ package org.yuttadhammo.buddydroid;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -261,47 +262,25 @@ public class Buddypress extends ListActivity {
 	}
 	
 	private ProgressDialog downloadProgressDialog;
-
-	private class ReadFile extends AsyncTask<String, Integer, String> {
-		List<JSONObject> jobs = new ArrayList<JSONObject>();
-		@Override
-        protected String doInBackground(String... sUrl) {
-            try {
-    			jobs = RssReader.getLatestRssFeed(getBaseContext());
-
-            } catch (Exception e) {
-            	e.printStackTrace();
-            }
-            return null;
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-	        downloadProgressDialog = new ProgressDialog(activity);
-	        downloadProgressDialog.setCancelable(true);
-	        downloadProgressDialog.setMessage(activity.getString(R.string.updating));
-	        downloadProgressDialog.setIndeterminate(true);
-            downloadProgressDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if(jobs.size() == 0 && manualRefresh) {
-            	manualRefresh = false;
-				Toast.makeText(Buddypress.this, "Problem retrieving feed!",
-						Toast.LENGTH_LONG).show();
-            }
-            if(downloadProgressDialog.isShowing())
-            	downloadProgressDialog.dismiss();
-    		adapter = new RssListAdapter(activity,jobs);
-    		setListAdapter(adapter);
-        }
-    }
+	private String scope = "sitewide";
+	private int max = 40;
+	private String TAG = "Buddypress";
 	
 	public void refreshStream() {
-		ReadFile rf = new ReadFile();
-		rf.execute("");
+        
+		BPStream stream = new BPStream(this, scope, max);
+		stream.get();
 	}
-
+	public void onRefreshStream(HashMap<?, ?> rss) {
+		
+		Object obj = rss.get("activities");
+		
+		Object[] list = (Object[]) obj;
+		
+		adapter = new RssListAdapter(activity,list);
+		if (adapter.isEmpty())
+			Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
+					Toast.LENGTH_LONG).show();
+		setListAdapter(adapter);
+	}
 }

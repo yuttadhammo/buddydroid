@@ -316,6 +316,7 @@ public class XMLRPCClient {
 	@SuppressWarnings("unchecked")
 	private Object callXMLRPC(String method, Object[] params, File tempFile) throws XMLRPCException {
 		try {
+			Log.i("BP", "Serializing");
 			// prepare POST body
 			StringWriter bodyWriter = new StringWriter();
 			serializer.setOutput(bodyWriter);
@@ -342,6 +343,7 @@ public class XMLRPCClient {
 			}
 			serializer.endTag(null, TAG_METHOD_CALL);
 			serializer.endDocument();
+			Log.i("BP", "Serialized");
 			
 			HttpEntity entity = new StringEntity(bodyWriter.toString());
 			//Log.i("WordPress", bodyWriter.toString());

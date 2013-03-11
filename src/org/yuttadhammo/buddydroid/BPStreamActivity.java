@@ -87,11 +87,11 @@ public class BPStreamActivity extends ListActivity {
             	return;
             if(downloadProgressDialog.isShowing())
             	downloadProgressDialog.dismiss();
-    		adapter = new RssListAdapter(activity,jobs);
+/*    		adapter = new RssListAdapter(activity,jobs);
     		if (adapter.isEmpty())
     			Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
     					Toast.LENGTH_LONG).show();
-    		setListAdapter(adapter);
+    		setListAdapter(adapter);*/
         }
     }
    @Override
