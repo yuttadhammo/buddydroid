@@ -1,4 +1,4 @@
-package org.yuttadhammo.buddydroid;
+package org.yuttadhammo.buddydroid.interfaces;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +10,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
-import org.yuttadhammo.buddydroid.BPStatus.uploadStatusTask;
+import org.yuttadhammo.buddydroid.Buddypress;
+import org.yuttadhammo.buddydroid.R;
+import org.yuttadhammo.buddydroid.R.string;
+import org.yuttadhammo.buddydroid.interfaces.BPStatus.uploadStatusTask;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -29,6 +32,7 @@ public class BPStream {
 
 	public Vector<String> imageUrl = new Vector<String>();
 	Vector<String> selectedCategories = new Vector<String>();
+	public static Object error;
 	public static Activity activity;
 	public static String TAG = "BPStream";
 	private static Handler handler;
@@ -62,11 +66,11 @@ public class BPStream {
 			if (success) {
 				msg.arg1 = R.string.updated;
 				msg.obj = rss;
-				msg.what = Buddypress.MSG_SUCCESS;
+				msg.what = Buddypress.MSG_STREAM;
 			}
 			else {
 				msg.arg1 = R.string.error;
-				msg.obj = rss;
+				msg.obj = error;
 				msg.what = Buddypress.MSG_ERROR;
 			}
 			handler.sendMessage(msg);
@@ -98,6 +102,7 @@ public class BPStream {
 				success = true;
 				return true;
 			} catch (final XMLRPCException e) {
+				error = e.getCause().toString();
 				e.printStackTrace();
 			}
 			return false;

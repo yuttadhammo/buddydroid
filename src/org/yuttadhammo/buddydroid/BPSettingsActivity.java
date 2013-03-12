@@ -85,15 +85,19 @@ public class BPSettingsActivity extends PreferenceActivity {
 
 		final EditTextPreference websitePref = (EditTextPreference)findPreference("website");
 		final EditTextPreference userPref = (EditTextPreference)findPreference("username");
+		final EditTextPreference apiPref = (EditTextPreference)findPreference("api_key");
+
 		final EditTextPreference maxPref = (EditTextPreference)findPreference("stream_max");
 		final EditTextPreference servicePref = (EditTextPreference)findPreference("service_name");
 		final EditTextPreference memberPref = (EditTextPreference)findPreference("member_slug");
 
-		this.setEditTextPreference(websitePref,"");
-		this.setEditTextPreference(userPref,"");
-		this.setEditTextPreference(maxPref,"20");
-		this.setEditTextPreference(servicePref,getString(R.string.app_name));
-		this.setEditTextPreference(memberPref,"members");
+		this.setupEditTextPreference(websitePref,"");
+		this.setupEditTextPreference(userPref,"");
+		this.setupEditTextPreference(apiPref,null);
+
+		this.setupEditTextPreference(maxPref,"20");
+		this.setupEditTextPreference(servicePref,getString(R.string.app_name));
+		this.setupEditTextPreference(memberPref,"members");
 		
 		maxPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
 		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
@@ -164,12 +168,17 @@ public class BPSettingsActivity extends PreferenceActivity {
 				apiPref.setSummary(apikey);
 				String website = prefs.getString("website", null);
 				String username = prefs.getString("username", null);
+				String members = prefs.getString("member_slug", "members");
+				
 				if(website != null && username != null) {
-					Uri url = Uri.parse(website+prefs.getString("member_slug", "members")+"/"+username+"/settings/remote-access/?time="+(new Date().getTime()));
+					Uri url = Uri.parse(website+members+"/"+username+"/settings/remote-access/?time="+(new Date().getTime()));
 					Intent i = new Intent(Intent.ACTION_VIEW);
 					i.setData(url);
 					activity.startActivity(i);
 				}
+				else 
+	    			Toast.makeText(activity, error,
+	    					Toast.LENGTH_LONG).show();
 			}
 			else if(error != null) {
     			Toast.makeText(activity, error,
@@ -194,11 +203,17 @@ public class BPSettingsActivity extends PreferenceActivity {
 	    }
 	}	
 	
-	public void setEditTextPreference(final EditTextPreference etp, String def) {
-		if(etp.getText() == null || etp.getText().equals(""))
-			etp.setText(def);
-		etp.setSummary(etp.getText());
-
+	public void setupEditTextPreference(final EditTextPreference etp, String def) {
+		if(def != null) {
+			if(etp.getText() == null || etp.getText().equals(""))
+				etp.setText(def);
+			etp.setSummary(etp.getText());
+		}
+		else if(etp.getText() != null && !etp.getText().equals("")) {
+			etp.setSummary(etp.getText());
+		}
+		
+		
 		etp.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 			public boolean onPreferenceChange(Preference preference,

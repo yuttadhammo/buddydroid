@@ -1,4 +1,4 @@
-package org.yuttadhammo.buddydroid.rss;
+package org.yuttadhammo.buddydroid.interfaces;
 
 import java.net.URL;
 

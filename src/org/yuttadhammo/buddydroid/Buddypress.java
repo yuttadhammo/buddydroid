@@ -3,13 +3,22 @@ package org.yuttadhammo.buddydroid;
 
 import java.net.URI;
 import java.util.HashMap;
-import org.yuttadhammo.buddydroid.rss.RssListAdapter;
+
+
+import org.yuttadhammo.buddydroid.interfaces.BPStatus;
+import org.yuttadhammo.buddydroid.interfaces.BPStream;
+import org.yuttadhammo.buddydroid.interfaces.BPStreamItem;
+import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
+
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,11 +26,14 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -81,6 +93,7 @@ public class Buddypress extends ListActivity {
     	website = prefs.getString("website", "");
     	if(land && website.length() > 0) {
     		listPane.setVisibility(View.VISIBLE);
+    		registerForContextMenu(findViewById(android.R.id.list));
     		if(prefs.getBoolean("auto_update", true))
     			refreshStream();
     	}
@@ -198,8 +211,74 @@ public class Buddypress extends ListActivity {
 
 		}
 	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		MenuInflater inflater = getMenuInflater();
+       	inflater.inflate(R.menu.stream_longclick, menu);
+        
+	    menu.setHeaderTitle(getString(R.string.post_options));
+		super.onCreateContextMenu(menu, v, menuInfo);
+	}
 	
-   @Override
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+	    int index = info.position;
+	    final HashMap<?,?> entryMap = (HashMap<?, ?>) getListView().getItemAtPosition(index);
+		Intent i;
+	    
+	    switch (item.getItemId()) {
+			case R.id.view:
+				String link = (String)entryMap.get("primary_link");
+				Uri url = Uri.parse(link);
+				i = new Intent(Intent.ACTION_VIEW, url);
+				activity.startActivity(i);
+				return true;
+			case R.id.share_link:
+				i = new Intent(Intent.ACTION_SEND);
+				i.putExtra(Intent.EXTRA_TEXT, (String)entryMap.get("primary_link"));
+				i.setType("text/plain");
+				startActivity(Intent.createChooser(i, getString(R.string.share_via)));
+				return true;
+			case R.id.share_text:
+				i = new Intent(Intent.ACTION_SEND);
+				i.putExtra(Intent.EXTRA_TEXT, (String)entryMap.get("content"));
+				i.setType("text/plain");
+				startActivity(Intent.createChooser(i, getString(R.string.share_via)));
+				return true;
+			case R.id.delete:
+		        new AlertDialog.Builder(this)
+		        .setIcon(android.R.drawable.ic_dialog_alert)
+		        .setTitle(R.string.delete)
+		        .setMessage(R.string.really_delete)
+		        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+		            @Override
+		            public void onClick(DialogInterface dialog, int which) {
+						downloadProgressDialog = new ProgressDialog(activity);
+				        downloadProgressDialog.setCancelable(true);
+				        downloadProgressDialog.setMessage(activity.getString(R.string.deleting));
+				        downloadProgressDialog.setIndeterminate(true);
+				        downloadProgressDialog.show();
+						BPStreamItem bpsi = new BPStreamItem(activity, mHandler, entryMap);
+						bpsi.delete();		            
+					}
+
+		        })
+		        .setNegativeButton(android.R.string.no, null)
+		        .show();	
+
+				return true;
+			default:
+				break;
+		}
+		
+		return super.onContextItemSelected(item);
+	}
+	
+	@Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -248,10 +327,10 @@ public class Buddypress extends ListActivity {
 	private ProgressDialog downloadProgressDialog;
 
 	public void refreshStream() {
-        
+		
         downloadProgressDialog = new ProgressDialog(activity);
         downloadProgressDialog.setCancelable(true);
-        downloadProgressDialog.setMessage(activity.getString(R.string.updating));
+        downloadProgressDialog.setMessage(getString(R.string.updating));
         downloadProgressDialog.setIndeterminate(true);
         downloadProgressDialog.show();
 		
@@ -260,14 +339,17 @@ public class Buddypress extends ListActivity {
 	}
 	
 	public static int MSG_ERROR = 0;
-	public static int MSG_SUCCESS = 1;
+	public static int MSG_STREAM = 1;
+	public static int MSG_DELETE = 2;
 	
 	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
 		
+
 		@Override
         public void handleMessage(Message msg) {
-			if(msg.what == MSG_SUCCESS ) {
+			String toast = null;
+			if(msg.what == MSG_STREAM ) {
 				
 				Log.i(TAG ,"got message");
 				
@@ -281,12 +363,20 @@ public class Buddypress extends ListActivity {
 					Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
 							Toast.LENGTH_LONG).show();
 				setListAdapter(adapter);
+				toast = getString(msg.arg1);
 			}
-			Toast.makeText(activity, (CharSequence) getString(msg.arg1),
+			else if(msg.what == MSG_DELETE ) {
+				toast = getString(msg.arg1);
+				refreshStream();
+			}
+			else {
+				toast = (String) msg.obj;
+			}
+			Toast.makeText(activity, (CharSequence) toast,
 					Toast.LENGTH_SHORT).show();
 			if(downloadProgressDialog.isShowing())
 				downloadProgressDialog.dismiss();
 		}
     };
-
+    
 }

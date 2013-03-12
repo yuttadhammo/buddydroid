@@ -1,4 +1,4 @@
-package org.yuttadhammo.buddydroid;
+package org.yuttadhammo.buddydroid.interfaces;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
+import org.yuttadhammo.buddydroid.Buddypress;
+import org.yuttadhammo.buddydroid.R;
+import org.yuttadhammo.buddydroid.R.id;
+import org.yuttadhammo.buddydroid.R.string;
 
 import android.app.Activity;
 import android.app.ListActivity;

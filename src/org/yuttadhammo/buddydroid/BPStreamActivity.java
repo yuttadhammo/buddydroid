@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONObject;
-import org.yuttadhammo.buddydroid.rss.RssListAdapter;
-import org.yuttadhammo.buddydroid.rss.RssReader;
+import org.yuttadhammo.buddydroid.interfaces.BPStream;
+import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
+import org.yuttadhammo.buddydroid.interfaces.RssReader;
 
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
@@ -81,7 +82,7 @@ public class BPStreamActivity extends ListActivity {
 		
 		@Override
         public void handleMessage(Message msg) {
-			if(msg.what == Buddypress.MSG_SUCCESS ) {
+			if(msg.what == Buddypress.MSG_STREAM ) {
 				
 				Log.i(TAG ,"got message");
 				
