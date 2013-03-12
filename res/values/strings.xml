@@ -18,7 +18,8 @@
 	<string name="submit">Submit</string>
 
 	<string name="posted">Update Posted Successfully!</string>
-	<string name="error">Please set up your account first!</string>
+	<string name="updated">Stream updated!</string>
+	<string name="error">Something went wrong; please check your setup and the system log!</string>
 	
 	<string name="app_name">BuddyDroid</string>
 		
@@ -32,6 +33,8 @@
 	<string name="preferences">Preferences</string>
 	<string name="userPref">User Preferences</string>
 	<string name="advPref">Advanced Preferences</string>
+	<string name="streamMax">Maximum # of Stream Items</string>
+	
 	<string name="memberSlug">Custom Members Slug</string>
 	<string name="memberSlugDesc">Change this to match the url to your site\' members section if not default \'members\'</string>
 	<string name="serviceName">Service Name</string>

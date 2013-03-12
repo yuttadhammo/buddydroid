@@ -1,6 +1,7 @@
 package org.yuttadhammo.buddydroid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -16,7 +17,10 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,9 +28,13 @@ import android.view.View;
 import android.widget.Toast;
 
 public class BPStreamActivity extends ListActivity {
+
+	private String TAG = "BPStreamActivity";
+
 	private RssListAdapter adapter;
 	private BPStreamActivity activity;
 	private SharedPreferences prefs;
+	private ProgressDialog downloadProgressDialog;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -36,7 +44,7 @@ public class BPStreamActivity extends ListActivity {
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-		View contentView =  View.inflate(this, R.layout.rss, null);
+		View contentView =  View.inflate(this, R.layout.stream_activity, null);
         setContentView(contentView);
 		
 		@SuppressWarnings("deprecation")
@@ -46,8 +54,7 @@ public class BPStreamActivity extends ListActivity {
 			getActionBar().setHomeButtonEnabled(true);
 		}
     	if(prefs.getString("website", "").length() > 0) {
-    		ReadFile rf = new ReadFile();
-    		rf.execute("");
+    		refreshStream();
     	}
     	else {
 			Toast.makeText(this, getString(R.string.noWebsite),
@@ -56,44 +63,47 @@ public class BPStreamActivity extends ListActivity {
 
 
 	}
-	private ProgressDialog downloadProgressDialog;
 
-	private class ReadFile extends AsyncTask<String, Integer, String> {
-		List<JSONObject> jobs = new ArrayList<JSONObject>();
+	
+	public void refreshStream() {
+        downloadProgressDialog = new ProgressDialog(activity);
+        downloadProgressDialog.setCancelable(true);
+        downloadProgressDialog.setMessage(activity.getString(R.string.updating));
+        downloadProgressDialog.setIndeterminate(true);
+        downloadProgressDialog.show();
+        
+		BPStream stream = new BPStream(this, mHandler, Buddypress.getStreamScope(), Buddypress.getStreamMax());
+		stream.get();
+	}
+	
+	/** Handler for the message from the timer service */
+	private Handler mHandler = new Handler() {
+		
 		@Override
-        protected String doInBackground(String... sUrl) {
-            try {
-    			jobs = RssReader.getLatestRssFeed(getBaseContext());
+        public void handleMessage(Message msg) {
+			if(msg.what == Buddypress.MSG_SUCCESS ) {
+				
+				Log.i(TAG ,"got message");
+				
+				HashMap<?, ?> rss = (HashMap<?, ?>) msg.obj;
+				Object obj = rss.get("activities");
+				
+				Object[] list = (Object[]) obj;
+				
+				adapter = new RssListAdapter(activity,list);
+				if (adapter.isEmpty())
+					Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
+							Toast.LENGTH_LONG).show();
+				setListAdapter(adapter);
+			}
+			Toast.makeText(activity, (CharSequence) getString(msg.arg1),
+					Toast.LENGTH_LONG).show();
+			if(downloadProgressDialog.isShowing())
+				downloadProgressDialog.dismiss();		
+		}
+    };
 
-            } catch (Exception e) {
-            	e.printStackTrace();
-            }
-            return null;
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-	        downloadProgressDialog = new ProgressDialog(activity);
-	        downloadProgressDialog.setCancelable(true);
-	        downloadProgressDialog.setMessage(activity.getString(R.string.updating));
-	        downloadProgressDialog.setIndeterminate(true);
-            downloadProgressDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if(getListView() == null)
-            	return;
-            if(downloadProgressDialog.isShowing())
-            	downloadProgressDialog.dismiss();
-/*    		adapter = new RssListAdapter(activity,jobs);
-    		if (adapter.isEmpty())
-    			Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
-    					Toast.LENGTH_LONG).show();
-    		setListAdapter(adapter);*/
-        }
-    }
+	
    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);

@@ -2,21 +2,14 @@
 package org.yuttadhammo.buddydroid;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONObject;
 import org.yuttadhammo.buddydroid.rss.RssListAdapter;
-import org.yuttadhammo.buddydroid.rss.RssReader;
-
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,13 +23,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Buddypress extends ListActivity {
 	
+	protected String TAG = "Buddypress";
 
 	public static String versionName = "1";
 	private static SharedPreferences prefs;
@@ -47,9 +40,6 @@ public class Buddypress extends ListActivity {
 	private boolean land;
 	private RelativeLayout listPane;
 	private String website;
-	private boolean manualRefresh;
-
-
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -160,8 +150,7 @@ public class Buddypress extends ListActivity {
 		    	}
 				if(listPane.getVisibility() == View.VISIBLE){
 					refreshStream();
-					manualRefresh = true;
-		    		return true;
+					return true;
 				}
 				
 				intent = new Intent(this, BPStreamActivity.class);
@@ -203,7 +192,6 @@ public class Buddypress extends ListActivity {
 		}
 	};
 
-		
 	protected void  onActivityResult (int requestCode, int resultCode, Intent  data) {
 		
 		if(data != null && data.hasExtra("123")) {
@@ -220,18 +208,6 @@ public class Buddypress extends ListActivity {
         else
         	listPane.setVisibility(View.GONE);
     }
-
-	public static class MessageHandler extends Handler {
-		
-		public MessageHandler() {
-		}
-	
-		@Override
-		public void handleMessage(Message msg) {
-			Log.i("message",msg.what+"");
-
-		}
-	}
 
 	public static URI getUrl() {
 		return URI.create(prefs.getString("website", "")+"index.php?bp_xmlrpc=true");
@@ -261,26 +237,56 @@ public class Buddypress extends ListActivity {
 		return prefs.getString("service_name", "BuddyDroid");
 	}
 	
-	private ProgressDialog downloadProgressDialog;
-	private String scope = "sitewide";
-	private int max = 40;
-	private String TAG = "Buddypress";
+	public static int getStreamMax() {
+		return 20;
+	}
 	
+	public static String getStreamScope() {
+		return prefs.getString("stream_scope", "sitewide");
+	}
+	
+	private ProgressDialog downloadProgressDialog;
+
 	public void refreshStream() {
         
-		BPStream stream = new BPStream(this, scope, max);
+        downloadProgressDialog = new ProgressDialog(activity);
+        downloadProgressDialog.setCancelable(true);
+        downloadProgressDialog.setMessage(activity.getString(R.string.updating));
+        downloadProgressDialog.setIndeterminate(true);
+        downloadProgressDialog.show();
+		
+		BPStream stream = new BPStream(this, mHandler, getStreamScope(), getStreamMax());
 		stream.get();
 	}
-	public void onRefreshStream(HashMap<?, ?> rss) {
+	
+	public static int MSG_ERROR = 0;
+	public static int MSG_SUCCESS = 1;
+	
+	/** Handler for the message from the timer service */
+	private Handler mHandler = new Handler() {
 		
-		Object obj = rss.get("activities");
-		
-		Object[] list = (Object[]) obj;
-		
-		adapter = new RssListAdapter(activity,list);
-		if (adapter.isEmpty())
-			Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
-					Toast.LENGTH_LONG).show();
-		setListAdapter(adapter);
-	}
+		@Override
+        public void handleMessage(Message msg) {
+			if(msg.what == MSG_SUCCESS ) {
+				
+				Log.i(TAG ,"got message");
+				
+				HashMap<?, ?> rss = (HashMap<?, ?>) msg.obj;
+				Object obj = rss.get("activities");
+				
+				Object[] list = (Object[]) obj;
+				
+				adapter = new RssListAdapter(activity,list);
+				if (adapter.isEmpty())
+					Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
+							Toast.LENGTH_LONG).show();
+				setListAdapter(adapter);
+			}
+			Toast.makeText(activity, (CharSequence) getString(msg.arg1),
+					Toast.LENGTH_SHORT).show();
+			if(downloadProgressDialog.isShowing())
+				downloadProgressDialog.dismiss();
+		}
+    };
+
 }

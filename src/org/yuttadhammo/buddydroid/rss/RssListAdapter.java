@@ -48,7 +48,7 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 		LayoutInflater inflater = activity.getLayoutInflater();
 
 		// Inflate the views from XML
-		View rowView = inflater.inflate(R.layout.image_text_layout, null);
+		View rowView = inflater.inflate(R.layout.stream_item_layout, null);
 		final HashMap<?,?> entryMap = (HashMap<?, ?>) getItem(position);
 		
 		//////////////////////////////////////////////////////////////////////////////////////////////////////

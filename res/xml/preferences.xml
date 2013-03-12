@@ -27,7 +27,11 @@
 
    	</PreferenceCategory>   
 	<PreferenceCategory android:title="@string/advPref">
-     	<EditTextPreference 
+	    <EditTextPreference
+	        android:key="stream_max"
+	        android:title="@string/streamMax"
+	        />
+	    <EditTextPreference 
    		    android:key="service_name"
 			android:title="@string/serviceName"
 			android:summary="@string/serviceNameDesc"

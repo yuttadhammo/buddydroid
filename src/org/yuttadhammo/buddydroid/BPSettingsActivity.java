@@ -47,47 +47,6 @@ public class BPSettingsActivity extends PreferenceActivity {
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		
-		final EditTextPreference websitePref = (EditTextPreference)findPreference("website");
-		if(websitePref.getText() == null || websitePref.getText().equals(""))
-			websitePref.setText("");
-		websitePref.setSummary(websitePref.getText());
-		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-		websitePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-
-			public boolean onPreferenceChange(Preference preference,
-					final Object newValue) {
-				String website = (String) newValue;
-				if(!website.matches("^https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$")) {
-					Toast.makeText(BPSettingsActivity.this, getString(R.string.websiteSyntaxError),
-							Toast.LENGTH_LONG).show();
-					return false;
-				}
-					
-				websitePref.setSummary(website);
-
-				return true;
-			}
-			
-		});
-
-		final EditTextPreference userPref = (EditTextPreference)findPreference("username");
-		if(userPref.getText() == null || userPref.getText().equals(""))
-			userPref.setText("");
-		userPref.setSummary(userPref.getText());
-		
-		userPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-
-			public boolean onPreferenceChange(Preference preference,
-					final Object newValue) {
-				String username = (String) newValue;
-
-				userPref.setSummary(username);
-
-				return true;
-			}
-			
-		});
-		
 		final Preference regPref = (Preference)findPreference("register");
 		regPref.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 
@@ -123,14 +82,22 @@ public class BPSettingsActivity extends PreferenceActivity {
 			}
 			
 		});
-		
+
+		final EditTextPreference websitePref = (EditTextPreference)findPreference("website");
+		final EditTextPreference userPref = (EditTextPreference)findPreference("username");
+		final EditTextPreference maxPref = (EditTextPreference)findPreference("stream_max");
 		final EditTextPreference servicePref = (EditTextPreference)findPreference("service_name");
-		if(servicePref.getText() == null || servicePref.getText().equals(""))
-			servicePref.setText(getString(R.string.app_name));
-		
 		final EditTextPreference memberPref = (EditTextPreference)findPreference("member_slug");
-		if(memberPref.getText() == null || memberPref.getText().equals(""))
-			memberPref.setText("members");
+
+		this.setEditTextPreference(websitePref,"");
+		this.setEditTextPreference(userPref,"");
+		this.setEditTextPreference(maxPref,"20");
+		this.setEditTextPreference(servicePref,getString(R.string.app_name));
+		this.setEditTextPreference(memberPref,"members");
+		
+		maxPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
+		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+
 		
 		
 		@SuppressWarnings("deprecation")
@@ -226,5 +193,23 @@ public class BPSettingsActivity extends PreferenceActivity {
 				return false;
 	    }
 	}	
+	
+	public void setEditTextPreference(final EditTextPreference etp, String def) {
+		if(etp.getText() == null || etp.getText().equals(""))
+			etp.setText(def);
+		etp.setSummary(etp.getText());
 
+		etp.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			public boolean onPreferenceChange(Preference preference,
+					final Object newValue) {
+
+				etp.setSummary((String) newValue);
+
+				return true;
+			}
+			
+		});			
+	}
+	
 }
