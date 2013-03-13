@@ -59,8 +59,7 @@ public class Buddypress extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		@SuppressWarnings("deprecation")
-		int api = Integer.parseInt(Build.VERSION.SDK);
+		int api = Build.VERSION.SDK_INT;
 		
 		if (api >= 14) {
 			getActionBar().setHomeButtonEnabled(true);
@@ -81,6 +80,7 @@ public class Buddypress extends ListActivity {
     	}
     	
     	listPane = (RelativeLayout) findViewById(R.id.list_pane);
+		registerForContextMenu(findViewById(android.R.id.list));
     	
     	DisplayMetrics metrics = new DisplayMetrics();
     	getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -93,7 +93,6 @@ public class Buddypress extends ListActivity {
     	website = prefs.getString("website", "");
     	if(land && website.length() > 0) {
     		listPane.setVisibility(View.VISIBLE);
-    		registerForContextMenu(findViewById(android.R.id.list));
     		if(prefs.getBoolean("auto_update", true))
     			refreshStream();
     	}
@@ -349,6 +348,8 @@ public class Buddypress extends ListActivity {
 		@Override
         public void handleMessage(Message msg) {
 			String toast = null;
+			boolean shouldRefresh = false;
+
 			if(msg.what == MSG_STREAM ) {
 				
 				Log.i(TAG ,"got message");
@@ -367,15 +368,18 @@ public class Buddypress extends ListActivity {
 			}
 			else if(msg.what == MSG_DELETE ) {
 				toast = getString(msg.arg1);
-				refreshStream();
+				shouldRefresh = true;
 			}
 			else {
 				toast = (String) msg.obj;
 			}
 			Toast.makeText(activity, (CharSequence) toast,
-					Toast.LENGTH_SHORT).show();
+					Toast.LENGTH_LONG).show();
 			if(downloadProgressDialog.isShowing())
 				downloadProgressDialog.dismiss();
+			
+			if(shouldRefresh)
+				refreshStream();
 		}
     };
     

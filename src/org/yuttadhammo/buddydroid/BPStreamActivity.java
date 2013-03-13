@@ -6,15 +6,19 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.yuttadhammo.buddydroid.interfaces.BPStream;
+import org.yuttadhammo.buddydroid.interfaces.BPStreamItem;
 import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
 import org.yuttadhammo.buddydroid.interfaces.RssReader;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,11 +26,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class BPStreamActivity extends ListActivity {
 
@@ -48,12 +55,13 @@ public class BPStreamActivity extends ListActivity {
 		View contentView =  View.inflate(this, R.layout.stream_activity, null);
         setContentView(contentView);
 		
-		@SuppressWarnings("deprecation")
-		int api = Integer.parseInt(Build.VERSION.SDK);
+		int api = Build.VERSION.SDK_INT;
 		
 		if (api >= 14) {
 			getActionBar().setHomeButtonEnabled(true);
 		}
+		
+		registerForContextMenu(findViewById(android.R.id.list));
     	if(prefs.getString("website", "").length() > 0) {
     		refreshStream();
     	}
@@ -61,8 +69,6 @@ public class BPStreamActivity extends ListActivity {
 			Toast.makeText(this, getString(R.string.noWebsite),
 					Toast.LENGTH_LONG).show();
     	}
-
-
 	}
 
 	
@@ -78,10 +84,14 @@ public class BPStreamActivity extends ListActivity {
 	}
 	
 	/** Handler for the message from the timer service */
+	
+	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
 		
+
 		@Override
         public void handleMessage(Message msg) {
+			String toast = null;
 			if(msg.what == Buddypress.MSG_STREAM ) {
 				
 				Log.i(TAG ,"got message");
@@ -96,14 +106,22 @@ public class BPStreamActivity extends ListActivity {
 					Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
 							Toast.LENGTH_LONG).show();
 				setListAdapter(adapter);
+				toast = getString(msg.arg1);
 			}
-			Toast.makeText(activity, (CharSequence) getString(msg.arg1),
-					Toast.LENGTH_LONG).show();
+			else if(msg.what == Buddypress.MSG_DELETE ) {
+				toast = getString(msg.arg1);
+				refreshStream();
+			}
+			else {
+				toast = (String) msg.obj;
+			}
+			Toast.makeText(activity, (CharSequence) toast,
+					Toast.LENGTH_SHORT).show();
 			if(downloadProgressDialog.isShowing())
-				downloadProgressDialog.dismiss();		
+				downloadProgressDialog.dismiss();
 		}
     };
-
+    
 	
    @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -148,5 +166,71 @@ public class BPStreamActivity extends ListActivity {
 		return true;
 	}	
 
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		MenuInflater inflater = getMenuInflater();
+       	inflater.inflate(R.menu.stream_longclick, menu);
+        
+	    menu.setHeaderTitle(getString(R.string.post_options));
+		super.onCreateContextMenu(menu, v, menuInfo);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+	    int index = info.position;
+	    final HashMap<?,?> entryMap = (HashMap<?, ?>) getListView().getItemAtPosition(index);
+		Intent i;
+	    
+	    switch (item.getItemId()) {
+			case R.id.view:
+				String link = (String)entryMap.get("primary_link");
+				Uri url = Uri.parse(link);
+				i = new Intent(Intent.ACTION_VIEW, url);
+				activity.startActivity(i);
+				return true;
+			case R.id.share_link:
+				i = new Intent(Intent.ACTION_SEND);
+				i.putExtra(Intent.EXTRA_TEXT, (String)entryMap.get("primary_link"));
+				i.setType("text/plain");
+				startActivity(Intent.createChooser(i, getString(R.string.share_via)));
+				return true;
+			case R.id.share_text:
+				i = new Intent(Intent.ACTION_SEND);
+				i.putExtra(Intent.EXTRA_TEXT, (String)entryMap.get("content"));
+				i.setType("text/plain");
+				startActivity(Intent.createChooser(i, getString(R.string.share_via)));
+				return true;
+			case R.id.delete:
+		        new AlertDialog.Builder(this)
+		        .setIcon(android.R.drawable.ic_dialog_alert)
+		        .setTitle(R.string.delete)
+		        .setMessage(R.string.really_delete)
+		        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+		            @Override
+		            public void onClick(DialogInterface dialog, int which) {
+						downloadProgressDialog = new ProgressDialog(activity);
+				        downloadProgressDialog.setCancelable(true);
+				        downloadProgressDialog.setMessage(activity.getString(R.string.deleting));
+				        downloadProgressDialog.setIndeterminate(true);
+				        downloadProgressDialog.show();
+						BPStreamItem bpsi = new BPStreamItem(activity, mHandler, entryMap);
+						bpsi.delete();		            
+					}
+
+		        })
+		        .setNegativeButton(android.R.string.no, null)
+		        .show();	
+
+				return true;
+			default:
+				break;
+		}
+		
+		return super.onContextItemSelected(item);
+	}
+	
 
 }
