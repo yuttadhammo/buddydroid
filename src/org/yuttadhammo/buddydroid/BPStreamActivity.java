@@ -1,6 +1,8 @@
 package org.yuttadhammo.buddydroid;
 
 import java.util.HashMap;
+
+import org.yuttadhammo.buddydroid.interfaces.BPComment;
 import org.yuttadhammo.buddydroid.interfaces.BPStream;
 import org.yuttadhammo.buddydroid.interfaces.BPStreamItem;
 import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
@@ -26,8 +28,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 public class BPStreamActivity extends ListActivity {
 
@@ -37,6 +43,10 @@ public class BPStreamActivity extends ListActivity {
 	private BPStreamActivity activity;
 	private SharedPreferences prefs;
 	private ProgressDialog downloadProgressDialog;
+
+	private Spinner filters;
+
+	protected String scope = "sitewide";
 
 	@SuppressLint("NewApi")
 	@Override
@@ -48,7 +58,29 @@ public class BPStreamActivity extends ListActivity {
 
 		View contentView =  View.inflate(this, R.layout.stream_activity, null);
         setContentView(contentView);
-		
+
+    	filters = (Spinner) findViewById(R.id.filters);
+    	filters.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				if (!filters.getSelectedItem().toString().equals(scope)) {
+					scope = filters.getSelectedItem().toString();
+					refreshStream();
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+    		
+    	});
+    	
+    	
+        
 		int api = Build.VERSION.SDK_INT;
 		
 		if (api >= 14) {
@@ -73,11 +105,9 @@ public class BPStreamActivity extends ListActivity {
         downloadProgressDialog.setIndeterminate(true);
         downloadProgressDialog.show();
         
-		BPStream stream = new BPStream(this, mHandler, Buddypress.getStreamScope(), Buddypress.getStreamMax());
+		BPStream stream = new BPStream(this, mHandler, scope, Buddypress.getStreamMax());
 		stream.get();
 	}
-	
-	/** Handler for the message from the timer service */
 	
 	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
@@ -86,33 +116,38 @@ public class BPStreamActivity extends ListActivity {
 		@Override
         public void handleMessage(Message msg) {
 			String toast = null;
-			if(msg.what == Buddypress.MSG_STREAM ) {
-				
-				Log.i(TAG ,"got message");
-				
-				HashMap<?, ?> rss = (HashMap<?, ?>) msg.obj;
-				Object obj = rss.get("activities");
-				
-				Object[] list = (Object[]) obj;
-				
-				adapter = new RssListAdapter(activity,list);
-				if (adapter.isEmpty())
-					Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
-							Toast.LENGTH_LONG).show();
-				setListAdapter(adapter);
-				toast = getString(msg.arg1);
-			}
-			else if(msg.what == Buddypress.MSG_DELETE ) {
-				toast = getString(msg.arg1);
-				refreshStream();
-			}
-			else {
-				toast = (String) msg.obj;
+			boolean shouldRefresh = false;
+			switch(msg.what) {
+				case Buddypress.MSG_STREAM:
+					Log.i(TAG ,"got message");
+					
+					HashMap<?, ?> rss = (HashMap<?, ?>) msg.obj;
+					Object obj = rss.get("activities");
+					
+					Object[] list = (Object[]) obj;
+					
+					adapter = new RssListAdapter(activity,list);
+					if (adapter.isEmpty())
+						Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
+								Toast.LENGTH_LONG).show();
+					setListAdapter(adapter);
+					toast = getString(msg.arg1);
+					break;
+				case Buddypress.MSG_DELETE:
+				case Buddypress.MSG_COMMENT:
+					toast = getString(msg.arg1);
+					shouldRefresh = true;
+					break;
+				default:
+					toast = (String) msg.obj;
 			}
 			Toast.makeText(activity, (CharSequence) toast,
-					Toast.LENGTH_SHORT).show();
+					Toast.LENGTH_LONG).show();
 			if(downloadProgressDialog.isShowing())
 				downloadProgressDialog.dismiss();
+			
+			if(shouldRefresh)
+				refreshStream();
 		}
     };
     
@@ -131,7 +166,7 @@ public class BPStreamActivity extends ListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.stream, menu);
+	    inflater.inflate(R.menu.menu_stream, menu);
 	    return true;
 	}
 
@@ -147,6 +182,13 @@ public class BPStreamActivity extends ListActivity {
 	        case android.R.id.home:
 	            // app icon in action bar clicked; go home
 	            finish();
+	            break;
+	        case R.id.menuRefresh:
+	        	if(prefs.getString("website", "").length() > 0) 
+	        		refreshStream();
+	        	else
+	    			Toast.makeText(this, getString(R.string.noWebsite),
+	    					Toast.LENGTH_LONG).show();
 	            break;
 			case (int)R.id.menuPrefs:
 				intent = new Intent(this, BPSettingsActivity.class);
@@ -183,6 +225,25 @@ public class BPStreamActivity extends ListActivity {
 				Uri url = Uri.parse(link);
 				i = new Intent(Intent.ACTION_VIEW, url);
 				activity.startActivity(i);
+				return true;
+			case R.id.comment:
+				final EditText input = new EditText(this);
+				new AlertDialog.Builder(this)
+			    .setTitle(R.string.comment)
+			    .setView(input)
+			    .setPositiveButton(R.string.submit, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int whichButton) {
+						input.clearFocus();
+			        	downloadProgressDialog = new ProgressDialog(activity);
+				        downloadProgressDialog.setCancelable(true);
+				        downloadProgressDialog.setMessage(activity.getString(R.string.commenting));
+				        downloadProgressDialog.setIndeterminate(true);
+				        downloadProgressDialog.show();
+						BPComment bpc = new BPComment(entryMap.get("activity_id").toString(),
+								input.getText().toString(),mHandler, activity);
+						bpc.upload();
+			        }
+			    }).setNegativeButton(android.R.string.no, null).show();	
 				return true;
 			case R.id.share_link:
 				i = new Intent(Intent.ACTION_SEND);

@@ -113,4 +113,8 @@ public class BPStream {
 
 	}
 
+	public void setScope(String _scope) {
+		scope = _scope;
+	}
+
 }

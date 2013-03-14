@@ -77,7 +77,7 @@ public class RssListAdapter extends ArrayAdapter<Object> {
         	
         	int comments = 0;
         	
-        	if(entryMap.containsKey("children") && !entryMap.get("children").equals(false)) {
+        	if(entryMap.containsKey("children") && entryMap.get("children") instanceof HashMap) {
         			
         		HashMap<?,?> chm = (HashMap<?,?>)entryMap.get("children");
         		comments = chm.entrySet().size();
@@ -87,22 +87,8 @@ public class RssListAdapter extends ArrayAdapter<Object> {
         		
         		final LinearLayout commentPane = (LinearLayout) rowView.findViewById(R.id.comment_pane);
         		
-        		Map<String,LinearLayout> tva = new TreeMap<String,LinearLayout>();
-        		
-        		for (Iterator<?> it = chm.keySet().iterator(); it.hasNext();) {
-    				String key = (String) it.next();
-					final HashMap<?,?> comment = (HashMap<?,?>) chm.get(key);
-					LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.comment, null);
-					TextView tv = (TextView) ll.findViewById(R.id.comment_text);
-					if(comment.containsKey("content")) {
-        				tv.setText((CharSequence) comment.get("content"));
-        			}
-					else {
-        				tv.setText((CharSequence) comment.toString());
-					}
-
-					tva.put((String) comment.get("date_recorded"), ll);
-        		}
+        		Map<String,LinearLayout> tva = makeCommentLayout(chm);
+        				
         		
         		for (Iterator<?> it = tva.keySet().iterator(); it.hasNext();) {
     				String key = (String) it.next();
@@ -135,6 +121,45 @@ public class RssListAdapter extends ArrayAdapter<Object> {
         textView.setTextColor(0xFF000000);
 		return rowView;
 
+	}
+
+
+	private Map<String, LinearLayout> makeCommentLayout(HashMap<?, ?> chm) {
+		
+		Map<String,LinearLayout> tva = new TreeMap<String,LinearLayout>();
+		
+		final Activity activity = (Activity) getContext();
+		LayoutInflater inflater = activity.getLayoutInflater();
+
+		
+		for (Iterator<?> it = chm.keySet().iterator(); it.hasNext();) {
+			String key = (String) it.next();
+			final HashMap<?,?> comment = (HashMap<?,?>) chm.get(key);
+			LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.comment_shell, null);
+			TextView tv = (TextView) inflater.inflate(R.layout.comment, null);
+			if(comment.containsKey("content")) {
+				tv.setText((CharSequence) comment.get("content"));
+			}
+			else {
+				continue;
+				//tv.setText((CharSequence) comment.toString());
+			}
+			ll.addView(tv);
+			// iterate
+			
+			if(comment.containsKey("children") && comment.get("children") instanceof HashMap) {
+				HashMap<?,?> chmc = (HashMap<?,?>)comment.get("children");
+				Map<String,LinearLayout> tvac = makeCommentLayout(chmc);
+        		for (Iterator<?> it2 = tvac.keySet().iterator(); it2.hasNext();) {
+    				String keyc = (String) it2.next();
+    				LinearLayout commentc = tvac.get(keyc);
+        			ll.addView(commentc);
+        		}				
+			}
+			tva.put((String) comment.get("id"), ll);
+		}
+
+		return tva;
 	} 
 
 }

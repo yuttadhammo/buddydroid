@@ -34,11 +34,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,10 +58,14 @@ public class Buddypress extends ListActivity {
 	private Buddypress activity;
 	private RssListAdapter adapter;
 	private boolean land;
-	private RelativeLayout listPane;
+	private LinearLayout listPane;
 	private String website;
 
 	private ListView listView;
+
+	protected static String scope = "sitewide";
+
+	private static Spinner filters;
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -85,9 +93,30 @@ public class Buddypress extends ListActivity {
 			textContent.setText(textContent.getText()+intent.getStringExtra(Intent.EXTRA_TEXT));
     	}
     	
-    	listPane = (RelativeLayout) findViewById(R.id.list_pane);
+    	listPane = (LinearLayout) findViewById(R.id.list_pane);
 		
     	listView = (ListView)findViewById(android.R.id.list);
+    	
+    	filters = (Spinner) findViewById(R.id.filters);
+    	filters.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				if (!filters.getSelectedItem().toString().equals(scope)) {
+					scope = filters.getSelectedItem().toString();
+					refreshStream();
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+    		
+    	});
+    	
     	
     	registerForContextMenu(listView);
     	
@@ -145,7 +174,7 @@ public class Buddypress extends ListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.main, menu);
+	    inflater.inflate(R.menu.menu_main, menu);
 	    return true;
 	}
 
@@ -348,7 +377,7 @@ public class Buddypress extends ListActivity {
 	}
 	
 	public static String getStreamScope() {
-		return prefs.getString("stream_scope", "sitewide");
+		return scope;
 	}
 	
 	private ProgressDialog downloadProgressDialog;
@@ -361,7 +390,7 @@ public class Buddypress extends ListActivity {
         downloadProgressDialog.setIndeterminate(true);
         downloadProgressDialog.show();
 		
-		BPStream stream = new BPStream(this, mHandler, getStreamScope(), getStreamMax());
+		BPStream stream = new BPStream(this, mHandler, scope, getStreamMax());
 		stream.get();
 	}
 	

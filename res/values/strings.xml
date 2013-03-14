@@ -6,6 +6,8 @@
 	<string name="statusHint">Enter status update here…</string>
 	<string name="submit">Submit</string>
 	<string name="stream">Stream</string>
+	<string name="filter_by">Filter by:</string>
+	<string name="refresh">Refresh</string>
 	<string name="status">Status</string>
 	<string name="comments">Comments</string>
 				
@@ -22,7 +24,8 @@
 
 	<string name="comment_options">Comment Options</string>
 	
-					
+	<string name="filter_prompt">Choose a filter</string>
+						
     <!-- Preferences -->
     
 	<string name="preferences">Preferences</string>
