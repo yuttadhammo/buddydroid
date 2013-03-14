@@ -9,11 +9,6 @@ import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
 import org.yuttadhammo.buddydroid.Buddypress;
 import org.yuttadhammo.buddydroid.R;
-import org.yuttadhammo.buddydroid.R.id;
-import org.yuttadhammo.buddydroid.R.string;
-
-import android.app.Activity;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -56,16 +51,13 @@ public class BPStatus {
 	private boolean isLocalChange;
 
 	private String mediaPaths;
-	private static Context context;
 	private static Buddypress activity;
 
 	public Vector<String> imageUrl = new Vector<String>();
 	Vector<String> selectedCategories = new Vector<String>();
 
 
-	public BPStatus(String content, Context ctx, Buddypress atv) {
-		// create a new post
-		context = ctx;
+	public BPStatus(String content, Buddypress atv) {
 		activity = atv;
 
 		this.description = content;
@@ -122,7 +114,7 @@ public class BPStatus {
 			data.put("status", bpstatus.description);
 
 			params = new Object[] { Buddypress.getUsername(),
-					activity.getServiceName(),
+					Buddypress.getServiceName(),
 					Buddypress.getApiKey(), data };
 			Log.e("BP", "api key" + params[2]);
 			XMLRPCClient client = new XMLRPCClient(Buddypress.getUrl(),

@@ -131,9 +131,10 @@ public class BPSettingsActivity extends PreferenceActivity {
 				if(obj.equals(false)) {
 					error = activity.getString(R.string.connectionRejected);
 				}
-					
-				result = (HashMap<?, ?>) obj;
-				success = true;
+				else {
+					result = (HashMap<?, ?>) obj;
+					success = true;
+				}
 			} catch (final XMLRPCException e) {
 				e.printStackTrace();
 				error = e.getMessage();

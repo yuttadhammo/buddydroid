@@ -7,17 +7,22 @@
 	<string name="submit">Submit</string>
 	<string name="stream">Stream</string>
 	<string name="status">Status</string>
-			
+	<string name="comments">Comments</string>
+				
 	<!-- Context Menu -->
 
 	<string name="post_options">Post Options</string>
 	<string name="view">View</string>
+	<string name="comment">Comment</string>
 	<string name="share_link">Share Link</string>
 	<string name="share_text">Share Text</string>
 	<string name="share_via">Share Via…</string>
 	<string name="delete">Delete</string>
 	<string name="really_delete">Do you want to delete this item?</string>
-				
+
+	<string name="comment_options">Comment Options</string>
+	
+					
     <!-- Preferences -->
     
 	<string name="preferences">Preferences</string>
@@ -52,6 +57,7 @@
 	
 	<string name="posted">Update Posted Successfully!</string>
 	<string name="updated">Stream updated!</string>
+	<string name="commented">Comment Posted Successfully!</string>
 	<string name="error">Something went wrong; please check your setup and the system log!</string>
 	
 	<!-- Ongoing -->
@@ -59,6 +65,7 @@
 	<string name="connecting">Connecting…</string>
 	<string name="updating">Updating Stream…</string>
 	<string name="posting">Posting Update…</string>
+	<string name="commenting">Posting Comment…</string>
 	<string name="registering">Registering Service…</string>
 	<string name="deleting">Deleting Entry…</string>
 				

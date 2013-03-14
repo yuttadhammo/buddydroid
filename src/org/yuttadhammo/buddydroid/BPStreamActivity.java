@@ -1,14 +1,9 @@
 package org.yuttadhammo.buddydroid;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONObject;
 import org.yuttadhammo.buddydroid.interfaces.BPStream;
 import org.yuttadhammo.buddydroid.interfaces.BPStreamItem;
 import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
-import org.yuttadhammo.buddydroid.interfaces.RssReader;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -19,7 +14,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;

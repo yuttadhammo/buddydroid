@@ -24,8 +24,8 @@ public class BPStreamItem {
 
 	public BPStreamItem(Activity atv, Handler h, HashMap<?, ?> entryMap) {
 		this.entryMap = entryMap;
-		this.activity = atv;
-		this.handler = h;
+		activity = atv;
+		handler = h;
 	}
 
 	public void delete() {

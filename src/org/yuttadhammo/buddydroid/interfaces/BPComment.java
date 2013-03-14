@@ -1,63 +1,46 @@
 package org.yuttadhammo.buddydroid.interfaces;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
 import org.yuttadhammo.buddydroid.Buddypress;
 import org.yuttadhammo.buddydroid.R;
-import org.yuttadhammo.buddydroid.R.string;
-import org.yuttadhammo.buddydroid.interfaces.BPStatus.uploadStatusTask;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-public class BPStream {
+public class BPComment {
 
-
-	public Vector<String> imageUrl = new Vector<String>();
-	Vector<String> selectedCategories = new Vector<String>();
-	public static Object error;
-	public static Activity activity;
-	public static String TAG = "BPStream";
+	private HashMap<?, ?> entryMap;
+	private int activityid;
+	private String[] comment;
+	private static Activity activity;
+	public static String TAG = "BPStreamItem";
 	private static Handler handler;
-	private static String scope;
-	private static int max;
+	public static String error;
 
-
-	public BPStream(Activity atv, Handler h, String ascope, int amax) {
-		handler = h;
+	public BPComment(String aid, String c, Handler h, Activity atv) {
 		activity = atv;
-		scope = ascope;
-		max = amax;
+		String[] ca = {aid,c};
+		comment = ca;
+		handler = h;
 	}
 
-	public void get() {
-
-		new getStreamTask().execute(this);
-
+	public void upload() {
+		UploadItemTask uit = new UploadItemTask();
+		uit.execute(comment);
 	}
-	
-	private static class getStreamTask extends
-			AsyncTask<BPStream, Boolean, Boolean> {
+
+	private static class UploadItemTask extends
+			AsyncTask<String[], Boolean, Boolean> {
 
 		private boolean success = false;
-		private Object rss;
+		private Object json;
 
 		@Override
 		protected void onPostExecute(Boolean result) {
@@ -65,8 +48,8 @@ public class BPStream {
 			Message msg = new Message();
 			if (success) {
 				msg.arg1 = R.string.updated;
-				msg.obj = rss;
-				msg.what = Buddypress.MSG_STREAM;
+				msg.obj = json;
+				msg.what = Buddypress.MSG_COMMENT;
 			}
 			else {
 				msg.arg1 = R.string.error;
@@ -82,23 +65,24 @@ public class BPStream {
 		}
 
 		@Override
-		protected Boolean doInBackground(BPStream... streams) {
+		protected Boolean doInBackground(String[]... comments) {
 
+			String[] comment = comments[0];
 			Object[] params;
 
 			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("scope", scope);
-			data.put("max", max);
+			data.put("activity_id", comment[0]);
+			data.put("comment", comment[1]);
 
 			params = new Object[] { Buddypress.getUsername(),
 					Buddypress.getServiceName(),
 					Buddypress.getApiKey(), data };
-			Log.i(TAG , "params: " + params[0]+" | "+params[1]+" | "+params[2]);
-			Log.i(TAG , "data: " + data.get("scope")+" | "+data.get("max"));
+			Log.i(TAG  , "params: " + params[0]+" | "+params[1]+" | "+params[2]);
+			Log.i(TAG , "data: " + data.get("activity_id")+" | " + data.get("comment"));
 			XMLRPCClient client = new XMLRPCClient(Buddypress.getUrl(),
 					Buddypress.getHttpuser(), Buddypress.getHttppassword());
 			try {
-				rss = client.call("bp.getActivity", params);
+				json = client.call("bp.postComment", params);
 				success = true;
 				return true;
 			} catch (final XMLRPCException e) {

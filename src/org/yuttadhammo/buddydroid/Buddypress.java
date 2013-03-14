@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.HashMap;
 
 
+import org.yuttadhammo.buddydroid.interfaces.BPComment;
 import org.yuttadhammo.buddydroid.interfaces.BPStatus;
 import org.yuttadhammo.buddydroid.interfaces.BPStream;
 import org.yuttadhammo.buddydroid.interfaces.BPStreamItem;
@@ -35,12 +36,15 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Buddypress extends ListActivity {
 	
+
 	protected String TAG = "Buddypress";
 
 	public static String versionName = "1";
@@ -52,6 +56,8 @@ public class Buddypress extends ListActivity {
 	private boolean land;
 	private RelativeLayout listPane;
 	private String website;
+
+	private ListView listView;
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -80,7 +86,10 @@ public class Buddypress extends ListActivity {
     	}
     	
     	listPane = (RelativeLayout) findViewById(R.id.list_pane);
-		registerForContextMenu(findViewById(android.R.id.list));
+		
+    	listView = (ListView)findViewById(android.R.id.list);
+    	
+    	registerForContextMenu(listView);
     	
     	DisplayMetrics metrics = new DisplayMetrics();
     	getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -199,7 +208,7 @@ public class Buddypress extends ListActivity {
 				return;
 			}
 				
-			BPStatus bpstatus = new BPStatus(text, getApplicationContext(), Buddypress.this);
+			BPStatus bpstatus = new BPStatus(text, Buddypress.this);
 			bpstatus.upload();
 		}
 	};
@@ -234,6 +243,25 @@ public class Buddypress extends ListActivity {
 				Uri url = Uri.parse(link);
 				i = new Intent(Intent.ACTION_VIEW, url);
 				activity.startActivity(i);
+				return true;
+			case R.id.comment:
+				final EditText input = new EditText(this);
+				new AlertDialog.Builder(this)
+			    .setTitle(R.string.comment)
+			    .setView(input)
+			    .setPositiveButton(R.string.submit, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int whichButton) {
+						input.clearFocus();
+			        	downloadProgressDialog = new ProgressDialog(activity);
+				        downloadProgressDialog.setCancelable(true);
+				        downloadProgressDialog.setMessage(activity.getString(R.string.commenting));
+				        downloadProgressDialog.setIndeterminate(true);
+				        downloadProgressDialog.show();
+						BPComment bpc = new BPComment(entryMap.get("activity_id").toString(),
+								input.getText().toString(),mHandler, activity);
+						bpc.upload();
+			        }
+			    }).setNegativeButton(android.R.string.no, null).show();	
 				return true;
 			case R.id.share_link:
 				i = new Intent(Intent.ACTION_SEND);
@@ -337,9 +365,10 @@ public class Buddypress extends ListActivity {
 		stream.get();
 	}
 	
-	public static int MSG_ERROR = 0;
-	public static int MSG_STREAM = 1;
-	public static int MSG_DELETE = 2;
+	public static final int MSG_ERROR = 0;
+	public static final int MSG_STREAM = 1;
+	public static final int MSG_DELETE = 2;
+	public static final int MSG_COMMENT = 3;
 	
 	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
@@ -349,29 +378,29 @@ public class Buddypress extends ListActivity {
         public void handleMessage(Message msg) {
 			String toast = null;
 			boolean shouldRefresh = false;
-
-			if(msg.what == MSG_STREAM ) {
-				
-				Log.i(TAG ,"got message");
-				
-				HashMap<?, ?> rss = (HashMap<?, ?>) msg.obj;
-				Object obj = rss.get("activities");
-				
-				Object[] list = (Object[]) obj;
-				
-				adapter = new RssListAdapter(activity,list);
-				if (adapter.isEmpty())
-					Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
-							Toast.LENGTH_LONG).show();
-				setListAdapter(adapter);
-				toast = getString(msg.arg1);
-			}
-			else if(msg.what == MSG_DELETE ) {
-				toast = getString(msg.arg1);
-				shouldRefresh = true;
-			}
-			else {
-				toast = (String) msg.obj;
+			switch(msg.what) {
+				case MSG_STREAM:
+					Log.i(TAG ,"got message");
+					
+					HashMap<?, ?> rss = (HashMap<?, ?>) msg.obj;
+					Object obj = rss.get("activities");
+					
+					Object[] list = (Object[]) obj;
+					
+					adapter = new RssListAdapter(activity,list);
+					if (adapter.isEmpty())
+						Toast.makeText(activity, activity.getString(R.string.checkSetupInternet),
+								Toast.LENGTH_LONG).show();
+					setListAdapter(adapter);
+					toast = getString(msg.arg1);
+					break;
+				case MSG_DELETE:
+				case MSG_COMMENT:
+					toast = getString(msg.arg1);
+					shouldRefresh = true;
+					break;
+				default:
+					toast = (String) msg.obj;
 			}
 			Toast.makeText(activity, (CharSequence) toast,
 					Toast.LENGTH_LONG).show();
