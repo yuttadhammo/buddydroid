@@ -55,7 +55,6 @@
 	<string name="help_3">Step 3: (App user) Add your website (root path, e.g. http://www.site.com/) and username to the Preferences screen in this app, then click register.  Wait for the API key to show up under the API key heading.</string>
 	<string name="help_4">Step 4: (App user) Go to your BuddyPress profile settings under Remote Access (click on Visit Settings Page) and approve the BuddyDroid app.</string>
 	<string name="help_5">Once you have completed these steps correctly, you should be able to interact with your BuddyPress activity stream via the app.</string>
-	
 
 	<!-- Messages -->
 	
