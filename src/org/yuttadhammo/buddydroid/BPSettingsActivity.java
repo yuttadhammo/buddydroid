@@ -34,6 +34,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 	private BPSettingsActivity activity;
 	private SharedPreferences prefs;
 	private Preference apiPref;
+	private Preference profilePref;
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -57,7 +58,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 		        downloadProgressDialog.setMessage(getString(R.string.registering));
 		        downloadProgressDialog.setIndeterminate(true);
 		        
-				ReadFile rf = new ReadFile();
+				ApiRequest rf = new ApiRequest();
 				rf.execute(Buddypress.getUrl());
 				return false;
 			}
@@ -89,7 +90,6 @@ public class BPSettingsActivity extends PreferenceActivity {
 
 		final EditTextPreference maxPref = (EditTextPreference)findPreference("stream_max");
 		final EditTextPreference servicePref = (EditTextPreference)findPreference("service_name");
-		final EditTextPreference memberPref = (EditTextPreference)findPreference("member_slug");
 
 		this.setupEditTextPreference(websitePref,"");
 		this.setupEditTextPreference(userPref,"");
@@ -97,15 +97,33 @@ public class BPSettingsActivity extends PreferenceActivity {
 
 		this.setupEditTextPreference(maxPref,"20");
 		this.setupEditTextPreference(servicePref,getString(R.string.app_name));
-		this.setupEditTextPreference(memberPref,"members");
-		
+
 		maxPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
 		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+		
+		profilePref = (Preference)findPreference("profile_url");
+		profilePref.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+
+				String website = prefs.getString("website", null);
+				String username = prefs.getString("username", null);
+				String apikey = prefs.getString("api_key", null);
+				String profileURL = prefs.getString("profile_url", null);
+				
+				if(website != null && username != null && apikey != null && profileURL != null) {
+					
+					Uri url = Uri.parse(profileURL+"?time="+(new Date().getTime()));
+					Intent i = new Intent(Intent.ACTION_VIEW);
+					i.setData(url);
+					activity.startActivity(i);
+				}
+				return false;
+			}
+		});
 		
-		
-		@SuppressWarnings("deprecation")
-		int api = Integer.parseInt(Build.VERSION.SDK);	
+		int api = Build.VERSION.SDK_INT;	
 		
 		if (api >= 14) {
 			getActionBar().setHomeButtonEnabled(true);
@@ -113,10 +131,11 @@ public class BPSettingsActivity extends PreferenceActivity {
 	}
     private ProgressDialog downloadProgressDialog;
 
-    private class ReadFile extends AsyncTask<URI, Integer, String> {
+    private class ApiRequest extends AsyncTask<URI, Integer, String> {
 		private Editor editor;
 		private String apikey = null;
 		private String error = null;
+		private String profileURL;
 
 		@Override
         protected String doInBackground(URI... sUrl) {
@@ -144,9 +163,13 @@ public class BPSettingsActivity extends PreferenceActivity {
 			}
 			if(success) {
 				String confirm = result.get("confirmation").toString();
-				if(confirm.equals("true")) {
+				if(confirm.equals("true") && result.containsKey("apikey")) {
 					apikey = result.get("apikey").toString();
 					editor = prefs.edit();
+					if(result.containsKey("url")) {
+						profileURL = result.get("url").toString();
+						editor.putString("profile_url", profileURL);
+					}
 					editor.putString("api_key", apikey);
 					editor.commit();
 				}
@@ -167,19 +190,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 			}
 			if(apikey != null) {
 				apiPref.setSummary(apikey);
-				String website = prefs.getString("website", null);
-				String username = prefs.getString("username", null);
-				String members = prefs.getString("member_slug", "members");
-				
-				if(website != null && username != null) {
-					Uri url = Uri.parse(website+members+"/"+username+"/settings/remote-access/?time="+(new Date().getTime()));
-					Intent i = new Intent(Intent.ACTION_VIEW);
-					i.setData(url);
-					activity.startActivity(i);
-				}
-				else 
-	    			Toast.makeText(activity, error,
-	    					Toast.LENGTH_LONG).show();
+				profilePref.setSummary(profileURL != null?profileURL:"Please update your wordpress plugin");
 			}
 			else if(error != null) {
     			Toast.makeText(activity, error,

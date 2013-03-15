@@ -65,7 +65,7 @@ public class BPStreamActivity extends ListActivity {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				if (!filters.getSelectedItem().toString().equals(scope)) {
+				if (scope != null && !filters.getSelectedItem().toString().equals(scope)) {
 					scope = filters.getSelectedItem().toString();
 					refreshStream();
 				}
@@ -99,7 +99,11 @@ public class BPStreamActivity extends ListActivity {
 
 	
 	public void refreshStream() {
-        downloadProgressDialog = new ProgressDialog(activity);
+
+		if(scope == null)
+			scope = filters.getSelectedItem().toString().replace(" ","_");
+		
+		downloadProgressDialog = new ProgressDialog(activity);
         downloadProgressDialog.setCancelable(true);
         downloadProgressDialog.setMessage(activity.getString(R.string.updating));
         downloadProgressDialog.setIndeterminate(true);

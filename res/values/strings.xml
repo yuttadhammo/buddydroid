@@ -35,12 +35,13 @@
 	<string name="register">Register</string>
 	<string name="api_key">API Key</string>
 	<string name="api_key_desc">Click register first, then go to your BuddyPress profile to accept and get this key to put here.</string>
-
+	<string name="profileURL">Visit Settings Page</string>
+	<string name="profileURLDesc">Click here after registering</string>
+	
+	
 	<string name="userPref">User Preferences</string>
 	<string name="advPref">Advanced Preferences</string>
 	<string name="streamMax">Maximum # of Stream Items</string>
-	<string name="memberSlug">Custom Members Slug</string>
-	<string name="memberSlugDesc">Change this to match the url to your site\' members section if not default \'members\'</string>
 	<string name="serviceName">Service Name</string>
 	<string name="serviceNameDesc">Change this if you want to register more than one service (e.g. on more than one device)</string>
 	<string name="autoUpdate">Update Stream Automatically</string>
@@ -48,12 +49,12 @@
 	<!-- Help -->
 		
 	<string name="help">Instructions</string>
-	<string name="help_intro">This is a very simple Buddypress client. If configured properly, it will allow you to post status updates to your Buddypress install.</string>
+	<string name="help_intro">This is a very simple Buddypress client. If configured properly, it will allow you basic interaction with your Buddypress install.</string>
 	<string name="help_1">Step 1: (Webmaster only) Install the BuddyPress XML-RPC receiver plugin for Wordpress here: https://github.com/yuttadhammo/buddypress-xmlrpc-receiver</string>
 	<string name="help_2">Step 2: (Webmaster only) Activate and configure above plugin via wp-admin under Settings->BuddyPress XML-RPC</string>
 	<string name="help_3">Step 3: (App user) Add your website (root path, e.g. http://www.site.com/) and username to the Preferences screen in this app, then click register.  Wait for the API key to show up under the API key heading.</string>
-	<string name="help_4">Step 4: (App user) Go to your BuddyPress profile settings under Remote Access (should open automatically after last step) and approve the BuddyDroid app.</string>
-	<string name="help_5">Once you have completed these steps correctly, you should be able to post status updates to your BuddyPress activity stream.</string>
+	<string name="help_4">Step 4: (App user) Go to your BuddyPress profile settings under Remote Access (click on Visit Settings Page) and approve the BuddyDroid app.</string>
+	<string name="help_5">Once you have completed these steps correctly, you should be able to interact with your BuddyPress activity stream via the app.</string>
 	
 
 	<!-- Messages -->

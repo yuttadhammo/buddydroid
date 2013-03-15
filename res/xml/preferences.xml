@@ -25,7 +25,12 @@
 			android:shouldDisableView="true"
 			android:summary="@string/api_key_desc"
 			/>
-
+	    <Preference 
+   		    android:key="profile_url"
+			android:title="@string/profileURL"
+			android:summary="@string/profileURLDesc"
+			android:shouldDisableView="true"
+			android:singleLine="true"/>
    	</PreferenceCategory>   
 	<PreferenceCategory android:title="@string/advPref">
 	    <EditTextPreference
@@ -36,12 +41,6 @@
    		    android:key="service_name"
 			android:title="@string/serviceName"
 			android:summary="@string/serviceNameDesc"
-			android:shouldDisableView="true"
-			android:singleLine="true"/>
-	    <EditTextPreference 
-   		    android:key="member_slug"
-			android:title="@string/memberSlug"
-			android:summary="@string/memberSlugDesc"
 			android:shouldDisableView="true"
 			android:singleLine="true"/>
 	    <CheckBoxPreference

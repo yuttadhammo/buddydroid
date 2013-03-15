@@ -63,7 +63,7 @@ public class Buddypress extends ListActivity {
 
 	private ListView listView;
 
-	protected static String scope = "sitewide";
+	protected static String scope;
 
 	private static Spinner filters;
 	@SuppressLint("NewApi")
@@ -103,7 +103,7 @@ public class Buddypress extends ListActivity {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				if (!filters.getSelectedItem().toString().equals(scope)) {
+				if (scope != null && !filters.getSelectedItem().toString().equals(scope)) {
 					scope = filters.getSelectedItem().toString().replace(" ","_");
 					refreshStream();
 				}
@@ -383,6 +383,9 @@ public class Buddypress extends ListActivity {
 	private ProgressDialog downloadProgressDialog;
 
 	public void refreshStream() {
+		
+		if(scope == null)
+			scope = filters.getSelectedItem().toString().replace(" ","_");
 		
         downloadProgressDialog = new ProgressDialog(activity);
         downloadProgressDialog.setCancelable(true);
