@@ -58,10 +58,11 @@
 
 	<!-- Messages -->
 	
-	<string name="posted">Update Posted Successfully!</string>
-	<string name="updated">Stream updated!</string>
-	<string name="commented">Comment Posted Successfully!</string>
-	<string name="error">Something went wrong; please check your setup and the system log!</string>
+	<string name="posted">Update posted</string>
+	<string name="updated">Stream updated</string>
+	<string name="deleted">Post deleted</string>
+	<string name="commented">Comment posted</string>
+	<string name="error">Something went wrong; please check your setup and the system log</string>
 	
 	<!-- Ongoing -->
 	

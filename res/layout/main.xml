@@ -10,49 +10,16 @@
 		android:id="@+id/list_pane"
 	    android:layout_width="0dp"
 	    android:layout_weight="0.5"
-		android:layout_height="fill_parent"
+		android:layout_height="match_parent"
 		android:visibility="gone"
 		android:orientation="vertical"
 	    >
-		<LinearLayout 
-			android:id="@+id/filter_pane"
-		    android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			android:background="#999999"
-			android:layout_marginBottom="10dp"
-			android:padding="12dp"
-		    >
-   			<TextView
-			    android:id="@+id/filter_text"
-				android:layout_width="wrap_content"
-				android:layout_height="match_parent"
-				android:textColor="#FFFFFF"
-				android:text="@string/filter_by"
-				android:textSize="20sp"
-				android:layout_gravity="center"
-				android:gravity="center"
-				android:layout_marginRight="8dp"
-			    />
-	        <Spinner
-		        android:id="@+id/filters"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:padding="10dp"
-				android:background="#FFFFFF"
-		        android:entries="@array/filters"
-		        android:prompt="@string/filter_prompt" 
-				/>
-		</LinearLayout>
-	    <ListView android:id="@+id/android:list"
-	        android:layout_width="match_parent"
+		<include
+			android:id="@+id/list"  
 			android:layout_height="match_parent"
-			android:layout_marginLeft="10dp"
-			android:layout_marginRight="10dp"
-			android:dividerHeight="10dp"
-			android:background="#FFFFFF"
-	        android:divider="@drawable/divider"
-        	/>
+			android:layout_width="match_parent"
+			layout="@layout/stream_list" 
+			/>
 
 	</LinearLayout>
 	<RelativeLayout

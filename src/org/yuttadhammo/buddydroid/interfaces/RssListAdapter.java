@@ -23,11 +23,20 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
+import android.renderscript.Font.Style;
 import android.text.Html;
+import android.text.Layout.Alignment;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.SpannedString;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.style.AlignmentSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -71,7 +80,7 @@ public class RssListAdapter extends ArrayAdapter<Object> {
         	String text = (String)entryMap.get("content");
         	String title = (String)entryMap.get("action");
         	
-        	title = title.replace("posted an update", "posted an <a href=\""+((String) entryMap.get("primary_link"))+"\">update</a>");
+        	//title = title.replace("posted an update", "posted an <a href=\""+((String) entryMap.get("primary_link"))+"\">update</a>");
         	
         	String dates = (String)entryMap.get("date_recorded");
         	
@@ -138,7 +147,20 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 			LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.comment_shell, null);
 			TextView tv = (TextView) inflater.inflate(R.layout.comment, null);
 			if(comment.containsKey("content")) {
-				tv.setText((CharSequence) comment.get("content"));
+				String commentString = (String) comment.get("content");
+				int cl = commentString.length();
+				String commentAuthor = "- <a href=\""+comment.get("primary_link")+"\">" + (String) comment.get("display_name")+"</a>";
+				Spanned commentAuthorSpan = Html.fromHtml(commentAuthor);
+				SpannedString styledComment = new SpannedString(commentString+"\n");
+				styledComment = (SpannedString) TextUtils.concat(styledComment,commentAuthorSpan);
+				SpannableString outcomment = new SpannableString(styledComment);
+				outcomment.setSpan(new AlignmentSpan.Standard(Alignment.ALIGN_OPPOSITE),
+						cl + 1, cl + 1 + commentAuthorSpan.length(), 
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				outcomment.setSpan(new StyleSpan(Typeface.ITALIC),
+						cl + 1, cl + 1 + commentAuthorSpan.length(), 
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				tv.setText(outcomment );
 			}
 			else {
 				continue;

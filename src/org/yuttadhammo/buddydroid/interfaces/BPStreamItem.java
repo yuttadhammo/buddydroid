@@ -45,7 +45,7 @@ public class BPStreamItem {
 
 			Message msg = new Message();
 			if (success) {
-				msg.arg1 = R.string.updated;
+				msg.arg1 = R.string.deleted;
 				msg.obj = rss;
 				msg.what = Buddypress.MSG_DELETE;
 			}
