@@ -102,6 +102,12 @@ public class BPSettingsActivity extends PreferenceActivity {
 		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
 		
 		profilePref = (Preference)findPreference("profile_url");
+		
+		String profileURL = prefs.getString("profile_url", null);
+		if(profileURL != null)
+			profilePref.setSummary(profileURL);
+		
+		
 		profilePref.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 
 			@Override

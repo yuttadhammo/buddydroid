@@ -414,6 +414,7 @@ public class XMLRPCClient {
 			pullParser.nextTag(); // either TAG_PARAMS (<params>) or TAG_FAULT (<fault>)  
 			String tag = pullParser.getName();
 			if (tag.equals(TAG_PARAMS)) {
+				Log.i("Buddypress", "Got params");
 				// normal response
 				pullParser.nextTag(); // TAG_PARAM (<param>)
 				pullParser.require(XmlPullParser.START_TAG, null, TAG_PARAM);
@@ -427,6 +428,7 @@ public class XMLRPCClient {
 				return obj;
 			} else
 			if (tag.equals(TAG_FAULT)) {
+				Log.i("Buddypress", "Got fault");
 				// fault response
 				pullParser.nextTag(); // TAG_VALUE (<value>)
 				// no parser.require() here since its called in XMLRPCSerializer.deserialize() below
@@ -438,6 +440,7 @@ public class XMLRPCClient {
 				entity.consumeContent();
 				throw new XMLRPCFault(faultString, faultCode);
 			} else {
+				Log.i("Buddypress", "Got something else");
 				entity.consumeContent();
 				throw new XMLRPCException("Bad tag <" + tag + "> in XMLRPC response - neither <params> nor <fault>");
 			}
