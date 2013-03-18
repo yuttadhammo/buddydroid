@@ -6,7 +6,7 @@
 	</string-array>
     <string-array name="filters">
         <item>sitewide</item>
-        <item>activity update</item>
+        <item>activity_update</item>
         <item>favorites</item>
         <item>following</item>
         <item>friends</item>
@@ -14,6 +14,6 @@
         <item>just-me</item>
         <item>mentions</item>
         <item>my-groups</item>
-        <item>new member</item>
+        <item>new_member</item>
 	</string-array>
 </resources>

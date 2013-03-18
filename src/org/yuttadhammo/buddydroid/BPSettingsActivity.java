@@ -102,12 +102,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
 		
 		profilePref = (Preference)findPreference("profile_url");
-		
-		String profileURL = prefs.getString("profile_url", null);
-		if(profileURL != null)
-			profilePref.setSummary(profileURL);
-		
-		
+
 		profilePref.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 
 			@Override
@@ -116,11 +111,10 @@ public class BPSettingsActivity extends PreferenceActivity {
 				String website = prefs.getString("website", null);
 				String username = prefs.getString("username", null);
 				String apikey = prefs.getString("api_key", null);
-				String profileURL = prefs.getString("profile_url", null);
 				
-				if(website != null && username != null && apikey != null && profileURL != null) {
+				if(website != null && username != null && apikey != null) {
 					
-					Uri url = Uri.parse(profileURL+"?time="+(new Date().getTime()));
+					Uri url = Uri.parse(website+"index.php?bp_xmlrpc=true&bp_xmlrpc_redirect=remote_settings");
 					Intent i = new Intent(Intent.ACTION_VIEW);
 					i.setData(url);
 					activity.startActivity(i);
@@ -141,7 +135,6 @@ public class BPSettingsActivity extends PreferenceActivity {
 		private Editor editor;
 		private String apikey = null;
 		private String error = null;
-		private String profileURL;
 
 		@Override
         protected String doInBackground(URI... sUrl) {
@@ -172,10 +165,6 @@ public class BPSettingsActivity extends PreferenceActivity {
 				if(confirm.equals("true") && result.containsKey("apikey")) {
 					apikey = result.get("apikey").toString();
 					editor = prefs.edit();
-					if(result.containsKey("url")) {
-						profileURL = result.get("url").toString();
-						editor.putString("profile_url", profileURL);
-					}
 					editor.putString("api_key", apikey);
 					editor.commit();
 				}
@@ -196,7 +185,6 @@ public class BPSettingsActivity extends PreferenceActivity {
 			}
 			if(apikey != null) {
 				apiPref.setSummary(apikey);
-				profilePref.setSummary(profileURL != null?profileURL:"Please update your wordpress plugin");
 			}
 			else if(error != null) {
     			Toast.makeText(activity, error,

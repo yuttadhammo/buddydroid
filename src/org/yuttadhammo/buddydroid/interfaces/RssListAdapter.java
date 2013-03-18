@@ -77,7 +77,7 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 		WebView wv = (WebView) rowView.findViewById(R.id.feed_image);
         try {
         	
-        	String text = (String)entryMap.get("content");
+        	String text = sanitizeText((String)entryMap.get("content"));
         	String title = (String)entryMap.get("action");
         	
         	//title = title.replace("posted an update", "posted an <a href=\""+((String) entryMap.get("primary_link"))+"\">update</a>");
@@ -147,7 +147,8 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 			LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.comment_shell, null);
 			TextView tv = (TextView) inflater.inflate(R.layout.comment, null);
 			if(comment.containsKey("content")) {
-				String commentString = (String) comment.get("content");
+				String commentString = sanitizeText((String) comment.get("content"));
+				
 				int cl = commentString.length();
 				String commentAuthor = "- <a href=\""+comment.get("primary_link")+"\">" + (String) comment.get("display_name")+"</a>";
 				Spanned commentAuthorSpan = Html.fromHtml(commentAuthor);
@@ -182,6 +183,12 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 		}
 
 		return tva;
+	}
+
+
+	private String sanitizeText(String string) {
+		string = string.replace("\\\"", "\"").replace("\\'", "'");
+		return string;
 	} 
 
 }
