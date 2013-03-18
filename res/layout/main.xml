@@ -134,7 +134,7 @@
 				android:layout_width="match_parent" 
 				android:layout_height="wrap_content"
 				android:width="150dip" 
-				android:textSize="30sp" 
+				android:textSize="25sp" 
 				android:height="80dip"
 				android:layout_alignParentBottom="true"
 				android:background="#FFFFFF"
@@ -162,9 +162,10 @@
 
 	    <ImageView
 			android:id="@id/handle"
-			android:src="@drawable/tray_handle"
+			android:src="@drawable/tray_grip"
+			android:background="@drawable/tray_handle"
 			android:layout_width="match_parent"
-			android:layout_height="30dp"
+			android:layout_height="20dp"
 			/>
 		<RelativeLayout
 			android:layout_height="match_parent"
@@ -212,7 +213,7 @@
 				android:layout_width="match_parent" 
 				android:layout_height="wrap_content"
 				android:width="150dip" 
-				android:textSize="30sp" 
+				android:textSize="25sp" 
 				android:height="80dip"
 				android:layout_alignParentBottom="true"
 				android:background="#FFFFFF"
