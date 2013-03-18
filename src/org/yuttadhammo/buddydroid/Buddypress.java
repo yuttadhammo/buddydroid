@@ -448,6 +448,7 @@ public class Buddypress extends ListActivity {
 
 		HashMap<String, Object> data = new HashMap<String, Object>();
 		data.put("scope", scope);
+		data.put("user_data", "true");
 		data.put("max", getStreamMax());
 		
 		BPRequest stream = new BPRequest(this, mHandler, "bp.getActivity", data, MSG_STREAM);
@@ -484,6 +485,7 @@ public class Buddypress extends ListActivity {
 					toast = getString(R.string.updated);
 					
 					if(map.containsKey("user_data")){
+						Log.i(TAG ,"got user data");
 						Map<?,?> user = (HashMap<?, ?>) map.get("user_data");
 						notificationStrings = new ArrayList<CharSequence>();
 						Object nfoo = user.get("notifications");

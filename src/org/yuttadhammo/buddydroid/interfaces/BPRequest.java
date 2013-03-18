@@ -45,7 +45,7 @@ public class BPRequest {
 			AsyncTask<BPRequest, Boolean, Boolean> {
 
 		private boolean success = false;
-		private Object rss;
+		private Object obj;
 
 		@Override
 		protected void onPostExecute(Boolean result) {
@@ -53,7 +53,7 @@ public class BPRequest {
 			Message msg = new Message();
 			if (success) {
 				msg.arg1 = 0;
-				msg.obj = rss;
+				msg.obj = obj;
 				msg.what = what;
 			}
 			else {
@@ -77,12 +77,10 @@ public class BPRequest {
 			params = new Object[] { Buddypress.getUsername(),
 					Buddypress.getServiceName(),
 					Buddypress.getApiKey(), data };
-			Log.i(TAG , "params: " + params[0]+" | "+params[1]+" | "+params[2]);
-			Log.i(TAG , "data: " + data.get("scope")+" | "+data.get("max"));
 			XMLRPCClient client = new XMLRPCClient(Buddypress.getUrl(),
 					Buddypress.getHttpuser(), Buddypress.getHttppassword());
 			try {
-				rss = client.call(protocol, params);
+				obj = client.call(protocol, params);
 				success = true;
 				return true;
 			} catch (final XMLRPCException e) {
