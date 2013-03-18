@@ -135,7 +135,7 @@ public class Buddypress extends ListActivity {
 		submitDrawerButton = (Button)findViewById(R.id.submit_drawer);
 
 		submitButton.setOnClickListener(mSubmitListener);
-		submitButton.setOnClickListener(mSubmitListener);
+		submitDrawerButton.setOnClickListener(mSubmitListener);
 		       
 		textContent = (TextView) findViewById(R.id.text_content);
 		
@@ -338,7 +338,7 @@ public class Buddypress extends ListActivity {
 		            public void onClick(DialogInterface dialog, int which) {
 						HashMap<String, Object> data = new HashMap<String, Object>();
 						data.put("activity_id", entryMap.get("activity_id").toString());
-						BPRequest bpc = new BPRequest(activity, mHandler, "bp.deleteProfileStatus", data, MSG_COMMENT);
+						BPRequest bpc = new BPRequest(activity, mHandler, "bp.deleteProfileStatus", data, MSG_DELETE);
 						bpc.execute();
 						showDialog(DIALOG_DELETING);
 						
@@ -442,7 +442,10 @@ public class Buddypress extends ListActivity {
 	protected ArrayList<String> notificationLinks;
 
 	public void refreshStream() {
-		
+    	downloadProgressDialog = new ProgressDialog(activity);
+        downloadProgressDialog.setCancelable(true);
+        downloadProgressDialog.setIndeterminate(true);
+        
 		if(scope == null)
 			scope = filters.getSelectedItem().toString().replace(" ","_");
 
@@ -469,11 +472,17 @@ public class Buddypress extends ListActivity {
 
 		@Override
         public void handleMessage(Message msg) {
+			Log.i(TAG ,"got message");
+			removeDialog(DIALOG_REFRESH);
+			removeDialog(DIALOG_COMMENTING);
+			removeDialog(DIALOG_STATUS);
+			removeDialog(DIALOG_DELETING);
+
+
 			String toast = null;
 			boolean shouldRefresh = false;
 			switch(msg.what) {
 				case MSG_STREAM:
-					Log.i(TAG ,"got message");
 					
 					HashMap<?, ?> map = (HashMap<?, ?>) msg.obj;
 					Object obj = map.get("activities");
@@ -535,8 +544,6 @@ public class Buddypress extends ListActivity {
 			}
 			Toast.makeText(activity, (CharSequence) toast,
 					Toast.LENGTH_LONG).show();
-			if(downloadProgressDialog.isShowing())
-				downloadProgressDialog.dismiss();
 			
 			if(shouldRefresh)
 				refreshStream();
@@ -565,8 +572,10 @@ public class Buddypress extends ListActivity {
 	
 	private OnClickListener mSubmitListener = new OnClickListener() {
 
+		@SuppressWarnings("deprecation")
 		public void onClick(View v)
 		{
+			submitDrawer.close();
 			String text = textContent.getText().toString();
 			if(text.length() == 0)
 				return;

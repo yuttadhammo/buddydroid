@@ -76,8 +76,8 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 		TextView textView = (TextView) rowView.findViewById(R.id.job_text);
 		WebView wv = (WebView) rowView.findViewById(R.id.feed_image);
         try {
-        	
         	String text = sanitizeText((String)entryMap.get("content"));
+        	text = text.replace("\n", "<br/>");
         	String title = (String)entryMap.get("action");
         	
         	//title = title.replace("posted an update", "posted an <a href=\""+((String) entryMap.get("primary_link"))+"\">update</a>");
