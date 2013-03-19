@@ -1,14 +1,25 @@
 package org.yuttadhammo.buddydroid;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
+import org.yuttadhammo.buddydroid.interfaces.BPRequest;
+import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
+
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -16,15 +27,22 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 
@@ -35,6 +53,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 	private SharedPreferences prefs;
 	private Preference apiPref;
 	private Preference profilePref;
+	protected final int MSG_API = 0;
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -58,8 +77,9 @@ public class BPSettingsActivity extends PreferenceActivity {
 		        downloadProgressDialog.setMessage(getString(R.string.registering));
 		        downloadProgressDialog.setIndeterminate(true);
 		        
-				ApiRequest rf = new ApiRequest();
-				rf.execute(Buddypress.getUrl());
+				HashMap<String, Object> data = new HashMap<String, Object>();
+				BPRequest bpr = new BPRequest(context, mHandler, "bp.requestApiKey", data, MSG_API );
+				bpr.execute();
 				return false;
 			}
 			
@@ -88,12 +108,16 @@ public class BPSettingsActivity extends PreferenceActivity {
 		final EditTextPreference userPref = (EditTextPreference)findPreference("username");
 		final EditTextPreference apiPref = (EditTextPreference)findPreference("api_key");
 
+		final EditTextPreference intervalPref = (EditTextPreference)findPreference("sync_interval");
+		
 		final EditTextPreference maxPref = (EditTextPreference)findPreference("stream_max");
 		final EditTextPreference servicePref = (EditTextPreference)findPreference("service_name");
-
+		
 		this.setupEditTextPreference(websitePref,"");
 		this.setupEditTextPreference(userPref,"");
 		this.setupEditTextPreference(apiPref,null);
+
+		this.setupEditTextPreference(intervalPref,"60");
 
 		this.setupEditTextPreference(maxPref,"20");
 		this.setupEditTextPreference(servicePref,getString(R.string.app_name));
@@ -122,6 +146,28 @@ public class BPSettingsActivity extends PreferenceActivity {
 				return false;
 			}
 		});
+
+		final CheckBoxPreference syncPref = (CheckBoxPreference)findPreference("interval_sync");
+
+		if(prefs.getBoolean("interval_sync", false))
+			intervalPref.setEnabled(true);
+		else
+			intervalPref.setEnabled(false);
+			
+		syncPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference,
+					Object newValue) {
+				if(!syncPref.isChecked())
+					intervalPref.setEnabled(true);
+				else
+					intervalPref.setEnabled(false);
+					
+				return true;
+			}
+			
+		});
 		
 		int api = Build.VERSION.SDK_INT;	
 		
@@ -130,69 +176,64 @@ public class BPSettingsActivity extends PreferenceActivity {
 		}		
 	}
     private ProgressDialog downloadProgressDialog;
+	private final int DIALOG_API = 0;
+	protected String TAG = "BPSettingsActivity";
 
-    private class ApiRequest extends AsyncTask<URI, Integer, String> {
-		private Editor editor;
-		private String apikey = null;
-		private String error = null;
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+	    super.onCreateDialog (id);
+	    final Activity activity = this;
+    	downloadProgressDialog = new ProgressDialog(activity);
+        downloadProgressDialog.setCancelable(true);
+        downloadProgressDialog.setIndeterminate(true);
+
+		switch(id) {
+		    case DIALOG_API :
+		        downloadProgressDialog.setMessage(getString(R.string.registering));
+		        return downloadProgressDialog;
+		}
+		return null;
+	}
+	
+	/** Handler for the message from the timer service */
+	private Handler mHandler = new Handler() {
+		
 
 		@Override
-        protected String doInBackground(URI... sUrl) {
-            boolean success = false;
-            HashMap<?, ?> result = null;
-			
-			Object[] params = new Object[] {Buddypress.getUsername(), Buddypress.getServiceName()};
-			XMLRPCClient client = new XMLRPCClient(Buddypress.getUrl(),
-					Buddypress.getHttpuser(), Buddypress.getHttppassword());
-			try {
-				Object obj = client.call("bp.requestApiKey", params);
-				if(obj.equals(false)) {
-					error = activity.getString(R.string.connectionRejected);
-				}
-				else {
-					result = (HashMap<?, ?>) obj;
-					success = true;
-				}
-			} catch (final XMLRPCException e) {
-				e.printStackTrace();
-				error = e.getMessage();
-			} catch (Exception e) {
-				e.printStackTrace();
-				error = e.getMessage();
-			}
-			if(success) {
-				String confirm = result.get("confirmation").toString();
-				if(confirm.equals("true") && result.containsKey("apikey")) {
-					apikey = result.get("apikey").toString();
-					editor = prefs.edit();
-					editor.putString("api_key", apikey);
-					editor.commit();
-				}
-			}
-			return null;
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            downloadProgressDialog.show();
-        }
+        public void handleMessage(Message msg) {
+			Log.i(TAG  ,"got message");
+			removeDialog(DIALOG_API);
 
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-			if(downloadProgressDialog.isShowing()) {
-				downloadProgressDialog.dismiss();
-			}
-			if(apikey != null) {
-				apiPref.setSummary(apikey);
-			}
-			else if(error != null) {
-    			Toast.makeText(activity, error,
-    					Toast.LENGTH_LONG).show();
-			}
-        }
 
-    }
+			String toast = null;
+			boolean shouldRefresh = false;
+			switch(msg.what) {
+				case MSG_API:
+					String apikey;
+					
+					HashMap<?, ?> result = (HashMap<?, ?>) msg.obj;
+					if(result.containsKey("apikey")) {
+						apikey = result.get("apikey").toString();
+						SharedPreferences.Editor editor = prefs.edit();
+						editor.putString("api_key", apikey);
+						editor.commit();
+						apiPref.setSummary(apikey);
+					}
+
+				default: 
+					toast = (String) msg.obj;
+					if(toast == null)
+						toast = getString(R.string.error);
+					break;
+			}
+			Toast.makeText(activity, (CharSequence) toast,
+					Toast.LENGTH_LONG).show();
+		}
+    };
+
+	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection

@@ -50,6 +50,7 @@ public class XMLRPCClient {
 	private HttpPost postMethod;
 	private XmlSerializer serializer;
 	private HttpParams httpParams;
+	private String TAG = "XMLRPCClient";
 
 	/**
 	 * XMLRPCClient constructor. Creates new instance based on server URI
@@ -316,7 +317,7 @@ public class XMLRPCClient {
 	@SuppressWarnings("unchecked")
 	private Object callXMLRPC(String method, Object[] params, File tempFile) throws XMLRPCException {
 		try {
-			Log.i("BP", "Serializing");
+			Log.i(TAG , "Serializing");
 			// prepare POST body
 			StringWriter bodyWriter = new StringWriter();
 			serializer.setOutput(bodyWriter);
@@ -343,7 +344,7 @@ public class XMLRPCClient {
 			}
 			serializer.endTag(null, TAG_METHOD_CALL);
 			serializer.endDocument();
-			Log.i("BP", "Serialized");
+			Log.i(TAG, "Serialized");
 			
 			HttpEntity entity = new StringEntity(bodyWriter.toString());
 			//Log.i("WordPress", bodyWriter.toString());
@@ -359,7 +360,7 @@ public class XMLRPCClient {
 			// execute HTTP POST request
 			HttpResponse response = client.execute(postMethod);
 			//parseResponse(response);
-			Log.i("BP", "response = " + response.getStatusLine());
+			Log.i(TAG, "status = " + response.getStatusLine());
 			// check status code
 			int statusCode = response.getStatusLine().getStatusCode();
 			
@@ -414,7 +415,7 @@ public class XMLRPCClient {
 			pullParser.nextTag(); // either TAG_PARAMS (<params>) or TAG_FAULT (<fault>)  
 			String tag = pullParser.getName();
 			if (tag.equals(TAG_PARAMS)) {
-				Log.i("Buddypress", "Got params");
+				Log.i(TAG, "Got params");
 				// normal response
 				pullParser.nextTag(); // TAG_PARAM (<param>)
 				pullParser.require(XmlPullParser.START_TAG, null, TAG_PARAM);
@@ -424,11 +425,11 @@ public class XMLRPCClient {
 				// deserialize result
 				Object obj = XMLRPCSerializer.deserialize(pullParser);
 				entity.consumeContent();
-				Log.i("BP","response = "+obj.toString());
+				Log.i(TAG,"response = "+obj.toString());
 				return obj;
 			} else
 			if (tag.equals(TAG_FAULT)) {
-				Log.i("Buddypress", "Got fault");
+				Log.i(TAG, "Got fault");
 				// fault response
 				pullParser.nextTag(); // TAG_VALUE (<value>)
 				// no parser.require() here since its called in XMLRPCSerializer.deserialize() below
@@ -440,7 +441,7 @@ public class XMLRPCClient {
 				entity.consumeContent();
 				throw new XMLRPCFault(faultString, faultCode);
 			} else {
-				Log.i("Buddypress", "Got something else");
+				Log.i(TAG, "Got something else");
 				entity.consumeContent();
 				throw new XMLRPCException("Bad tag <" + tag + "> in XMLRPC response - neither <params> nor <fault>");
 			}

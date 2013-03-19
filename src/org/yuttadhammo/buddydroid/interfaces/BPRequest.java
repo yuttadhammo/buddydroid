@@ -1,5 +1,6 @@
 package org.yuttadhammo.buddydroid.interfaces;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Vector;
 import org.xmlrpc.android.XMLRPCClient;
@@ -7,29 +8,33 @@ import org.xmlrpc.android.XMLRPCException;
 import org.yuttadhammo.buddydroid.Buddypress;
 import org.yuttadhammo.buddydroid.R;
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class BPRequest {
 
 
+	public static final int MSG_ERROR = 9999;
 	public Vector<String> imageUrl = new Vector<String>();
 	Vector<String> selectedCategories = new Vector<String>();
+	private static Context context;
 	private static String protocol;
 	private static int what;
 	private static HashMap<String, Object> data;
 	public static Object error;
-	public static Activity activity;
 	public static String TAG = "BPRequest";
 	private static Handler handler;
 
 
 
-	public BPRequest(Activity atv, Handler h, String _protocol, HashMap<String, Object> _data, int _what) {
+	public BPRequest(Context c, Handler h, String _protocol, HashMap<String, Object> _data, int _what) {
+		context = c;
 		handler = h;
-		activity = atv;
 		data = _data;
 		protocol = _protocol;
 		what = _what;
@@ -59,7 +64,7 @@ public class BPRequest {
 			else {
 				msg.arg1 = R.string.error;
 				msg.obj = error;
-				msg.what = Buddypress.MSG_ERROR;
+				msg.what = MSG_ERROR;
 			}
 			handler.sendMessage(msg);
 		}
@@ -72,13 +77,23 @@ public class BPRequest {
 		@Override
 		protected Boolean doInBackground(BPRequest... streams) {
 			
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+			
+			String api = prefs.getString("api_key", null);
+			String service = prefs.getString("service_name", "BuddyDroid");
+			String username = prefs.getString("username", null);
+			String website = prefs.getString("website", null);
+			
+			if(api == null || username == null || website == null)
+				return false;
+			
 			Object[] params;
 
-			params = new Object[] { Buddypress.getUsername(),
-					Buddypress.getServiceName(),
-					Buddypress.getApiKey(), data };
-			XMLRPCClient client = new XMLRPCClient(Buddypress.getUrl(),
-					Buddypress.getHttpuser(), Buddypress.getHttppassword());
+			params = new Object[] { username,
+					service,
+					api, data };
+			XMLRPCClient client = new XMLRPCClient(URI.create(website+"index.php?bp_xmlrpc=true"),
+					username, api); // these aren't necessary...
 			try {
 				obj = client.call(protocol, params);
 				success = true;
@@ -86,8 +101,6 @@ public class BPRequest {
 			} catch (final XMLRPCException e) {
 				if(e.getCause() != null)
 					error = e.getCause().toString();
-				else
-					error = activity.getString(R.string.error);
 				e.printStackTrace();
 			}
 			return false;

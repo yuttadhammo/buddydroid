@@ -54,5 +54,23 @@
  			android:theme="@style/LightTheme"
    			android:logo="@drawable/actionbar_icon"
             />       
-   	</application>
+
+		<receiver android:name=".interfaces.NotifyStarter" 
+             android:enabled="true" 
+             android:exported="false"
+             android:label="NotifyStarter">
+	        <intent-filter>
+	            <action android:name="android.intent.action.BOOT_COMPLETED" />
+	        </intent-filter>
+	    </receiver>
+		<receiver android:name=".interfaces.NoticeReceiver"
+			android:enabled="true" 
+			android:exported="false"
+		    >
+	    	<intent-filter>
+	        	<action android:name="org.yuttadhammo.buddydroid.interfaces.NoticeService.BROADCAST" />
+	    	</intent-filter>
+		</receiver>
+    <service android:name=".interfaces.NoticeService" />
+    </application>
 </manifest> 

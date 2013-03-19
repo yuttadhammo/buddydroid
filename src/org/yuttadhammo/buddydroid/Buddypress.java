@@ -6,24 +6,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.yuttadhammo.buddydroid.interfaces.BPRequest;
+import org.yuttadhammo.buddydroid.interfaces.NoticeService;
+import org.yuttadhammo.buddydroid.interfaces.NotifyService;
 import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
 
+import android.app.NotificationManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
@@ -52,44 +65,6 @@ import android.widget.Toast;
 
 public class Buddypress extends ListActivity {
 
-
-	public static URI getUrl() {
-		return URI.create(prefs.getString("website", "")+"index.php?bp_xmlrpc=true");
-	}
-
-	public static String getHttpuser() {
-		return prefs.getString("username", "");
-	}
-
-	public static String getHttppassword() {
-		return prefs.getString("password", "");
-	}
-
-	public static String getUsername() {
-		return prefs.getString("username", "");
-	}
-
-	public static String getPassword() {
-		return prefs.getString("password", "");
-	}
-
-	public static String getApiKey() {
-		return prefs.getString("api_key", "");
-	}
-
-	public static String getServiceName() {
-		return prefs.getString("service_name", "BuddyDroid");
-	}
-	
-	public static int getStreamMax() {
-		return 20;
-	}
-	
-	public static String getStreamScope() {
-		return scope;
-	}
-	
-
 	protected String TAG = "Buddypress";
 
 	public static String versionName = "1";
@@ -114,6 +89,12 @@ public class Buddypress extends ListActivity {
 	protected static String scope;
 
 	private static Spinner filters;
+
+	public static int NOTIFY_ID = 0;
+
+	private AlarmManager mgr=null;
+	private PendingIntent pi=null;
+	
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -190,6 +171,37 @@ public class Buddypress extends ListActivity {
     	
     	if(website.length() > 0 && prefs.getBoolean("auto_update", true))
     			refreshStream();
+    	
+
+    	// set up notification
+		((NotificationManager)getSystemService(NOTIFICATION_SERVICE))
+		.cancelAll();
+		
+		mgr=(AlarmManager)getSystemService(Context.ALARM_SERVICE);
+		
+		Intent i=new Intent(this, NoticeService.class);
+		
+		pi=PendingIntent.getService(this, 0, i, 0);
+		
+		cancelAlarm(null);
+
+		// start cancelling receiver
+
+		IntentFilter filter=new IntentFilter(NoticeService.BROADCAST);
+		
+		filter.setPriority(2);
+		registerReceiver(onNotice, filter);
+		
+    	if(prefs.getBoolean("interval_sync", false)) {
+    		Long interval = Long.parseLong(prefs.getString("sync_interval", "60"))*60*1000;
+			Log.i(TAG,interval+"");
+    		mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+				SystemClock.elapsedRealtime()+interval,
+				interval,
+				pi);
+    	}
+		
+    	
 	}
 	
 	@Override
@@ -206,6 +218,14 @@ public class Buddypress extends ListActivity {
     			refreshStream();
     	}
 	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		unregisterReceiver(onNotice);
+	}
+	
 	@Override
 	protected void onNewIntent(Intent intent){
 		super.onNewIntent(intent);
@@ -442,6 +462,8 @@ public class Buddypress extends ListActivity {
 	protected ArrayList<String> notificationLinks;
 
 	public void refreshStream() {
+		Log.i(TAG ,"refreshing stream");
+		
     	downloadProgressDialog = new ProgressDialog(activity);
         downloadProgressDialog.setCancelable(true);
         downloadProgressDialog.setIndeterminate(true);
@@ -452,19 +474,19 @@ public class Buddypress extends ListActivity {
 		HashMap<String, Object> data = new HashMap<String, Object>();
 		data.put("scope", scope);
 		data.put("user_data", "true");
-		data.put("max", getStreamMax());
+		data.put("max", Integer.parseInt(prefs.getString("stream_max", "20")));
 		
-		BPRequest stream = new BPRequest(this, mHandler, "bp.getActivity", data, MSG_STREAM);
+		BPRequest stream = new BPRequest(activity, mHandler, "bp.getActivity", data, MSG_STREAM);
 		stream.execute();
 		
 		showDialog(DIALOG_REFRESH);
 	}
 	
-	public static final int MSG_ERROR = 0;
 	public static final int MSG_STREAM = 1;
 	public static final int MSG_DELETE = 2;
 	public static final int MSG_COMMENT = 3;
 	public static final int MSG_STATUS = 4;
+	public static final int MSG_SYNC = 5;
 	
 	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
@@ -478,14 +500,18 @@ public class Buddypress extends ListActivity {
 			removeDialog(DIALOG_STATUS);
 			removeDialog(DIALOG_DELETING);
 
-
+			HashMap<?, ?> map;
+			Object obj;
+			
 			String toast = null;
 			boolean shouldRefresh = false;
 			switch(msg.what) {
 				case MSG_STREAM:
+					if(!(msg.obj instanceof HashMap)) 
+						break;
 					
-					HashMap<?, ?> map = (HashMap<?, ?>) msg.obj;
-					Object obj = map.get("activities");
+					map = (HashMap<?, ?>) msg.obj;
+					obj = map.get("activities");
 					
 					Object[] list = (Object[]) obj;
 					
@@ -496,36 +522,21 @@ public class Buddypress extends ListActivity {
 					if(map.containsKey("user_data")){
 						Log.i(TAG ,"got user data");
 						Map<?,?> user = (HashMap<?, ?>) map.get("user_data");
-						notificationStrings = new ArrayList<CharSequence>();
 						Object nfoo = user.get("notifications");
-						if(nfoo instanceof Object[] && !(((Object[])nfoo)[0] instanceof Boolean)) {
-							Object[] nfo = (Object[]) user.get("notifications");
-							String nfs = Integer.toString(nfo.length);
-							nf.setBackgroundColor(0xFF00DD00);
-							nf.setText(nfs);
-							notificationLinks = new ArrayList<String>();
-							for(Object anf : nfo){
-								notificationLinks.add(((String) anf).replaceFirst("^<a href=\"([^\"]*)\".*", "$1"));
-								notificationStrings.add(Html.fromHtml((String) anf).toString());
-							}
-							nf.setOnClickListener(new OnClickListener(){
-
-								@Override
-								public void onClick(View v) {
-									showDialog(DIALOG_NOTIFY);
-								}
-								
-							});
-						}
-						else {
-							nf.setBackgroundColor(0xFF555555);
-							nf.setText(R.string.zero);
-							nf.setOnClickListener(null);
-						}
+						processNotifications(nfoo);
 						
 					}
 					
 					break;
+				case MSG_SYNC:
+					if(!(msg.obj instanceof HashMap)) 
+						break;
+						
+					map = (HashMap<?, ?>) msg.obj;
+					obj = map.get("message");
+					
+					processNotifications(obj);
+					return;
 				case MSG_STATUS:
 					textContent.setText("");
 					toast = activity.getString(R.string.posted);
@@ -539,8 +550,11 @@ public class Buddypress extends ListActivity {
 					toast = getString(R.string.commented);
 					shouldRefresh = true;
 					break;
-				default:
+				default: 
 					toast = (String) msg.obj;
+					if(toast == null)
+						toast = getString(R.string.error);
+					break;
 			}
 			Toast.makeText(activity, (CharSequence) toast,
 					Toast.LENGTH_LONG).show();
@@ -570,6 +584,35 @@ public class Buddypress extends ListActivity {
 	}
 
 	
+	protected void processNotifications(Object nfoo) {
+		notificationStrings = new ArrayList<CharSequence>();
+		notificationLinks = new ArrayList<String>();
+		if(nfoo instanceof Object[] && !(((Object[])nfoo)[0] instanceof Boolean)) {
+			Object[] nfo = (Object[]) nfoo;
+			String nfs = Integer.toString(nfo.length);
+			nf.setBackgroundColor(0xFF00DD00);
+			nf.setText(nfs);
+			for(Object anf : nfo){
+				notificationLinks.add(((String) anf).replaceFirst("^<a href=\"([^\"]*)\".*", "$1"));
+				notificationStrings.add(Html.fromHtml((String) anf).toString());
+			}
+			nf.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View v) {
+					showDialog(DIALOG_NOTIFY);
+				}
+				
+			});
+		}
+		else {
+			nf.setBackgroundColor(0xFF555555);
+			nf.setText(R.string.zero);
+			nf.setOnClickListener(null);
+		}
+	}
+
+
 	private OnClickListener mSubmitListener = new OnClickListener() {
 
 		@SuppressWarnings("deprecation")
@@ -580,9 +623,9 @@ public class Buddypress extends ListActivity {
 			if(text.length() == 0)
 				return;
 
-			if(getApiKey().length() < 1) {
-				Toast.makeText(Buddypress.this, "Please set up your account first...",
-						Toast.LENGTH_SHORT).show();
+			if(prefs.getString("api_key", null) == null) {
+				Toast.makeText(Buddypress.this, R.string.error,
+						Toast.LENGTH_LONG).show();
 				return;
 			}
 				
@@ -593,6 +636,20 @@ public class Buddypress extends ListActivity {
 			showDialog(DIALOG_STATUS);
 		}
 	};
+	
+	public void cancelAlarm(View v) {
+		mgr.cancel(pi);
+	}
 
+	private BroadcastReceiver onNotice=new BroadcastReceiver() {
+		public void onReceive(Context ctxt, Intent i) {
+			Log.i(TAG, "notification sync");
+			HashMap<String, Object> data = new HashMap<String, Object>();
+	    	BPRequest bpr = new BPRequest(activity, mHandler, "bp.getNotifications", data, MSG_SYNC);
+	    	bpr.execute();
+	    	
+			abortBroadcast();
+		}
+	};
 	
 }

@@ -30,8 +30,22 @@
 			android:title="@string/profileURL"
 			android:summary="@string/profileURLDesc"
 			android:shouldDisableView="true"
-			android:singleLine="true"/>
-   	</PreferenceCategory>   
+			/>
+   	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/notifyPref">
+	    <CheckBoxPreference
+	        android:key="interval_sync"
+	        android:defaultValue="false"
+	        android:title="@string/intervalSync"
+			android:summary="@string/intervalSyncDesc"
+	        />
+	    <EditTextPreference 
+   		    android:key="sync_interval"
+			android:title="@string/syncInterval"
+			android:shouldDisableView="true"
+			android:singleLine="true"
+			/>
+   	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/advPref">
 	    <EditTextPreference
 	        android:key="stream_max"

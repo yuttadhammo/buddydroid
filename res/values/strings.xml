@@ -29,21 +29,30 @@
 
 	<string name="comment_options">Comment Options</string>
 	
-						
+	<!-- Notification -->
+	
+    <string name="notification_title">%1$d Buddypress Notifications</string>  
+    <string name="notification_title_1">1 Buddypress Notification</string>  
+    <string name="notification_text">Buddypress Notifications</string>  
+        						
     <!-- Preferences -->
     
 	<string name="preferences">Preferences</string>
     
-    <string name="website">Website URL</string>
+	<string name="userPref">User Preferences</string>
+	<string name="website">Website URL</string>
 	<string name="username">Username</string>
 	<string name="register">Register</string>
 	<string name="api_key">API Key</string>
 	<string name="api_key_desc">Click register first, then go to your BuddyPress profile to accept and get this key to put here.</string>
 	<string name="profileURL">Visit Settings Page</string>
 	<string name="profileURLDesc">Click here after registering</string>
+
+	<string name="notifyPref">Notification Preferences</string>
+	<string name="intervalSync">Sync Notifications</string>
+	<string name="intervalSyncDesc">check for notifications periodically (starts on boot)</string>
+	<string name="syncInterval">Sync Interval (minutes)</string>
 	
-	
-	<string name="userPref">User Preferences</string>
 	<string name="advPref">Advanced Preferences</string>
 	<string name="streamMax">Maximum # of Stream Items</string>
 	<string name="serviceName">Service Name</string>
