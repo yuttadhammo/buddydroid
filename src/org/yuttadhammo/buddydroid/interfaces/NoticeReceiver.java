@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
@@ -89,6 +90,7 @@ public class NoticeReceiver extends BroadcastReceiver {
 						        .setAutoCancel(true)
 						        .setContentTitle(nfn == 1?context.getString(R.string.notification_title_1):String.format(context.getString(R.string.notification_title), nfn))
 						        .setContentText(context.getString(R.string.notification_text))
+						        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
 						        .setContentInfo(Integer.toString(nfn));
 						
 						NotificationCompat.InboxStyle inboxStyle =
@@ -104,10 +106,9 @@ public class NoticeReceiver extends BroadcastReceiver {
 						// Moves the big view style object into the notification object.
 						mBuilder.setStyle(inboxStyle);
 						
-						prefs = PreferenceManager.getDefaultSharedPreferences(context);
-						Uri url = Uri.parse(prefs.getString("website", "")+"index.php?bp_xmlrpc=true&bp_xmlrpc_redirect=notifications");
-						Intent i = new Intent(Intent.ACTION_VIEW);
-						i.setData(url);
+						// Creates an explicit intent for an Activity in your app
+						Intent resultIntent = new Intent(context, Buddypress.class);
+						resultIntent.putExtra("notification", true);
 						
 						// The stack builder object will contain an artificial back stack for the
 						// started Activity.
@@ -117,12 +118,13 @@ public class NoticeReceiver extends BroadcastReceiver {
 						// Adds the back stack for the Intent (but not the Intent itself)
 						stackBuilder.addParentStack(Buddypress.class);
 						// Adds the Intent that starts the Activity to the top of the stack
-						stackBuilder.addNextIntent(i);
+						stackBuilder.addNextIntent(resultIntent);
 						PendingIntent resultPendingIntent =
 						        stackBuilder.getPendingIntent(
 						            0,
 						            PendingIntent.FLAG_UPDATE_CURRENT
 						        );
+
 						mBuilder.setContentIntent(resultPendingIntent);
 						Notification notification = mBuilder.build();
 						notification.flags |= Notification.FLAG_AUTO_CANCEL;

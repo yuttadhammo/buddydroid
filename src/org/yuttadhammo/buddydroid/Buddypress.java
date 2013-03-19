@@ -1,13 +1,11 @@
 
 package org.yuttadhammo.buddydroid;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.yuttadhammo.buddydroid.interfaces.BPRequest;
 import org.yuttadhammo.buddydroid.interfaces.NoticeService;
-import org.yuttadhammo.buddydroid.interfaces.NotifyService;
 import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
 
 import android.app.NotificationManager;
@@ -26,8 +24,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,10 +31,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.text.Html;
-import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -55,7 +48,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SlidingDrawer;
@@ -169,9 +161,15 @@ public class Buddypress extends ListActivity {
     	
     	website = prefs.getString("website", "");
     	
-    	if(website.length() > 0 && prefs.getBoolean("auto_update", true))
-    			refreshStream();
+    	if(prefs.getBoolean("auto_update", true) && !this.getIntent().hasExtra("notification"))
+   			refreshStream();
     	
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+
 
     	// set up notification
 		((NotificationManager)getSystemService(NOTIFICATION_SERVICE))
@@ -192,6 +190,10 @@ public class Buddypress extends ListActivity {
 		filter.setPriority(2);
 		registerReceiver(onNotice, filter);
 		
+    	this.activity = this;
+    	String newWebsite = prefs.getString("website", "");
+    	adjustLayout();
+
     	if(prefs.getBoolean("interval_sync", false)) {
     		Long interval = Long.parseLong(prefs.getString("sync_interval", "60"))*60*1000;
 			Log.i(TAG,interval+"");
@@ -200,23 +202,17 @@ public class Buddypress extends ListActivity {
 				interval,
 				pi);
     	}
-		
     	
-	}
-	
-	@Override
-	public void onResume(){
-		super.onResume();
-
-    	this.activity = this;
-    	String newWebsite = prefs.getString("website", "");
-    	adjustLayout();
-
-    	if(newWebsite.length() > 0 && !website.equals(newWebsite)) {
+    	// if website changed
+    	
+    	if(!website.equals(newWebsite)) {
     		website = newWebsite;
     		if(prefs.getBoolean("auto_update", true))
     			refreshStream();
     	}
+    	
+    	if(getIntent().hasExtra("notification"))
+			refreshStream();
 	}
 	
 	@Override
@@ -411,7 +407,8 @@ public class Buddypress extends ListActivity {
 						Uri url = Uri.parse(notificationLinks.get(which));
 						Intent i = new Intent(Intent.ACTION_VIEW);
 						i.setData(url);
-						activity.startActivity(i);
+						startActivity(i);
+						removeDialog(DIALOG_NOTIFY);
 					}
 		    	 });
 		    	 
@@ -462,6 +459,10 @@ public class Buddypress extends ListActivity {
 	protected ArrayList<String> notificationLinks;
 
 	public void refreshStream() {
+		
+		if(website == null || website.length() == 0 )
+			return;
+		
 		Log.i(TAG ,"refreshing stream");
 		
     	downloadProgressDialog = new ProgressDialog(activity);
@@ -505,6 +506,11 @@ public class Buddypress extends ListActivity {
 			
 			String toast = null;
 			boolean shouldRefresh = false;
+			
+			boolean fromNotify = getIntent().hasExtra("notification");
+			if(fromNotify)
+				getIntent().removeExtra("notification");
+			
 			switch(msg.what) {
 				case MSG_STREAM:
 					if(!(msg.obj instanceof HashMap)) 
@@ -519,14 +525,16 @@ public class Buddypress extends ListActivity {
 					setListAdapter(adapter);
 					toast = getString(R.string.updated);
 					
-					if(map.containsKey("user_data")){
+					if(map.containsKey("user_data") && map.get("user_data") instanceof HashMap){
 						Log.i(TAG ,"got user data");
 						Map<?,?> user = (HashMap<?, ?>) map.get("user_data");
 						Object nfoo = user.get("notifications");
 						processNotifications(nfoo);
-						
 					}
-					
+
+					if(fromNotify)
+						showDialog(DIALOG_NOTIFY);
+
 					break;
 				case MSG_SYNC:
 					if(!(msg.obj instanceof HashMap)) 
@@ -641,7 +649,7 @@ public class Buddypress extends ListActivity {
 		mgr.cancel(pi);
 	}
 
-	private BroadcastReceiver onNotice=new BroadcastReceiver() {
+	private BroadcastReceiver onNotice = new BroadcastReceiver() {
 		public void onReceive(Context ctxt, Intent i) {
 			Log.i(TAG, "notification sync");
 			HashMap<String, Object> data = new HashMap<String, Object>();

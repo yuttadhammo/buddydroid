@@ -122,6 +122,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 		this.setupEditTextPreference(maxPref,"20");
 		this.setupEditTextPreference(servicePref,getString(R.string.app_name));
 
+		intervalPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
 		maxPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
 		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
 		
@@ -153,7 +154,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 			intervalPref.setEnabled(true);
 		else
 			intervalPref.setEnabled(false);
-			
+
 		syncPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
 			@Override
