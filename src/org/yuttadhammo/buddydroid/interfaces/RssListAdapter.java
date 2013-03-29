@@ -92,7 +92,7 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 				Log.i(TAG,comments+" comments");
 
         		final LinearLayout commentPane = (LinearLayout) rowView.findViewById(R.id.comment_pane);
-        		
+        		commentPane.setVisibility(View.VISIBLE);
         		Map<String,LinearLayout> tva = makeCommentLayout(chm);
         				
         		

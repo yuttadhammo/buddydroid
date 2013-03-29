@@ -45,13 +45,13 @@
             />   
         <activity android:label="Preferences" 
             android:name=".BPSettingsActivity"
- 			android:theme="@style/LightTheme"
+ 			android:theme="@style/DarkTheme"
 			android:configChanges="orientation|screenSize|keyboardHidden"
    			android:logo="@drawable/actionbar_icon"
             />
         <activity android:label="Help" 
             android:name=".BPHelpActivity"
- 			android:theme="@style/LightTheme"
+ 			android:theme="@style/DarkTheme"
    			android:logo="@drawable/actionbar_icon"
             />       
 

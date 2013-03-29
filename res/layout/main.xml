@@ -10,20 +10,31 @@
 		android:layout_height="fill_parent"
 		android:background="#DDDDDD"
 		>
-		<LinearLayout 
+		<RelativeLayout 
 			android:id="@+id/list_pane"
 		    android:layout_width="0dp"
 		    android:layout_weight="0.5"
 			android:layout_height="match_parent"
-			android:orientation="vertical"
 		    >
-			<LinearLayout 
+		    <ListView android:id="@+id/android:list"
+		        android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:clipToPadding="false"
+				android:paddingLeft="10dp"
+				android:paddingRight="10dp"
+				android:dividerHeight="10dp"
+		        android:divider="@drawable/divider"
+		       	/>
+		   	<LinearLayout 
 				android:id="@+id/filter_pane"
 			    android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				android:layout_height="47dp"
+				android:layout_marginLeft="10dp"
+				android:layout_marginRight="10dp"
+				android:paddingRight="10dp"
+				android:paddingLeft="10dp"
 				android:orientation="horizontal"
-				android:background="#999999"
-				android:padding="12dp"
+				android:background="@drawable/filter_back"
 			    >
 	  			<TextView
 				    android:id="@+id/filter_text"
@@ -31,7 +42,7 @@
 					android:layout_height="match_parent"
 					android:textColor="#FFFFFF"
 					android:text="@string/filter_by"
-					android:textSize="20sp"
+					android:textSize="16sp"
 					android:layout_gravity="center"
 					android:gravity="center"
 					android:layout_marginRight="8dp"
@@ -40,8 +51,7 @@
 			        android:id="@+id/filters"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:padding="10dp"
-					android:background="#FFFFFF"
+			        android:layout_gravity="center"
 			        android:entries="@array/filters"
 			        android:prompt="@string/filter_prompt" 
 					/>
@@ -51,24 +61,14 @@
 					android:layout_height="wrap_content"
 					android:orientation="horizontal"
 					android:gravity="right"
+			        android:layout_gravity="center"
 				    >
-		      	        <TextView 
-				        android:id="@+id/visit_site"
-				        android:layout_width="wrap_content"
-				        android:layout_height="match_parent"
-				        android:textSize="24sp"
-				        android:gravity="center"
-				        android:layout_gravity="center_vertical"
-				        android:textColor="#FFFFFF"
-				        android:paddingLeft="20dp"
-				        android:paddingRight="20dp"
-						android:text="@string/visit_site"
-			            />
+
 		   		    <TextView 
 				        android:id="@+id/notifications"
-				        android:layout_width="40dp"
-				        android:layout_height="40dp"
-				        android:textSize="24sp"
+				        android:layout_width="30dp"
+				        android:layout_height="30dp"
+				        android:textSize="16sp"
 				        android:textStyle="bold"
 				        android:gravity="center"
 				        android:layout_gravity="center_vertical"
@@ -78,15 +78,8 @@
 			            />
 				</LinearLayout>
 			</LinearLayout>
-		    <ListView android:id="@+id/android:list"
-		        android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:clipToPadding="false"
-				android:padding="10dp"
-				android:dividerHeight="10dp"
-		        android:divider="@drawable/divider"
-		       	/>
-		</LinearLayout>
+
+		</RelativeLayout>
 		<RelativeLayout
 			android:id="@+id/submit_pane"
 			android:layout_height="fill_parent"
@@ -150,6 +143,7 @@
 				android:background="#DDDDDD"
 				/>
 		</RelativeLayout>
+		
 	</LinearLayout>
 	 <SlidingDrawer
 		android:id="@+id/drawer"

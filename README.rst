@@ -36,6 +36,8 @@ Changelog
 - fixed text from share
 - fixed sound in notification
 - switched avatars to URLImageViewHelper class
+- disappearing filter pane
+- better older/smaller device compatibility
 
 Credits
 =================

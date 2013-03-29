@@ -8,13 +8,12 @@ import org.yuttadhammo.buddydroid.interfaces.BPRequest;
 import org.yuttadhammo.buddydroid.interfaces.NoticeService;
 import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
 
+import com.actionbarsherlock.app.SherlockListActivity;
 import android.app.NotificationManager;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -35,18 +34,25 @@ import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuInflater;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SlidingDrawer;
@@ -54,7 +60,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Buddypress extends ListActivity {
+public class Buddypress extends SherlockListActivity {
 	
 	// set this if you are hardcoding a website into your app
 	public final static String CUSTOM_WEBSITE = null;
@@ -94,6 +100,8 @@ public class Buddypress extends ListActivity {
 
 	private Intent intent;
 
+	private LinearLayout filterPane;
+
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -129,8 +137,30 @@ public class Buddypress extends ListActivity {
     		intent.removeExtra(Intent.EXTRA_TEXT);
     	}
     	
-		
+    	filterPane = (LinearLayout)findViewById(R.id.filter_pane);
+    	
+    	LinearLayout header = (LinearLayout) getLayoutInflater().inflate(R.layout.list_header, null);
     	listView = (ListView)findViewById(android.R.id.list);
+    	listView.addHeaderView(header);
+    	listView.setOnScrollListener(new OnScrollListener(){
+
+        	int fv = 0;
+        	@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				if(firstVisibleItem > fv)
+					doSlideUp(filterPane);
+				else if(firstVisibleItem < fv || firstVisibleItem == 0)
+					doSlideDown(filterPane);
+				fv = firstVisibleItem;
+			}
+
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
     	
     	filters = (Spinner) findViewById(R.id.filters);
     	filters.setOnItemSelectedListener(new OnItemSelectedListener(){
@@ -151,16 +181,6 @@ public class Buddypress extends ListActivity {
 			}
     		
     	});
-
-		TextView vs = (TextView) findViewById(R.id.visit_site);
-		vs.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				redirectTo("stream");
-			}
-
-		});
 
 		nf = (TextView) findViewById(R.id.notifications);
     	
@@ -226,7 +246,7 @@ public class Buddypress extends ListActivity {
     		if(prefs.getBoolean("auto_update", true))
     			refreshStream();
     	}
-    	
+
     	if(getIntent().hasExtra("notification"))
 			refreshStream();
 	}
@@ -234,7 +254,6 @@ public class Buddypress extends ListActivity {
 	@Override
 	public void onPause() {
 		super.onPause();
-
 		unregisterReceiver(onNotice);
 	}
 	
@@ -260,7 +279,7 @@ public class Buddypress extends ListActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
+	    MenuInflater inflater = getSupportMenuInflater();
 	    inflater.inflate(R.menu.menu_main, menu);
 	    return true;
 	}
@@ -309,7 +328,7 @@ public class Buddypress extends ListActivity {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
-		MenuInflater inflater = getMenuInflater();
+		android.view.MenuInflater inflater = getMenuInflater();
        	inflater.inflate(R.menu.stream_longclick, menu);
         
 	    menu.setHeaderTitle(getString(R.string.post_options));
@@ -317,7 +336,7 @@ public class Buddypress extends ListActivity {
 	}
 	
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+	public boolean onContextItemSelected(android.view.MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 	    int index = info.position;
 	    final HashMap<?,?> entryMap = (HashMap<?, ?>) getListView().getItemAtPosition(index);
@@ -405,8 +424,7 @@ public class Buddypress extends ListActivity {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 	    super.onCreateDialog (id);
-	    final Activity activity = this;
-		AlertDialog alertDialog;
+	    final Buddypress activity = this;
     	final AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	downloadProgressDialog = new ProgressDialog(activity);
         downloadProgressDialog.setCancelable(true);
@@ -691,5 +709,95 @@ public class Buddypress extends ListActivity {
 			website = null;
 		return website;
 	}
+
+	public void doSlideDown(View view){
+		if(view.getVisibility() == View.VISIBLE || view.getAnimation() != null)
+			return;
+		view.setVisibility(View.VISIBLE);
+		Animation slideDown = setLayoutAnim_slidedown(); 
+		view.startAnimation(slideDown);
+	}
+
+	public void doSlideUp(View view){
+		if(view.getVisibility() == View.GONE || view.getAnimation() != null)
+			return;
+
+		Animation slideUp = setLayoutAnim_slideup(view); 
+		view.startAnimation(slideUp);
+	}
+
+	public Animation setLayoutAnim_slidedown() {
+
+	        AnimationSet set = new AnimationSet(true);
+
+	        Animation animation = new TranslateAnimation(
+	                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+	                0.0f, Animation.RELATIVE_TO_SELF, -1.0f,
+	                Animation.RELATIVE_TO_SELF, 0.0f);
+	        animation.setDuration(200);
+	        animation.setAnimationListener(new AnimationListener() {
+
+	            @Override
+	            public void onAnimationStart(Animation animation) {
+	                // TODO Auto-generated method stub
+	                // MapContacts.this.mapviewgroup.setVisibility(View.VISIBLE);
+
+	            }
+
+	            @Override
+	            public void onAnimationRepeat(Animation animation) {
+	                // TODO Auto-generated method stub
+
+	            }
+
+	            @Override
+	            public void onAnimationEnd(Animation animation) {
+	                // TODO Auto-generated method stub
+	                Log.d("LA","sliding down ended");
+
+	            }
+	        });
+	        set.addAnimation(animation);
+
+	        return animation;
+	    }
+
+	public Animation setLayoutAnim_slideup(final View view) {
+
+	        AnimationSet set = new AnimationSet(true);
+
+	        Animation animation = new TranslateAnimation(
+	                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+	                0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+	                Animation.RELATIVE_TO_SELF, -1.0f);
+	        animation.setDuration(200);
+	        animation.setAnimationListener(new AnimationListener() {
+
+	            @Override
+	            public void onAnimationStart(Animation animation) {
+	                // TODO Auto-generated method stub
+
+	            }
+
+	            @Override
+	            public void onAnimationRepeat(Animation animation) {
+	                // TODO Auto-generated method stub
+
+	            }
+
+	            @Override
+	            public void onAnimationEnd(Animation animation) {
+	                // TODO Auto-generated method stub
+	                view.clearAnimation();
+	                view.setVisibility(View.GONE);
+	            }
+	        });
+	        set.addAnimation(animation);
+
+	        return animation;
+
+	}
+
+
 	
 }
