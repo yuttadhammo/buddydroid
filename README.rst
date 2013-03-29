@@ -35,7 +35,9 @@ Changelog
 - added EditText text transfer on rotate
 - fixed text from share
 - fixed sound in notification
+- switched avatars to URLImageViewHelper class
 
 Credits
 =================
 - Wordpress, Buddypress, Android, et al
+- Koushik Dutta for URLImageViewHelper

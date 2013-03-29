@@ -17,6 +17,8 @@ import java.util.TreeMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -74,13 +76,10 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 		final HashMap<?,?> entryMap = (HashMap<?, ?>) getItem(position);
 		
 		TextView textView = (TextView) rowView.findViewById(R.id.job_text);
-		WebView wv = (WebView) rowView.findViewById(R.id.feed_image);
         try {
         	String text = sanitizeText((String)entryMap.get("content"));
         	text = text.replace("\n", "<br/>");
         	String title = (String)entryMap.get("action");
-        	
-        	//title = title.replace("posted an update", "posted an <a href=\""+((String) entryMap.get("primary_link"))+"\">update</a>");
         	
         	String dates = (String)entryMap.get("date_recorded");
         	
@@ -92,8 +91,6 @@ public class RssListAdapter extends ArrayAdapter<Object> {
         		comments = chm.entrySet().size();
 				Log.i(TAG,comments+" comments");
 
-				//TextView commentButton = (TextView) rowView.findViewById(R.id.comment_button);
-        		
         		final LinearLayout commentPane = (LinearLayout) rowView.findViewById(R.id.comment_pane);
         		
         		Map<String,LinearLayout> tva = makeCommentLayout(chm);
@@ -104,13 +101,13 @@ public class RssListAdapter extends ArrayAdapter<Object> {
     				LinearLayout comment = tva.get(key);
         			commentPane.addView(comment);
         		}
-        		
-        		//commentButton.setText(Integer.toString(comments));
-        		//commentButton.setVisibility(View.VISIBLE);
         	}
         	
         	String imgurl = (String)entryMap.get("user_avatar");
-        	wv.loadData(imgurl, "text/html", "UTF-8");
+        	imgurl = imgurl.replaceAll(".*src=\"([^\"]*)\".*","$1");
+        	
+        	ImageView iv = (ImageView) rowView.findViewById(R.id.feed_image);
+        	UrlImageViewHelper.setUrlDrawable(iv, imgurl);
         	
         	//2013-03-11 20:32:01
         	

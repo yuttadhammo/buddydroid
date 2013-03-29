@@ -86,13 +86,17 @@
 	<string name="commenting">Posting Comment…</string>
 	<string name="registering">Registering Service…</string>
 	<string name="deleting">Deleting Entry…</string>
-				
+
+	<!-- Errors -->				
 	
 	<string name="checkSetupInternet">No internet connection.</string>
 	<string name="error_upload">Sorry, an error occurred while uploading the %s. Please try again later.</string>
 	<string name="noWebsite">Please specify a website in preferences.</string>
 	<string name="websiteSyntaxError">Invalid website URL</string>
 	<string name="connectionRejected">Connection rejected - check username</string>
-						
+	
+	<!-- Misc -->	
 
+	<string name="avatar">Avatar</string>
+	
 </resources>

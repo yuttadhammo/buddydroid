@@ -449,7 +449,6 @@ public class Buddypress extends ListActivity {
 	@Override
 	protected void onPrepareDialog(int id, final Dialog dialog) {
 	    super.onPrepareDialog (id, dialog);
-	    final Activity activity = this;
 	    switch(id) {
     		case DIALOG_NOTIFY:
     			ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,android.R.layout.simple_list_item_1, notificationStrings);
