@@ -14,7 +14,9 @@ Now, if you have done these steps correctly, you should be able to post status u
 Features
 ========
 - posts updates to stream via xml-rpc
-- shows a feed of latest updates
+- shows a feed of latest updates and threaded comments
+- ability to comment on and delete updates
+- retrieves Buddypress notifications
 - allows importing plain text / links from other apps
 
 Technical Details
@@ -29,10 +31,11 @@ https://github.com/yuttadhammo/buddydroid
 
 Changelog
 =================
-0.1 - first version, may have bugs!
-0.2 - added RSS feed activity
+1.6 
+- added EditText text transfer on rotate
+- fixed text from share
+- fixed sound in notification
 
 Credits
 =================
 - Wordpress, Buddypress, Android, et al
-- RSSReader modified from https://github.com/robhinds/AndroidRssReader

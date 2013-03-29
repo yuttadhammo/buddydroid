@@ -28,6 +28,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.util.EntityUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
@@ -317,7 +318,6 @@ public class XMLRPCClient {
 	@SuppressWarnings("unchecked")
 	private Object callXMLRPC(String method, Object[] params, File tempFile) throws XMLRPCException {
 		try {
-			Log.i(TAG , "Serializing");
 			// prepare POST body
 			StringWriter bodyWriter = new StringWriter();
 			serializer.setOutput(bodyWriter);
@@ -374,7 +374,7 @@ public class XMLRPCClient {
 			XmlPullParser pullParser = XmlPullParserFactory.newInstance().newPullParser();
 			entity = response.getEntity();
 			InputStream is = entity.getContent();
-			
+
 			// Many WordPress configs can output junk before the xml response (php warnings for example), this cleans it.
 			int bomCheck = -1;
 			int stopper = 0;
@@ -405,12 +405,16 @@ public class XMLRPCClient {
 					}
 				}
 			}
+
+			Log.i(TAG, "input cleaned");
 			
 			pullParser.setInput(is, "UTF-8");
-			
+
 			// lets start pulling...
 			pullParser.nextTag();
 			pullParser.require(XmlPullParser.START_TAG, null, TAG_METHOD_RESPONSE);
+
+			Log.i(TAG, "first pull");
 			
 			pullParser.nextTag(); // either TAG_PARAMS (<params>) or TAG_FAULT (<fault>)  
 			String tag = pullParser.getName();

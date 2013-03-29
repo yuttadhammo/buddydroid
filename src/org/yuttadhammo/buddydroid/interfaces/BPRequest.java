@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.Vector;
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
+import org.yuttadhammo.buddydroid.BPSettingsActivity;
 import org.yuttadhammo.buddydroid.Buddypress;
 import org.yuttadhammo.buddydroid.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -26,7 +29,7 @@ public class BPRequest {
 	private static String protocol;
 	private static int what;
 	private static HashMap<String, Object> data;
-	public static Object error;
+	public static String error;
 	public static String TAG = "BPRequest";
 	private static Handler handler;
 
@@ -76,31 +79,48 @@ public class BPRequest {
 
 		@Override
 		protected Boolean doInBackground(BPRequest... streams) {
+			if(!isInternetOn()) {
+				error = context.getString(R.string.checkSetupInternet);
+				return false;
+			}
 			
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 			
 			String api = prefs.getString("api_key", null);
 			String service = prefs.getString("service_name", "BuddyDroid");
 			String username = prefs.getString("username", null);
-			String website = prefs.getString("website", null);
+			String website = Buddypress.getWebsite();
 			
-			if(api == null || username == null || website == null)
+			if(username == null || website == null)
 				return false;
 			
 			Object[] params;
-
-			params = new Object[] { username,
+			
+			if(api == null) { 
+				if(what == BPSettingsActivity.MSG_API) // api request
+					params = new Object[] { 
+						username,
+						service,
+						data 
+					};
+				else
+					return false;
+			}
+			else
+				params = new Object[] { 
+					username,
 					service,
-					api, data };
+					api, 
+					data 
+				};
 			XMLRPCClient client = new XMLRPCClient(URI.create(website+"index.php?bp_xmlrpc=true"),
-					username, api); // these aren't necessary...
+					username, api); // not used
 			try {
 				obj = client.call(protocol, params);
 				success = true;
 				return true;
 			} catch (final XMLRPCException e) {
-				if(e.getCause() != null)
-					error = e.getCause().toString();
+				error = e.toString();
 				e.printStackTrace();
 			}
 			return false;
@@ -108,4 +128,14 @@ public class BPRequest {
 
 	}
 
+	public static boolean isInternetOn() {
+	    ConnectivityManager cm =
+	        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+	        return true;
+	    }
+	    return false;
+	}
+	
 }

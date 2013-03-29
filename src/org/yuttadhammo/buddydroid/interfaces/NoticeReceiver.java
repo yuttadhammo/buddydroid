@@ -90,7 +90,6 @@ public class NoticeReceiver extends BroadcastReceiver {
 						        .setAutoCancel(true)
 						        .setContentTitle(nfn == 1?context.getString(R.string.notification_title_1):String.format(context.getString(R.string.notification_title), nfn))
 						        .setContentText(context.getString(R.string.notification_text))
-						        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
 						        .setContentInfo(Integer.toString(nfn));
 						
 						NotificationCompat.InboxStyle inboxStyle =
@@ -127,8 +126,7 @@ public class NoticeReceiver extends BroadcastReceiver {
 
 						mBuilder.setContentIntent(resultPendingIntent);
 						Notification notification = mBuilder.build();
-						notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
+						
 						// mId allows you to update the notification later on.
 						mNotificationManager.notify(Buddypress.NOTIFY_ID, notification);
 						

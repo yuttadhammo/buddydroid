@@ -47,7 +47,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SlidingDrawer;
@@ -56,16 +55,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Buddypress extends ListActivity {
-
+	
+	// set this if you are hardcoding a website into your app
+	public final static String CUSTOM_WEBSITE = null;
+	
 	protected String TAG = "Buddypress";
 
 	public static String versionName = "1";
 	private static SharedPreferences prefs;
-	private TextView textContent;
+	private EditText activeEditText;
 	private Button submitButton;
 	private Buddypress activity;
 	private RssListAdapter adapter;
-	private LinearLayout listPane;
 	private String website;
 
 	private ListView listView;
@@ -86,7 +87,13 @@ public class Buddypress extends ListActivity {
 
 	private AlarmManager mgr=null;
 	private PendingIntent pi=null;
-	
+
+	private EditText textContent;
+
+	private EditText textDrawer;
+
+	private Intent intent;
+
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -110,16 +117,18 @@ public class Buddypress extends ListActivity {
 		submitButton.setOnClickListener(mSubmitListener);
 		submitDrawerButton.setOnClickListener(mSubmitListener);
 		       
-		textContent = (TextView) findViewById(R.id.text_content);
+		textContent = (EditText) findViewById(R.id.text_content);
+		textDrawer =  (EditText) findViewById(R.id.text_drawer);
 		
-		Intent intent = this.getIntent();
+		
+		intent = this.getIntent();
 		
     	if(intent.hasExtra(Intent.EXTRA_TEXT)) {
     		Log.i("Buddypress","Got text: "+intent.getStringExtra(Intent.EXTRA_TEXT));
-			textContent.setText(textContent.getText()+intent.getStringExtra(Intent.EXTRA_TEXT));
+    		textContent.setText(intent.getStringExtra(Intent.EXTRA_TEXT));
+    		intent.removeExtra(Intent.EXTRA_TEXT);
     	}
     	
-    	listPane = (LinearLayout) findViewById(R.id.list_pane);
 		
     	listView = (ListView)findViewById(android.R.id.list);
     	
@@ -157,11 +166,12 @@ public class Buddypress extends ListActivity {
     	
     	registerForContextMenu(listView);
     	
-    	this.activity = this;
+    	activity = this;
+    	website = getWebsite();
+
+    	adjustLayout();
     	
-    	website = prefs.getString("website", "");
-    	
-    	if(prefs.getBoolean("auto_update", true) && !this.getIntent().hasExtra("notification"))
+    	if(prefs.getBoolean("auto_update", true) && !getIntent().hasExtra("notification"))
    			refreshStream();
     	
 	}
@@ -191,9 +201,15 @@ public class Buddypress extends ListActivity {
 		registerReceiver(onNotice, filter);
 		
     	this.activity = this;
-    	String newWebsite = prefs.getString("website", "");
+    	String newWebsite = getWebsite();
     	adjustLayout();
 
+    	if(intent.hasExtra(Intent.EXTRA_TEXT)) {
+    		Log.i("Buddypress","Got text: "+intent.getStringExtra(Intent.EXTRA_TEXT));
+			activeEditText.setText(activeEditText.getText()+intent.getStringExtra(Intent.EXTRA_TEXT));
+    		intent.removeExtra(Intent.EXTRA_TEXT);
+    	}
+    	
     	if(prefs.getBoolean("interval_sync", false)) {
     		Long interval = Long.parseLong(prefs.getString("sync_interval", "60"))*60*1000;
 			Log.i(TAG,interval+"");
@@ -205,7 +221,7 @@ public class Buddypress extends ListActivity {
     	
     	// if website changed
     	
-    	if(!website.equals(newWebsite)) {
+    	if(website != null && !website.equals(newWebsite)) {
     		website = newWebsite;
     		if(prefs.getBoolean("auto_update", true))
     			refreshStream();
@@ -226,11 +242,11 @@ public class Buddypress extends ListActivity {
 	protected void onNewIntent(Intent intent){
 		super.onNewIntent(intent);
     	if(intent.hasExtra(Intent.EXTRA_TEXT)) {
-    		String text = textContent.getText().toString();
+    		String text = activeEditText.getText().toString();
     		String add = "";
     		if(text.length() > 0)
     			add = "\n";
-			textContent.setText(text+add+intent.getStringExtra(Intent.EXTRA_TEXT));
+			activeEditText.setText(text+add+intent.getStringExtra(Intent.EXTRA_TEXT));
     	}
     		
 	}
@@ -264,7 +280,7 @@ public class Buddypress extends ListActivity {
 	            return true;
 
 			case (int)R.id.menuStream:
-		    	if(prefs.getString("website", "").length() == 0) {
+		    	if(getWebsite() == null) {
 					Toast.makeText(this, getString(R.string.noWebsite),
 							Toast.LENGTH_LONG).show();
 					return true;
@@ -443,9 +459,10 @@ public class Buddypress extends ListActivity {
 	    }
 	}
 	private void redirectTo(String string) {
-		if(prefs.getString("website", "").length() == 0)
+		String site = getWebsite();
+		if(site == null)
 			return;
-		Uri url = Uri.parse(prefs.getString("website", "")+"index.php?bp_xmlrpc=true&bp_xmlrpc_redirect="+string);
+		Uri url = Uri.parse(site+"index.php?bp_xmlrpc=true&bp_xmlrpc_redirect="+string);
 		Intent i = new Intent(Intent.ACTION_VIEW);
 		i.setData(url);
 		activity.startActivity(i);
@@ -460,7 +477,7 @@ public class Buddypress extends ListActivity {
 
 	public void refreshStream() {
 		
-		if(website == null || website.length() == 0 )
+		if(getWebsite() == null || prefs.getString("username", null) == null || prefs.getString("api_key", null) == null)
 			return;
 		
 		Log.i(TAG ,"refreshing stream");
@@ -546,7 +563,7 @@ public class Buddypress extends ListActivity {
 					processNotifications(obj);
 					return;
 				case MSG_STATUS:
-					textContent.setText("");
+					activeEditText.setText("");
 					toast = activity.getString(R.string.posted);
 					shouldRefresh = true;
 					break;
@@ -559,8 +576,9 @@ public class Buddypress extends ListActivity {
 					shouldRefresh = true;
 					break;
 				default: 
-					toast = (String) msg.obj;
-					if(toast == null)
+					if(msg.obj instanceof String)
+						toast = (String) msg.obj;
+					else
 						toast = getString(R.string.error);
 					break;
 			}
@@ -572,6 +590,8 @@ public class Buddypress extends ListActivity {
 		}
     };
 
+	private boolean isLandscape = true;
+
 
 	private void adjustLayout() {
 		DisplayMetrics metrics = new DisplayMetrics();
@@ -580,15 +600,20 @@ public class Buddypress extends ListActivity {
     	boolean land = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && width > 600;
 
     	if(land) {
+    		if(land != isLandscape)
+    			textContent.setText(textDrawer.getText());
     		submitPane.setVisibility(View.VISIBLE);
     		submitDrawer.setVisibility(View.GONE);
-    		textContent = (TextView) findViewById(R.id.text_content);
+    		activeEditText = textContent;
     	}
     	else {
+    		if(land != isLandscape)
+    			textDrawer.setText(textContent.getText());
     		submitPane.setVisibility(View.GONE);
     		submitDrawer.setVisibility(View.VISIBLE);
-    		textContent = (TextView) findViewById(R.id.text_drawer);
+    		activeEditText = textDrawer;
     	}
+    	isLandscape  = land;
 	}
 
 	
@@ -627,7 +652,7 @@ public class Buddypress extends ListActivity {
 		public void onClick(View v)
 		{
 			submitDrawer.close();
-			String text = textContent.getText().toString();
+			String text = activeEditText.getText().toString();
 			if(text.length() == 0)
 				return;
 
@@ -659,5 +684,13 @@ public class Buddypress extends ListActivity {
 			abortBroadcast();
 		}
 	};
+
+
+	public static String getWebsite() {
+		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", null);
+		if(website.length() == 0)
+			website = null;
+		return website;
+	}
 	
 }

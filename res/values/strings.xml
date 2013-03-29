@@ -76,7 +76,8 @@
 	<string name="deleted">Post deleted</string>
 	<string name="commented">Comment posted</string>
 	<string name="error">Something went wrong; please check your setup and the system log</string>
-	
+	<string name="registered">Service registered.  Visit the user\'s settings page to accept the service.</string>
+		
 	<!-- Ongoing -->
 	
 	<string name="connecting">Connecting…</string>
@@ -87,7 +88,7 @@
 	<string name="deleting">Deleting Entry…</string>
 				
 	
-	<string name="checkSetupInternet">Stream not available.  Please check your setup and Internet connection.</string>
+	<string name="checkSetupInternet">No internet connection.</string>
 	<string name="error_upload">Sorry, an error occurred while uploading the %s. Please try again later.</string>
 	<string name="noWebsite">Please specify a website in preferences.</string>
 	<string name="websiteSyntaxError">Invalid website URL</string>

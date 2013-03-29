@@ -53,7 +53,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 	private SharedPreferences prefs;
 	private Preference apiPref;
 	private Preference profilePref;
-	protected final int MSG_API = 0;
+	public final static int MSG_API = 4567;
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -76,6 +76,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 		        downloadProgressDialog.setCancelable(true);
 		        downloadProgressDialog.setMessage(getString(R.string.registering));
 		        downloadProgressDialog.setIndeterminate(true);
+		        showDialog(DIALOG_API);
 		        
 				HashMap<String, Object> data = new HashMap<String, Object>();
 				BPRequest bpr = new BPRequest(context, mHandler, "bp.requestApiKey", data, MSG_API );
@@ -113,7 +114,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 		final EditTextPreference maxPref = (EditTextPreference)findPreference("stream_max");
 		final EditTextPreference servicePref = (EditTextPreference)findPreference("service_name");
 		
-		this.setupEditTextPreference(websitePref,"");
+		this.setupEditTextPreference(websitePref, Buddypress.getWebsite());
 		this.setupEditTextPreference(userPref,"");
 		this.setupEditTextPreference(apiPref,null);
 
@@ -133,7 +134,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 
-				String website = prefs.getString("website", null);
+				String website = Buddypress.getWebsite();
 				String username = prefs.getString("username", null);
 				String apikey = prefs.getString("api_key", null);
 				
@@ -174,7 +175,11 @@ public class BPSettingsActivity extends PreferenceActivity {
 		
 		if (api >= 14) {
 			getActionBar().setHomeButtonEnabled(true);
-		}		
+		}
+		
+		if(Buddypress.CUSTOM_WEBSITE != null)
+			websitePref.setEnabled(false);
+		
 	}
     private ProgressDialog downloadProgressDialog;
 	private final int DIALOG_API = 0;
@@ -208,7 +213,6 @@ public class BPSettingsActivity extends PreferenceActivity {
 
 
 			String toast = null;
-			boolean shouldRefresh = false;
 			switch(msg.what) {
 				case MSG_API:
 					String apikey;
@@ -220,11 +224,13 @@ public class BPSettingsActivity extends PreferenceActivity {
 						editor.putString("api_key", apikey);
 						editor.commit();
 						apiPref.setSummary(apikey);
+						toast = getString(R.string.registered);
 					}
-
-				default: 
-					toast = (String) msg.obj;
-					if(toast == null)
+					break;
+				default:
+					if(msg.obj instanceof String)
+						toast = (String) msg.obj;
+					else
 						toast = getString(R.string.error);
 					break;
 			}
