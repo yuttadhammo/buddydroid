@@ -685,7 +685,7 @@ public class Buddypress extends ListActivity {
 	};
 
 
-	public static String getWebsite() {
+	private static String getWebsite() {
 		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", null);
 		if(website.length() == 0)
 			website = null;

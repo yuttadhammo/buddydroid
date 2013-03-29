@@ -25,6 +25,7 @@ public class BPRequest {
 	public static final int MSG_ERROR = 9999;
 	public Vector<String> imageUrl = new Vector<String>();
 	Vector<String> selectedCategories = new Vector<String>();
+	private static SharedPreferences prefs;
 	private static Context context;
 	private static String protocol;
 	private static int what;
@@ -41,6 +42,7 @@ public class BPRequest {
 		data = _data;
 		protocol = _protocol;
 		what = _what;
+		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
 	public void execute() {
@@ -84,12 +86,10 @@ public class BPRequest {
 				return false;
 			}
 			
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-			
 			String api = prefs.getString("api_key", null);
 			String service = prefs.getString("service_name", "BuddyDroid");
 			String username = prefs.getString("username", null);
-			String website = Buddypress.getWebsite();
+			String website = getWebsite();
 			
 			if(username == null || website == null)
 				return false;
@@ -136,6 +136,13 @@ public class BPRequest {
 	        return true;
 	    }
 	    return false;
+	}
+
+	private static String getWebsite() {
+		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", null);
+		if(website.length() == 0)
+			website = null;
+		return website;
 	}
 	
 }

@@ -50,7 +50,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 	
 	private Context context;
 	private BPSettingsActivity activity;
-	private SharedPreferences prefs;
+	private static SharedPreferences prefs;
 	private Preference apiPref;
 	private Preference profilePref;
 	public final static int MSG_API = 4567;
@@ -114,7 +114,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 		final EditTextPreference maxPref = (EditTextPreference)findPreference("stream_max");
 		final EditTextPreference servicePref = (EditTextPreference)findPreference("service_name");
 		
-		this.setupEditTextPreference(websitePref, Buddypress.getWebsite());
+		this.setupEditTextPreference(websitePref, getWebsite());
 		this.setupEditTextPreference(userPref,"");
 		this.setupEditTextPreference(apiPref,null);
 
@@ -134,7 +134,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 
-				String website = Buddypress.getWebsite();
+				String website = getWebsite();
 				String username = prefs.getString("username", null);
 				String apikey = prefs.getString("api_key", null);
 				
@@ -280,5 +280,10 @@ public class BPSettingsActivity extends PreferenceActivity {
 			
 		});			
 	}
-	
+	private static String getWebsite() {
+		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", null);
+		if(website.length() == 0)
+			website = null;
+		return website;
+	}	
 }
