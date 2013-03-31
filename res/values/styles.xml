@@ -16,6 +16,16 @@
     <!-- Application theme. -->
     <style name="DarkTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+	    <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
+    
+	</style>
+	<style name="Widget.Styled.ActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+    	<item name="android:background">@drawable/actionbar_back</item>
+    	<item name="background">@drawable/actionbar_back</item>
+    	<item name="titleTextStyle">@style/TitleTextStyle</item>
     </style>
-
+	<style name="TitleTextStyle" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+		<item name="android:textColor">#FFFFFF</item>
+		<item name="android:textSize">20sp</item>
+	</style>
 </resources>

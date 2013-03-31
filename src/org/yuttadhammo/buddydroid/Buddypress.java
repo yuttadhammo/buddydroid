@@ -140,8 +140,10 @@ public class Buddypress extends SherlockListActivity {
     	filterPane = (LinearLayout)findViewById(R.id.filter_pane);
     	
     	LinearLayout header = (LinearLayout) getLayoutInflater().inflate(R.layout.list_header, null);
+    	LinearLayout footer = (LinearLayout) getLayoutInflater().inflate(R.layout.list_footer, null);
     	listView = (ListView)findViewById(android.R.id.list);
     	listView.addHeaderView(header);
+    	listView.addFooterView(footer);
     	listView.setOnScrollListener(new OnScrollListener(){
 
         	int fv = 0;
