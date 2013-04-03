@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.yuttadhammo.buddydroid"
-      android:versionName="1.6" 
-      android:versionCode="20">
+      android:versionName="1.7" 
+      android:versionCode="21">
     
 	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="17" />
 	<uses-permission android:name="android.permission.INTERNET" />
@@ -55,7 +55,7 @@
    			android:logo="@drawable/actionbar_icon"
             />       
 
-		<receiver android:name=".interfaces.NotifyStarter" 
+		<receiver android:name="org.yuttadhammo.buddydroid.interfaces.NotifyStarter" 
              android:enabled="true" 
              android:exported="false"
              android:label="NotifyStarter">
@@ -63,7 +63,7 @@
 	            <action android:name="android.intent.action.BOOT_COMPLETED" />
 	        </intent-filter>
 	    </receiver>
-		<receiver android:name=".interfaces.NoticeReceiver"
+		<receiver android:name="org.yuttadhammo.buddydroid.interfaces.NoticeReceiver"
 			android:enabled="true" 
 			android:exported="false"
 		    >
@@ -71,6 +71,6 @@
 	        	<action android:name="org.yuttadhammo.buddydroid.interfaces.NoticeService.BROADCAST" />
 	    	</intent-filter>
 		</receiver>
-    <service android:name=".interfaces.NoticeService" />
+    <service android:name="org.yuttadhammo.buddydroid.interfaces.NoticeService" />
     </application>
 </manifest> 

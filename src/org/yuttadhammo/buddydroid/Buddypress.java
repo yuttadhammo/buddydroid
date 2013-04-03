@@ -4,6 +4,7 @@ package org.yuttadhammo.buddydroid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.yuttadhammo.buddydroid.interfaces.BPRequest;
 import org.yuttadhammo.buddydroid.interfaces.NoticeService;
 import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;

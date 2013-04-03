@@ -4,31 +4,18 @@ import org.yuttadhammo.buddydroid.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
-import android.os.Build;
-import android.renderscript.Font.Style;
 import android.text.Html;
 import android.text.Layout.Alignment;
 import android.text.Spannable;
@@ -36,6 +23,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.SpannedString;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.AlignmentSpan;
 import android.text.style.StyleSpan;
@@ -43,11 +31,8 @@ import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -75,7 +60,9 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 		View rowView = inflater.inflate(R.layout.stream_item, null);
 		final HashMap<?,?> entryMap = (HashMap<?, ?>) getItem(position);
 		
-		TextView textView = (TextView) rowView.findViewById(R.id.job_text);
+		TextView titleView = (TextView) rowView.findViewById(R.id.title);
+		TextView textView = (TextView) rowView.findViewById(R.id.text);
+		TextView dateView = (TextView) rowView.findViewById(R.id.date);
         try {
         	String text = sanitizeText((String)entryMap.get("content"));
         	text = text.replace("\n", "<br/>");
@@ -102,29 +89,44 @@ public class RssListAdapter extends ArrayAdapter<Object> {
         			commentPane.addView(comment);
         		}
         	}
+
+        	// load image
         	
         	String imgurl = (String)entryMap.get("user_avatar");
         	imgurl = imgurl.replaceAll(".*src=\"([^\"]*)\".*","$1");
         	
         	ImageView iv = (ImageView) rowView.findViewById(R.id.feed_image);
         	UrlImageViewHelper.setUrlDrawable(iv, imgurl);
+
+        	// add text content if exists
         	
+        	if(text.replaceAll("<[^>]*>", "").length() > 0) {
+            	Spanned out = Html.fromHtml(text);
+        		textView.setText(out);
+    			textView.setMovementMethod(LinkMovementMethod.getInstance());
+    			title = title + ":";
+        	}
+    		else
+        		textView.setVisibility(View.GONE);
+
+        	// add title
+        	
+        	Spanned titleSpan = Html.fromHtml(title);
+        	titleView.setText(titleSpan);
+        	titleView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        	// add date
         	//2013-03-11 20:32:01
         	
         	Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).parse(dates);
-        	DateFormat df = new SimpleDateFormat("EEE, MMM d, yyyy", Locale.ENGLISH);
+        	//DateFormat df = new SimpleDateFormat("EEE, MMM d, yyyy", Locale.ENGLISH);
         	
-        	Spanned out = Html.fromHtml("<b>"+title+(text.length() > 0?":</b><br/><br/>"+text:"</b>")+"<br/><br/><i>"+df.format(date)+"</i>");
-        	
-        	textView.setText(out);
-    		textView.setMovementMethod(LinkMovementMethod.getInstance());
-    		
-
+        	CharSequence dateString = DateUtils.getRelativeTimeSpanString(date.getTime());      	
+        	dateView.setText(dateString);
         }
         catch (Exception e) {
         	e.printStackTrace();
         }
-        textView.setTextColor(0xFF000000);
 		return rowView;
 
 	}
@@ -162,7 +164,6 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 			}
 			else {
 				continue;
-				//tv.setText((CharSequence) comment.toString());
 			}
 			ll.addView(tv);
 			// iterate

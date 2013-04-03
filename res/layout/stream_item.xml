@@ -6,29 +6,49 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:background="#FFFFFF"
+	android:padding="6dp"
 	>
 	<LinearLayout 
 		android:orientation="horizontal" 
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		>
-    
 		<ImageView android:id="@+id/feed_image"
 			android:layout_width="50dp" 
 			android:layout_height="50dp"
-			android:layout_marginLeft="6dp"
-			android:layout_marginTop="6dp"
 			android:contentDescription="@string/avatar"
 			/>
-		<TextView android:id="@+id/job_text" 
+		<TextView android:id="@+id/title" 
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content" 
 			android:textSize="16sp"
-			android:padding="8dp"
+			android:textStyle="bold"
 			android:textIsSelectable="true"
 			android:linksClickable="true"
+			android:textColor="#000000"
+			android:paddingLeft="10dp"
 			/>
 	</LinearLayout>
+	<TextView android:id="@+id/text" 
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" 
+		android:textSize="16sp"
+		android:textIsSelectable="true"
+		android:linksClickable="true"
+		android:textColor="#000000"
+		android:gravity="fill_horizontal"
+		android:paddingTop="6dp"
+		/>
+	<TextView android:id="@+id/date" 
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" 
+		android:textSize="12sp"
+		android:textStyle="italic"
+		android:textIsSelectable="true"
+		android:linksClickable="true"
+		android:textColor="#000000"
+		android:gravity="right"
+		/>
 	<LinearLayout 
 	    android:id="@+id/comment_pane"
 		android:orientation="vertical" 
