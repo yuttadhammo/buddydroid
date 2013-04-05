@@ -52,9 +52,15 @@
 	<string name="intervalSync">Sync Notifications</string>
 	<string name="intervalSyncDesc">check for notifications periodically (starts on boot)</string>
 	<string name="syncInterval">Sync Interval (minutes)</string>
-	
-	<string name="advPref">Advanced Preferences</string>
+
+	<string name="streamPref">Stream Preferences</string>
 	<string name="streamMax">Maximum # of Stream Items</string>
+	<string name="contentMax">Maximum Content Length</string>
+	<string name="contentMaxDesc">leave blank for unlimited</string>
+	<string name="relativeDate">Use Relative Date</string>
+	<string name="relativeDateDesc">e.g. "two minutes ago"</string>
+				
+	<string name="advPref">Advanced Preferences</string>
 	<string name="serviceName">Service Name</string>
 	<string name="serviceNameDesc">Change this if you want to register more than one service (e.g. on more than one device)</string>
 	<string name="autoUpdate">Update stream on startup</string>

@@ -109,22 +109,25 @@ public class BPSettingsActivity extends PreferenceActivity {
 		final EditTextPreference userPref = (EditTextPreference)findPreference("username");
 		final EditTextPreference apiPref = (EditTextPreference)findPreference("api_key");
 
-		final EditTextPreference intervalPref = (EditTextPreference)findPreference("sync_interval");
+		final EditTextPreference streamPref = (EditTextPreference)findPreference("stream_max");
+		final EditTextPreference contentPref = (EditTextPreference)findPreference("content_max");
 		
-		final EditTextPreference maxPref = (EditTextPreference)findPreference("stream_max");
+		final EditTextPreference intervalPref = (EditTextPreference)findPreference("sync_interval");
 		final EditTextPreference servicePref = (EditTextPreference)findPreference("service_name");
 		
-		this.setupEditTextPreference(websitePref, getWebsite());
-		this.setupEditTextPreference(userPref,"");
-		this.setupEditTextPreference(apiPref,null);
+		setupEditTextPreference(websitePref, getWebsite(), null);
+		setupEditTextPreference(userPref,"", null);
+		setupEditTextPreference(apiPref,null, getString(R.string.api_key_desc));
 
-		this.setupEditTextPreference(intervalPref,"60");
+		setupEditTextPreference(streamPref,"20", null);
+		setupEditTextPreference(contentPref,null, getString(R.string.contentMaxDesc));
 
-		this.setupEditTextPreference(maxPref,"20");
-		this.setupEditTextPreference(servicePref,getString(R.string.app_name));
+		setupEditTextPreference(intervalPref,"60", null);
+		setupEditTextPreference(servicePref,getString(R.string.app_name), null);
 
 		intervalPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
-		maxPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
+		streamPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
+		contentPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
 		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
 		
 		profilePref = (Preference)findPreference("profile_url");
@@ -201,7 +204,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 		}
 		return null;
 	}
-	
+
 	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
 		
@@ -257,7 +260,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 	    }
 	}	
 	
-	public void setupEditTextPreference(final EditTextPreference etp, String def) {
+	public void setupEditTextPreference(final EditTextPreference etp, final String def, final String desc) {
 		if(def != null) {
 			if(etp.getText() == null || etp.getText().equals(""))
 				etp.setText(def);
@@ -272,8 +275,10 @@ public class BPSettingsActivity extends PreferenceActivity {
 
 			public boolean onPreferenceChange(Preference preference,
 					final Object newValue) {
-
-				etp.setSummary((String) newValue);
+				if((newValue == null || ((String)newValue).length() == 0) && desc != null)
+					etp.setSummary(desc);
+				else
+					etp.setSummary((String) newValue);
 
 				return true;
 			}

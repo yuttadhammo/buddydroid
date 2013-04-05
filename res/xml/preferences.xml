@@ -32,6 +32,23 @@
 			android:shouldDisableView="true"
 			/>
    	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/streamPref">
+	    <EditTextPreference
+	        android:key="stream_max"
+	        android:title="@string/streamMax"
+	        />
+	    <EditTextPreference
+	        android:key="content_max"
+	        android:title="@string/contentMax"
+			android:summary="@string/contentMaxDesc"
+	        />
+	    <CheckBoxPreference
+	        android:key="relative_date"
+	        android:defaultValue="true"
+	        android:title="@string/relativeDate"
+			android:summary="@string/relativeDateDesc"
+	        />	  	        
+   	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/notifyPref">
 	    <CheckBoxPreference
 	        android:key="interval_sync"
@@ -47,10 +64,7 @@
 			/>
    	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/advPref">
-	    <EditTextPreference
-	        android:key="stream_max"
-	        android:title="@string/streamMax"
-	        />
+
 	    <EditTextPreference 
    		    android:key="service_name"
 			android:title="@string/serviceName"

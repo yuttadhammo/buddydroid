@@ -4,18 +4,22 @@ import org.yuttadhammo.buddydroid.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Layout.Alignment;
 import android.text.Spannable;
@@ -55,6 +59,7 @@ public class RssListAdapter extends ArrayAdapter<Object> {
 
 		final Activity activity = (Activity) getContext();
 		LayoutInflater inflater = activity.getLayoutInflater();
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
 
 		// Inflate the views from XML
 		View rowView = inflater.inflate(R.layout.stream_item, null);
@@ -101,8 +106,12 @@ public class RssListAdapter extends ArrayAdapter<Object> {
         	// add text content if exists
         	
         	if(text.replaceAll("<[^>]*>", "").length() > 0) {
-            	Spanned out = Html.fromHtml(text);
-        		textView.setText(out);
+        		Spanned out = Html.fromHtml(text);
+        		String contentMax = prefs.getString("content_max", null);
+            	if(contentMax != null && contentMax.length() > 0)
+            		out = (Spanned) TextUtils.concat(out.subSequence(0,Integer.parseInt(contentMax)),"...");
+
+            	textView.setText(out);
     			textView.setMovementMethod(LinkMovementMethod.getInstance());
     			title = title + ":";
         	}
@@ -118,11 +127,31 @@ public class RssListAdapter extends ArrayAdapter<Object> {
         	// add date
         	//2013-03-11 20:32:01
         	
-        	Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).parse(dates);
-        	//DateFormat df = new SimpleDateFormat("EEE, MMM d, yyyy", Locale.ENGLISH);
+        	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+        	simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        	Date date = simpleDateFormat.parse(dates);
         	
-        	CharSequence dateString = DateUtils.getRelativeTimeSpanString(date.getTime());      	
-        	dateView.setText(dateString);
+        	
+        	if(prefs.getBoolean("relative_date",true)) {
+            	CharSequence dateString = DateUtils.getRelativeTimeSpanString(date.getTime(), new Date().getTime(), DateUtils.SECOND_IN_MILLIS);      	
+            	dateView.setText(dateString);
+        	}
+        	else {
+        		
+        		// check if today or not
+        		
+        		Calendar now = Calendar.getInstance();
+        		Calendar calendar = Calendar.getInstance();
+        		calendar.setTime(date);
+        		DateFormat df;
+				
+        		if(now.get(Calendar.YEAR) == calendar.get(Calendar.YEAR) && now.get(Calendar.MONTH) == calendar.get(Calendar.MONTH) && now.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH))
+            		df = android.text.format.DateFormat.getTimeFormat(activity);
+        		else 	
+        			df = android.text.format.DateFormat.getMediumDateFormat(activity);
+				
+        		dateView.setText(df.format(date));
+        	}
         }
         catch (Exception e) {
         	e.printStackTrace();

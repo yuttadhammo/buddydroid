@@ -147,21 +147,46 @@ public class Buddypress extends SherlockListActivity {
     	listView.addFooterView(footer);
     	listView.setOnScrollListener(new OnScrollListener(){
 
-        	int fv = 0;
+        	int lastScroll = 0;
+        	int lvi = 0;
         	@Override
 			public void onScroll(AbsListView view, int firstVisibleItem,
 					int visibleItemCount, int totalItemCount) {
-				if(firstVisibleItem > fv)
-					doSlideUp(filterPane);
-				else if(firstVisibleItem < fv || firstVisibleItem == 0)
+        		
+        		int TOLERANCE = 10;
+        		
+        		View fc = listView.getChildAt(0);
+        		if(fc == null)
+        			return;
+
+        		int newScroll = fc.getTop();
+        		
+        		// small movements add up but don't count alone
+        		
+        		if(Math.abs(lastScroll - newScroll) < TOLERANCE)
+        			return;
+        		
+        		// different child or reversal
+        		
+        		if(newScroll * lastScroll < 0 || firstVisibleItem != lvi) {
+        			lvi = firstVisibleItem;
+        			lastScroll = newScroll;
+        		}
+        		
+        		if(newScroll < lastScroll || firstVisibleItem == 0) {
 					doSlideDown(filterPane);
-				fv = firstVisibleItem;
+        		}
+				else if(newScroll > lastScroll) {
+					doSlideUp(filterPane);
+				}
+				lastScroll = newScroll;
 			}
 
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
 				// TODO Auto-generated method stub
-				
+				if(scrollState == OnScrollListener.SCROLL_STATE_IDLE && listView.getFirstVisiblePosition() == 0)
+					doSlideDown(filterPane);
 			}
 		});
     	
@@ -478,7 +503,7 @@ public class Buddypress extends SherlockListActivity {
                 break;
 	    }
 	}
-	private void redirectTo(String string) {
+	public void redirectTo(String string) {
 		String site = getWebsite();
 		if(site == null)
 			return;
@@ -744,7 +769,6 @@ public class Buddypress extends SherlockListActivity {
 	            @Override
 	            public void onAnimationStart(Animation animation) {
 	                // TODO Auto-generated method stub
-	                // MapContacts.this.mapviewgroup.setVisibility(View.VISIBLE);
 
 	            }
 
@@ -757,7 +781,7 @@ public class Buddypress extends SherlockListActivity {
 	            @Override
 	            public void onAnimationEnd(Animation animation) {
 	                // TODO Auto-generated method stub
-	                Log.d("LA","sliding down ended");
+	                //Log.d(TAG,"sliding down ended");
 
 	            }
 	        });
