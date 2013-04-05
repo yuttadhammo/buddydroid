@@ -72,7 +72,7 @@ public class Buddypress extends SherlockListActivity {
 	private static SharedPreferences prefs;
 	private EditText activeEditText;
 	private Button submitButton;
-	private Buddypress activity;
+	private static Buddypress activity;
 	private RssListAdapter adapter;
 	private String website;
 
@@ -707,7 +707,8 @@ public class Buddypress extends SherlockListActivity {
 
 
 	private static String getWebsite() {
-		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", null);
+		prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+		String website = CUSTOM_WEBSITE  != null ? CUSTOM_WEBSITE : prefs.getString("website", null);
 		if(website.length() == 0)
 			website = null;
 		return website;
