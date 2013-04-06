@@ -31,6 +31,16 @@ https://github.com/yuttadhammo/buddydroid
 
 Changelog
 =================
+
+1.7.1
+- added content max pref
+- refined filter bar hiding
+- date fix and pref choice
+
+1.7
+- stream items fill space better
+- crash fix
+
 1.6 
 - added EditText text transfer on rotate
 - fixed text from share
@@ -43,3 +53,4 @@ Credits
 =================
 - Wordpress, Buddypress, Android, et al
 - Koushik Dutta for URLImageViewHelper
+- Jake Wharton for ActionBarSherlock

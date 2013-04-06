@@ -248,7 +248,7 @@ public class Buddypress extends SherlockListActivity {
 		filter.setPriority(2);
 		registerReceiver(onNotice, filter);
 		
-    	this.activity = this;
+    	activity = this;
     	String newWebsite = getWebsite();
     	adjustLayout();
 
@@ -731,8 +731,11 @@ public class Buddypress extends SherlockListActivity {
 	};
 
 
-	private static String getWebsite() {
-		prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+	private String getWebsite() {
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		if (prefs == null)
+			return CUSTOM_WEBSITE;
+		
 		String website = CUSTOM_WEBSITE  != null ? CUSTOM_WEBSITE : prefs.getString("website", null);
 		if(website.length() == 0)
 			website = null;
