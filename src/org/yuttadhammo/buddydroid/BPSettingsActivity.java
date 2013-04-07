@@ -286,7 +286,7 @@ public class BPSettingsActivity extends PreferenceActivity {
 		});			
 	}
 	private static String getWebsite() {
-		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", null);
+		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", "");
 		if(website.length() == 0)
 			website = null;
 		return website;
