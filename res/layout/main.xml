@@ -26,6 +26,7 @@
 				android:dividerHeight="10dp"
 		        android:divider="@drawable/divider"
 		        android:headerDividersEnabled="false"
+		        android:cacheColorHint="#00000000"
 		       	/>
 		   	<LinearLayout 
 				android:id="@+id/filter_pane"
@@ -36,34 +37,21 @@
 				android:orientation="horizontal"
 				android:background="@drawable/filter_back"
 			    >
-	  			<TextView
-				    android:id="@+id/filter_text"
-					android:layout_width="wrap_content"
-					android:layout_height="match_parent"
-					android:textColor="#FFFFFF"
-					android:text="@string/filter_by"
-					android:textSize="16sp"
-					android:layout_gravity="center"
-					android:gravity="center"
-					android:layout_marginRight="8dp"
-				    />
 		        <Spinner
 			        android:id="@+id/filters"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_gravity="center"
 			        android:entries="@array/filters"
 			        android:prompt="@string/filter_prompt" 
+			        android:layout_gravity="left|center_vertical"
 					/>
 		   		<LinearLayout 
 					android:id="@+id/site_links"
 				    android:layout_width="match_parent"
-					android:layout_height="wrap_content"
+					android:layout_height="match_parent"
 					android:orientation="horizontal"
 					android:gravity="right"
-			        android:layout_gravity="center"
 				    >
-
 		   		    <TextView 
 				        android:id="@+id/notifications"
 				        android:layout_width="30dp"
@@ -78,7 +66,6 @@
 			            />
 				</LinearLayout>
 			</LinearLayout>
-
 		</RelativeLayout>
 		<RelativeLayout
 			android:id="@+id/submit_pane"

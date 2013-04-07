@@ -41,13 +41,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class RssListAdapter extends ArrayAdapter<Object> {
+public class StreamListAdapter extends ArrayAdapter<Object> {
 
-	protected String TAG = "RssListAdapter";
+	protected String TAG = "StreamListAdapter";
 	public SparseIntArray expanded = new SparseIntArray();
-	private RssListAdapter tclass;
+	private StreamListAdapter tclass;
 	
-	public RssListAdapter(Activity activity, Object[] rss) {
+	public StreamListAdapter(Activity activity, Object[] rss) {
 		super(activity, 0, rss);
 		tclass = this;
 	}

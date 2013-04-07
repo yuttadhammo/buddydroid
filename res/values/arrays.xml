@@ -11,9 +11,10 @@
         <item>following</item>
         <item>friends</item>
         <item>groups</item>
-        <item>just-me</item>
+        <item>just_me</item>
         <item>mentions</item>
-        <item>my-groups</item>
+        <item>my_groups</item>
         <item>new_member</item>
+        <item>messages</item>
 	</string-array>
 </resources>

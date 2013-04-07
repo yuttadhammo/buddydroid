@@ -11,7 +11,7 @@ import java.util.prefs.PreferenceChangeListener;
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
 import org.yuttadhammo.buddydroid.interfaces.BPRequest;
-import org.yuttadhammo.buddydroid.interfaces.RssListAdapter;
+import org.yuttadhammo.buddydroid.interfaces.StreamListAdapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

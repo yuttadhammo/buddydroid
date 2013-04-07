@@ -28,7 +28,13 @@
 	<string name="really_delete">Do you want to delete this item?</string>
 
 	<string name="comment_options">Comment Options</string>
-	
+
+	<string name="message_options">Message Options</string>
+	<string name="reply">Reply</string>
+	<string name="send">Send</string>
+	<string name="mark_read">Mark Read</string>
+	<string name="mark_unread">Mark Unread</string>
+					
 	<!-- Notification -->
 	
     <string name="notification_title">%1$d Buddypress Notifications</string>  
@@ -79,6 +85,7 @@
 	
 	<string name="posted">Update posted</string>
 	<string name="updated">Stream updated</string>
+	<string name="messages">Retrieved %d messages</string>
 	<string name="deleted">Post deleted</string>
 	<string name="commented">Comment posted</string>
 	<string name="error">Something went wrong; please check your setup and the system log</string>

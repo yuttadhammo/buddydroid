@@ -32,6 +32,9 @@ https://github.com/yuttadhammo/buddydroid
 Changelog
 =================
 
+1.8
+- added messages to stream choices
+
 1.7.1
 - added content max pref
 - refined filter bar hiding
