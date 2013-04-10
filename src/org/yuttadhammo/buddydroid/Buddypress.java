@@ -619,11 +619,8 @@ public class Buddypress extends SherlockListActivity {
 	}
 	
 	public static final int MSG_STREAM = 1;
-	public static final int MSG_DELETE = 2;
-	public static final int MSG_COMMENT = 3;
-	public static final int MSG_STATUS = 4;
-	public static final int MSG_SYNC = 5;
-	public static final int MSG_MESSAGES = 6;
+	public static final int MSG_SYNC = 2;
+	public static final int MSG_MESSAGES = 3;
 	
 	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
@@ -639,7 +636,6 @@ public class Buddypress extends SherlockListActivity {
 			Object[] list;
 			
 			String toast = null;
-			boolean shouldRefresh = false;
 			
 			boolean fromNotify = getIntent().hasExtra("notification");
 			if(fromNotify)
@@ -649,6 +645,9 @@ public class Buddypress extends SherlockListActivity {
 				case MSG_STREAM:
 					if(!(msg.obj instanceof HashMap)) 
 						break;
+					
+					if(submitting)
+						activeEditText.setText("");
 					
 					map = (HashMap<?, ?>) msg.obj;
 					obj = map.get("activities");
@@ -701,19 +700,6 @@ public class Buddypress extends SherlockListActivity {
 					
 					processNotifications(obj);
 					return;
-				case MSG_STATUS:
-					activeEditText.setText("");
-					toast = activity.getString(R.string.posted);
-					shouldRefresh = true;
-					break;
-				case MSG_DELETE:
-					toast = getString(R.string.deleted);
-					shouldRefresh = true;
-					break;
-				case MSG_COMMENT:
-					toast = getString(R.string.commented);
-					shouldRefresh = true;
-					break;
 				default: 
 					if(msg.obj instanceof String)
 						toast = (String) msg.obj;
@@ -721,15 +707,18 @@ public class Buddypress extends SherlockListActivity {
 						toast = getString(R.string.error);
 					break;
 			}
+			submitting = false;
+
 			Toast.makeText(activity, (CharSequence) toast,
 					Toast.LENGTH_LONG).show();
+
 			
-			if(shouldRefresh)
-				refreshStream(new HashMap<String, Object>());
 		}
     };
 
 	private boolean isLandscape = true;
+
+	protected boolean submitting;
 
 
 	private void adjustLayout() {
@@ -799,7 +788,9 @@ public class Buddypress extends SherlockListActivity {
 						Toast.LENGTH_LONG).show();
 				return;
 			}
-				
+			
+			submitting = true;
+			
 			HashMap<String, Object> data = new HashMap<String, Object>();
 			data.put("action", "update");
 			data.put("action_data", text);
@@ -932,6 +923,7 @@ public class Buddypress extends SherlockListActivity {
 		refreshItem.setActionView(iv);
 	}
 	public void completeRefresh() {
+    	refreshing = false;
 		if(refreshItem == null || refreshItem.getActionView() == null)
 			return;	
 		
