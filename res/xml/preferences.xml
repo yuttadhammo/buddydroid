@@ -15,21 +15,11 @@
 			android:title="@string/username"
 			android:shouldDisableView="true"
 			android:singleLine="true"/>
-   		<Preference 
-   		    android:key="register"
-			android:title="@string/register"
-			/>
    		<EditTextPreference 
-   		    android:key="api_key"
-			android:title="@string/api_key"
+   		    android:key="password"
+			android:title="@string/password"
 			android:shouldDisableView="true"
-			android:summary="@string/api_key_desc"
-			/>
-	    <Preference 
-   		    android:key="profile_url"
-			android:title="@string/profileURL"
-			android:summary="@string/profileURLDesc"
-			android:shouldDisableView="true"
+			android:inputType="textPassword"
 			/>
    	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/streamPref">

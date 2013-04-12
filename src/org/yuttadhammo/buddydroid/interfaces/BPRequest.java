@@ -86,35 +86,22 @@ public class BPRequest {
 				return false;
 			}
 			
-			String api = prefs.getString("api_key", null);
-			String service = prefs.getString("service_name", "BuddyDroid");
+			String password = prefs.getString("password", null);
 			String username = prefs.getString("username", null);
 			String website = getWebsite();
 			
-			if(username == null || website == null)
+			if(username == null || website == null || password == null)
 				return false;
 			
 			Object[] params;
 			
-			if(api == null) { 
-				if(what == BPSettingsActivity.MSG_API) // api request
-					params = new Object[] { 
-						username,
-						service,
-						data 
-					};
-				else
-					return false;
-			}
-			else
-				params = new Object[] { 
-					username,
-					service,
-					api, 
-					data 
-				};
+			params = new Object[] { 
+				username,
+				password,
+				data 
+			};
 			XMLRPCClient client = new XMLRPCClient(URI.create(website+"index.php?bp_xmlrpc=true"),
-					username, api); // not used
+					username, password); // not used
 			try {
 				obj = client.call(protocol, params);
 				success = true;

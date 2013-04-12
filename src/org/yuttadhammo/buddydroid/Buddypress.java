@@ -586,8 +586,11 @@ public class Buddypress extends SherlockListActivity {
 	protected ArrayList<String> notificationLinks;
 
 	public void refreshStream(HashMap<String, Object> data) {
-		if(getWebsite() == null || prefs.getString("username", null) == null || prefs.getString("api_key", null) == null)
+		if(getWebsite() == null || prefs.getString("username", null) == null || prefs.getString("password", null) == null) {
+			Toast.makeText(Buddypress.this, R.string.error,
+					Toast.LENGTH_LONG).show();
 			return;
+		}
 		
 		Log.i(TAG ,"refreshing stream");
 		
@@ -783,7 +786,7 @@ public class Buddypress extends SherlockListActivity {
 			if(text.length() == 0)
 				return;
 
-			if(prefs.getString("api_key", null) == null) {
+			if(getWebsite() == null || prefs.getString("password", null) == null || prefs.getString("username", null) == null) {
 				Toast.makeText(Buddypress.this, R.string.error,
 						Toast.LENGTH_LONG).show();
 				return;
