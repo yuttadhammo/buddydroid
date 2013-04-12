@@ -359,6 +359,10 @@ public class XMLRPCClient {
 			
 			// execute HTTP POST request
 			HttpResponse response = client.execute(postMethod);
+			
+			//final String responseText =  EntityUtils.toString(response.getEntity());
+			//Log.v(TAG,responseText);
+			
 			//parseResponse(response);
 			Log.i(TAG, "status = " + response.getStatusLine());
 			// check status code

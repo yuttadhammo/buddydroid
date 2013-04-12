@@ -218,6 +218,15 @@ public class BPSettingsActivity extends PreferenceActivity {
 			String toast = null;
 			switch(msg.what) {
 				case MSG_API:
+					
+					if(!(msg.obj instanceof HashMap)) {
+						if(msg.obj instanceof String)
+							toast = (String) msg.obj;
+						else
+							toast = getString(R.string.error);
+						break;
+					}
+					
 					String apikey;
 					
 					HashMap<?, ?> result = (HashMap<?, ?>) msg.obj;
