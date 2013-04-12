@@ -1,52 +1,25 @@
 package org.yuttadhammo.buddydroid;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
-
-import org.xmlrpc.android.XMLRPCClient;
-import org.xmlrpc.android.XMLRPCException;
-import org.yuttadhammo.buddydroid.interfaces.BPRequest;
-import org.yuttadhammo.buddydroid.interfaces.StreamListAdapter;
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
+import com.actionbarsherlock.view.MenuItem;
 
 
-public class BPSettingsActivity extends PreferenceActivity {
+public class BPSettingsActivity extends SherlockPreferenceActivity {
 	
 	private Context context;
 	private static SharedPreferences prefs;

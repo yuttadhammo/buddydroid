@@ -73,9 +73,8 @@
 	<string name="help_intro">This is a simple Buddypress client. If configured properly, it will allow you to post status updates to your Buddypress install.  It also has a simple RSS reader for your sitewide activity feed where you can comment on, share and delete feed items.</string>
 	<string name="help_1">Step 1: (Webmaster only) Install the BuddyPress XML-RPC receiver plugin for Wordpress at http://wordpress.org/extend/plugins/buddypress-xml-rpc-receiver/</string>
 	<string name="help_2">Step 2: (Webmaster only) Activate and configure above plugin via wp-admin under Settings->BuddyPress XML-RPC</string>
-	<string name="help_3">Step 3: (App user) Add your website (root path, e.g. http://www.site.com/) and username to the Preferences screen in this app, then click register.  Wait for the API key to show up under the API key heading.</string>
-	<string name="help_4">Step 4: (App user) Go to your BuddyPress profile settings under Remote Access (click on Visit Settings Page - must be logged in in browser!) and approve the BuddyDroid app.</string>
-	<string name="help_5">Once you have completed these steps correctly, you should be able to interact with your BuddyPress activity stream via the app.</string>
+	<string name="help_3">Step 3: (App user) Add your website (root path, e.g. http://www.site.com/), username, and password to the Preferences screen in this app.</string>
+	<string name="help_4">Once you have completed these steps correctly, you should be able to interact with your BuddyPress activity stream via the app.</string>
 
 	<!-- Messages -->
 	
