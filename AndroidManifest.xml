@@ -54,7 +54,11 @@
  			android:theme="@style/DarkTheme"
    			android:logo="@drawable/actionbar_icon"
             />       
-
+        <activity 
+            android:name=".BPUserActivity"
+ 			android:theme="@style/Theme.Transparent"
+            />       
+        
 		<receiver android:name="org.yuttadhammo.buddydroid.interfaces.NotifyStarter" 
              android:enabled="true" 
              android:exported="false"

@@ -98,6 +98,7 @@ public class BPSettingsActivity extends SherlockPreferenceActivity {
 		
 		if (api >= 14) {
 			getActionBar().setHomeButtonEnabled(true);
+			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 		
 		if(Buddypress.CUSTOM_WEBSITE != null)

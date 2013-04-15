@@ -28,4 +28,11 @@
 		<item name="android:textColor">#FFFFFF</item>
 		<item name="android:textSize">20sp</item>
 	</style>
+	<style name="Theme.Transparent" parent="android:Theme">
+		<item name="android:windowIsTranslucent">true</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+		<item name="android:windowContentOverlay">@null</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowIsFloating">true</item>
+	</style>
 </resources>

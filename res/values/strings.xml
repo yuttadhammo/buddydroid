@@ -67,6 +67,10 @@
 	<string name="serviceNameDesc">Change this if you want to register more than one service (e.g. on more than one device)</string>
 	<string name="autoUpdate">Update stream on startup</string>
 	
+	<!-- User -->
+	
+	<string name="sprofile">%1$s\'s Profile</string>  
+	
 	<!-- Help -->
 		
 	<string name="help">Instructions</string>

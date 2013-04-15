@@ -17,6 +17,7 @@ import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
@@ -35,6 +36,7 @@ import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -102,7 +104,17 @@ public class StreamListAdapter extends ArrayAdapter<Object> {
         	
         	ImageView iv = (ImageView) rowView.findViewById(R.id.feed_image);
         	UrlImageViewHelper.setUrlDrawable(iv, imgurl);
+        	
+        	iv.setOnClickListener(new OnClickListener(){
 
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(activity, BPUserActivity.class);
+					intent.putExtra("user_id", (String)entryMap.get("user_id"));
+					activity.startActivity(intent);
+				}
+        	});
+        	
         	// add text content if exists
         	
         	if(text.replaceAll("<[^>]*>", "").length() > 0) {

@@ -625,7 +625,6 @@ public class Buddypress extends SherlockListActivity {
 	public static final int MSG_SYNC = 2;
 	public static final int MSG_MESSAGES = 3;
 	
-	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
 		
 
