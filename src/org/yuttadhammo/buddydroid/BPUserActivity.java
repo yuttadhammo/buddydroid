@@ -1,17 +1,25 @@
 package org.yuttadhammo.buddydroid;
 
 import java.util.HashMap;
+
+import org.yuttadhammo.buddydroid.interfaces.BPAnimations;
 import org.yuttadhammo.buddydroid.interfaces.BPRequest;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,7 +62,7 @@ public class BPUserActivity extends Activity {
         public void handleMessage(Message msg) {
 			Log.i(TAG ,"got message");
 
-			HashMap<?, ?> map;
+			final HashMap<?, ?> map;
 			Object obj;
 			Object[] list;
 			LayoutInflater inflater = activity.getLayoutInflater();
@@ -83,14 +91,34 @@ public class BPUserActivity extends Activity {
 					TextView status = (TextView) header.findViewById(R.id.user_activity);
 
 					title.setText(String.format(getString(R.string.sprofile),(String) map.get("display_name")));
-					login.setText("@"+(String) map.get("user_nicename"));
-					active.setText((String) map.get("last_active"));
-					status.setText(Html.fromHtml((String) map.get("last_status")));
+					
+					if(map.get("user_nicename") instanceof String)
+						login.setText("@"+(String) map.get("user_nicename"));
 
+					if(map.get("last_active") instanceof String)
+						active.setText((String) map.get("last_active"));
+
+					if(map.get("last_status") instanceof String)
+						status.setText(Html.fromHtml((String) map.get("last_status")));
+
+					status.setMovementMethod(LinkMovementMethod.getInstance());
+					
 					ImageView iv = (ImageView) header.findViewById(R.id.user_avatar);
 					HashMap<?,?> avatars = (HashMap<?, ?>) map.get("avatar");
 					String imgurl = (String) avatars.get("full");
 					UrlImageViewHelper.setUrlDrawable(iv, imgurl);
+					
+					iv.setOnClickListener(new OnClickListener(){
+
+						@Override
+						public void onClick(View v) {
+							String link = (String)map.get("primary_link");
+							Uri url = Uri.parse(link);
+							Intent i = new Intent(Intent.ACTION_VIEW, url);
+							activity.startActivity(i);
+						}
+						
+					});
 					
 					listView.addView(header);
 					
@@ -109,9 +137,12 @@ public class BPUserActivity extends Activity {
 							TextView value = (TextView) ll.findViewById(R.id.user_entry_value);
 							
 							label.setText((CharSequence) field.get("label"));
-							String vs = (String) field.get("value");
-							vs = vs.replaceAll("</*p>", "");
-							value.setText(Html.fromHtml(vs));
+							if(field.get("value") instanceof String) {
+								String vs = (String) field.get("value");
+								vs = vs.replaceAll("</*p>", "");
+								value.setText(Html.fromHtml(vs));
+								value.setMovementMethod(LinkMovementMethod.getInstance());
+							}
 							listView.addView(ll);
 						}
 					}
@@ -126,10 +157,15 @@ public class BPUserActivity extends Activity {
 					break;
 			}
 			
-			if(toast != null)
-				Toast.makeText(activity, (CharSequence) toast, Toast.LENGTH_LONG).show();
-
+			if(toast != null) {
+				TextView error = (TextView) inflater.inflate(R.layout.user_group_title, null);
+				error.setText(toast);
+				listView.addView(error);				
+			}
 			
+			Animation slideDown = BPAnimations.slideDown(); 
+			listView.startAnimation(slideDown);
+			listView.setVisibility(View.VISIBLE);
 		}
     };
 	

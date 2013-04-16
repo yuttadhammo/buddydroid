@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.yuttadhammo.buddydroid.interfaces.BPAnimations;
 import org.yuttadhammo.buddydroid.interfaces.BPRequest;
 import org.yuttadhammo.buddydroid.interfaces.MessageListAdapter;
 import org.yuttadhammo.buddydroid.interfaces.NoticeService;
@@ -826,7 +827,7 @@ public class Buddypress extends SherlockListActivity {
 		if(view.getVisibility() == View.VISIBLE || view.getAnimation() != null)
 			return;
 		view.setVisibility(View.VISIBLE);
-		Animation slideDown = setLayoutAnim_slidedown(); 
+		Animation slideDown = BPAnimations.slideDown(); 
 		view.startAnimation(slideDown);
 	}
 
@@ -834,79 +835,8 @@ public class Buddypress extends SherlockListActivity {
 		if(view.getVisibility() == View.GONE || view.getAnimation() != null)
 			return;
 
-		Animation slideUp = setLayoutAnim_slideup(view); 
+		Animation slideUp = BPAnimations.slideUp(view); 
 		view.startAnimation(slideUp);
-	}
-
-	public Animation setLayoutAnim_slidedown() {
-
-	        AnimationSet set = new AnimationSet(true);
-
-	        Animation animation = new TranslateAnimation(
-	                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
-	                0.0f, Animation.RELATIVE_TO_SELF, -1.0f,
-	                Animation.RELATIVE_TO_SELF, 0.0f);
-	        animation.setDuration(200);
-	        animation.setAnimationListener(new AnimationListener() {
-
-	            @Override
-	            public void onAnimationStart(Animation animation) {
-	                // TODO Auto-generated method stub
-
-	            }
-
-	            @Override
-	            public void onAnimationRepeat(Animation animation) {
-	                // TODO Auto-generated method stub
-
-	            }
-
-	            @Override
-	            public void onAnimationEnd(Animation animation) {
-	                // TODO Auto-generated method stub
-	                //Log.d(TAG,"sliding down ended");
-
-	            }
-	        });
-	        set.addAnimation(animation);
-
-	        return animation;
-	    }
-
-	public Animation setLayoutAnim_slideup(final View view) {
-
-	        AnimationSet set = new AnimationSet(true);
-
-	        Animation animation = new TranslateAnimation(
-	                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
-	                0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
-	                Animation.RELATIVE_TO_SELF, -1.0f);
-	        animation.setDuration(200);
-	        animation.setAnimationListener(new AnimationListener() {
-
-	            @Override
-	            public void onAnimationStart(Animation animation) {
-	                // TODO Auto-generated method stub
-
-	            }
-
-	            @Override
-	            public void onAnimationRepeat(Animation animation) {
-	                // TODO Auto-generated method stub
-
-	            }
-
-	            @Override
-	            public void onAnimationEnd(Animation animation) {
-	                // TODO Auto-generated method stub
-	                view.clearAnimation();
-	                view.setVisibility(View.GONE);
-	            }
-	        });
-	        set.addAnimation(animation);
-
-	        return animation;
-
 	}
 
 	public void showRefresh() {
