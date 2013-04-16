@@ -1,22 +1,34 @@
 BuddyDroid
 =================
-This is a very simple Buddypress client. If configured properly, it will allow you to post status updates to your Buddypress install.  It also has a simple RSS reader for your sitewide activity feed.
+This is a Buddypress client for Android. If configured properly, it will allow you to post status updates to your Buddypress install.  It also has a simple RSS reader for your sitewide activity feed where you can comment on, share and delete feed items.
+
+This app is still in beta - please visit the support thread here:
+
+http://buddypress.org/support/topic/buddydroid-buddypress-for-android/
+
+to discuss.
+
 
 Instructions
 =============
-Step 1: Install the BuddyPress XML-RPC receiver plugin for Wordpress here: https://github.com/yuttadhammo/buddypress-xmlrpc-receiver 
-Step 2: Activate and configure above plugin via wp-admin under Settings->BuddyPress XML-RPC
-Step 3: Add your website (root path, e.g. http://www.site.com/), username, and password to the Preferences screen in this app
 
-Once you have done these steps correctly, you should be able to post status updates to your BuddyPress activity stream.
+Step 1: (Webmaster) Install the BuddyPress XML-RPC receiver plugin for Wordpress here: http://wordpress.org/extend/plugins/buddypress-xml-rpc-receiver/
+Step 2: (Webmaster) Activate and configure above plugin via wp-admin under Settings->BuddyPress XML-RPC
+Step 3: (App User) Add your website (root path, e.g. http://www.site.com/), username, and password to the Preferences screen in this app.
+
+Once you have done these steps correctly, you should be able to interact with your BuddyPress activity stream.
+
 
 Features
 ========
-- posts updates to stream via xml-rpc
-- shows a feed of latest updates and threaded comments
-- ability to comment on and delete updates
-- retrieves Buddypress notifications
+- posts updates to stream 
+- view feed of latest updates with nested comments
+- filter feed in various ways
+- delete, comment on, and share posts via long-click on feed
+- view user profiles by clicking on avatars
+- view, delete, mark read/unread, and reply to private messages
 - allows importing plain text / links from other apps
+- option to check for and show Buddypress notifications in notification drawer
 
 Technical Details
 =================
