@@ -1,27 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="@string/userPref">
-	    <Preference 
-	 		android:key="help"
-			android:title="@string/help"
-			/>
-   		<EditTextPreference 
-   		    android:key="website"
-			android:title="@string/website"
-			android:shouldDisableView="true"
-			android:singleLine="true"/>
-   		<EditTextPreference 
-   		    android:key="username"
-			android:title="@string/username"
-			android:shouldDisableView="true"
-			android:singleLine="true"/>
-   		<EditTextPreference 
-   		    android:key="password"
-			android:title="@string/password"
-			android:shouldDisableView="true"
-			android:inputType="textPassword"
-			/>
-   	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/streamPref">
 	    <EditTextPreference
 	        android:key="stream_max"
@@ -39,7 +17,7 @@
 			android:summary="@string/relativeDateDesc"
 	        />	  	        
    	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/notifyPref">
+	<PreferenceCategory android:title="@string/advPref">
 	    <CheckBoxPreference
 	        android:key="interval_sync"
 	        android:defaultValue="false"
@@ -52,19 +30,11 @@
 			android:shouldDisableView="true"
 			android:singleLine="true"
 			/>
-   	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/advPref">
-
-	    <EditTextPreference 
-   		    android:key="service_name"
-			android:title="@string/serviceName"
-			android:summary="@string/serviceNameDesc"
-			android:shouldDisableView="true"
-			android:singleLine="true"/>
 	    <CheckBoxPreference
 	        android:key="auto_update"
 	        android:defaultValue="true"
 	        android:title="@string/autoUpdate"
+	        android:summary="@string/autoUpdateDesc"
 	        />
    	</PreferenceCategory>   
    	    	

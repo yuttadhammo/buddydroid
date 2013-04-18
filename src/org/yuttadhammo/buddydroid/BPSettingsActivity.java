@@ -35,33 +35,11 @@ public class BPSettingsActivity extends SherlockPreferenceActivity {
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		
-		
-		final Preference helpPref = (Preference)findPreference("help");
-		helpPref.setOnPreferenceClickListener(new OnPreferenceClickListener(){
-
-			@Override
-			public boolean onPreferenceClick(Preference arg0) {
-				Intent intent = new Intent(context, BPHelpActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-
-				return false;
-			}
-			
-		});
-
-		final EditTextPreference websitePref = (EditTextPreference)findPreference("website");
-		final EditTextPreference userPref = (EditTextPreference)findPreference("username");
-		final EditTextPreference passPref = (EditTextPreference)findPreference("password");
-
 		final EditTextPreference streamPref = (EditTextPreference)findPreference("stream_max");
 		final EditTextPreference contentPref = (EditTextPreference)findPreference("content_max");
 		
 		final EditTextPreference intervalPref = (EditTextPreference)findPreference("sync_interval");
 		
-		setupEditTextPreference(websitePref, getWebsite(), null);
-		setupEditTextPreference(userPref,"", null);
-
 		setupEditTextPreference(streamPref,"20", null);
 		setupEditTextPreference(contentPref,null, getString(R.string.contentMaxDesc));
 
@@ -70,7 +48,6 @@ public class BPSettingsActivity extends SherlockPreferenceActivity {
 		intervalPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
 		streamPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
 		contentPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
-		websitePref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_URI);
 		
 		final CheckBoxPreference syncPref = (CheckBoxPreference)findPreference("interval_sync");
 
@@ -101,11 +78,7 @@ public class BPSettingsActivity extends SherlockPreferenceActivity {
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 		
-		if(Buddypress.CUSTOM_WEBSITE != null)
-			websitePref.setEnabled(false);
-		
 	}
-    private ProgressDialog downloadProgressDialog;
 	protected String TAG = "BPSettingsActivity";
 
 
@@ -150,17 +123,4 @@ public class BPSettingsActivity extends SherlockPreferenceActivity {
 			
 		});			
 	}
-	private static String getWebsite() {
-		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", "");
-		if(website.length() == 0)
-			return null;
-		
-		if(!website.startsWith("http"))
-			website = "http://"+website;
-
-		if(!website.endsWith("/"))
-			website = website+"/";
-
-		return website;
-	}	
 }

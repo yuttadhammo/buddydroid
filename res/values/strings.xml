@@ -15,7 +15,19 @@
 	<string name="filter_prompt">Choose a filter</string>
 	<string name="zero">0</string>
 	<string name="notify_prompt">Notifications</string>
-						
+				
+	<!-- Login -->
+	
+	<string name="login">Login</string>
+	<string name="register">Register</string>
+	<string name="website">Website</string>
+	<string name="username">Username</string>
+	<string name="password">Password</string>
+	<string name="login_instructions">Enter a website address to log into or register for. The website must be running Buddypress and have the xml-rpc receiver plugin installed.</string>
+	<string name="website_hint">www.yoursite.com</string>
+	<string name="missing_value">Please fill all fields</string>
+	<string name="missing_website">Please enter a valid website</string>
+					
 	<!-- Context Menu -->
 
 	<string name="post_options">Post Options</string>
@@ -45,28 +57,24 @@
     
 	<string name="preferences">Preferences</string>
     
-	<string name="userPref">User Preferences</string>
-	<string name="website">Website URL</string>
-	<string name="username">Username</string>
-	<string name="password">Password</string>
+	<string name="helpPref">Help</string>
 
-	<string name="notifyPref">Notification Preferences</string>
-	<string name="intervalSync">Sync Notifications</string>
-	<string name="intervalSyncDesc">check for notifications periodically (starts on boot)</string>
-	<string name="syncInterval">Sync Interval (minutes)</string>
 
 	<string name="streamPref">Stream Preferences</string>
-	<string name="streamMax">Maximum # of Stream Items</string>
-	<string name="contentMax">Maximum Content Length</string>
+	<string name="streamMax">Max # of Stream Items</string>
+	<string name="contentMax">Max Content Length</string>
 	<string name="contentMaxDesc">leave blank for unlimited</string>
 	<string name="relativeDate">Use Relative Date</string>
 	<string name="relativeDateDesc">e.g. "two minutes ago"</string>
-				
+
+					
 	<string name="advPref">Advanced Preferences</string>
-	<string name="serviceName">Service Name</string>
-	<string name="serviceNameDesc">Change this if you want to register more than one service (e.g. on more than one device)</string>
-	<string name="autoUpdate">Update stream on startup</string>
-	
+	<string name="intervalSync">Sync Notifications</string>
+	<string name="intervalSyncDesc">check for notifications periodically (starts on boot)</string>
+	<string name="syncInterval">Sync Interval (minutes)</string>
+	<string name="autoUpdate">Auto Update</string>
+	<string name="autoUpdateDesc">Update stream on startup</string>
+		
 	<!-- User -->
 	
 	<string name="sprofile">%1$s\'s Profile</string>  
@@ -80,13 +88,18 @@
 					
 	<!-- Help -->
 		
-	<string name="help">Instructions</string>
-	<string name="help_intro">This is a simple Buddypress client. If configured properly, it will allow you to post status updates to your Buddypress install.  It also has a simple RSS reader for your sitewide activity feed where you can comment on, share and delete feed items.</string>
-	<string name="help_1">Step 1: (Webmaster only) Install the BuddyPress XML-RPC receiver plugin for Wordpress at http://wordpress.org/extend/plugins/buddypress-xml-rpc-receiver/</string>
-	<string name="help_2">Step 2: (Webmaster only) Activate and configure above plugin via wp-admin under Settings->BuddyPress XML-RPC</string>
-	<string name="help_3">Step 3: (App user) Add your website (root path, e.g. http://www.site.com/), username, and password to the Preferences screen in this app.</string>
-	<string name="help_4">Once you have completed these steps correctly, you should be able to interact with your BuddyPress activity stream via the app.</string>
-
+	<string name="help">Help</string>
+	<string name="help_text">
+	    <![CDATA[
+	    <body  style="text-align:justify">
+			<p>This is a simple Buddypress client. If configured properly, it will allow you to post status updates to your Buddypress install.  It also has a simple RSS reader for your sitewide activity feed where you can comment on, share and delete feed items.
+			<p>Step 1: (Webmaster) Install the BuddyPress XML-RPC receiver plugin for Wordpress at <a href="http://wordpress.org/extend/plugins/buddypress-xml-rpc-receiver/">http://wordpress.org/extend/plugins/buddypress-xml-rpc-receiver/</a>
+			<p>Step 2: (Webmaster) Activate and configure above plugin via wp-admin under Settings->BuddyPress XML-RPC
+			<p>Step 3: (App user) From the main screen menu, click "Login" and enter your website (root path, e.g. <a href="http://www.site.com/">http://www.site.com/</a>), username, and password and click "Login".  You can also register a new user by entering the website and clicking "Register", which will take you to the site\'s registration screen.
+			<p>Once you have completed these steps correctly, you should be able to interact with your BuddyPress activity stream via the app.
+		</body>
+		]]>
+	</string>
 	<!-- Messages -->
 	
 	<string name="posted">Update posted</string>

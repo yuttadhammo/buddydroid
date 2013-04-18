@@ -133,6 +133,15 @@ public class Buddypress extends SherlockListActivity {
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+		if(prefs.getBoolean("first_run", true)) {
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putBoolean("first_run", false);
+			editor.commit();
+			
+			Intent i = new Intent(this, BPLoginActivity.class);
+			startActivityForResult(i, RESULT_LOGIN);
+		}
+		
 		submitDrawer = (SlidingDrawer)findViewById(R.id.drawer);
 		submitPane = (LinearLayout)findViewById(R.id.submit_pane);
 		submitButton = (Button)findViewById(R.id.submit);
@@ -292,8 +301,6 @@ public class Buddypress extends SherlockListActivity {
     	
     	if(website != null && !website.equals(newWebsite)) {
     		website = newWebsite;
-    		if(prefs.getBoolean("auto_update", true))
-    			refreshStream(new HashMap<String, Object>());
     	}
 
     	if(getIntent().hasExtra("notification"))
@@ -344,7 +351,6 @@ public class Buddypress extends SherlockListActivity {
 		// Handle item selection
 		super.onOptionsItemSelected(item);
 		
-		//SharedPreferences.Editor editor = prefs.edit();
 		Intent intent;
 		switch (item.getItemId()) {
 	        case android.R.id.home:
@@ -363,8 +369,18 @@ public class Buddypress extends SherlockListActivity {
 			else
 				refreshStream(new HashMap<String, Object>());
 				break;
+			case (int)R.id.menuLogin:
+				intent = new Intent(this, BPLoginActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivityForResult(intent, RESULT_LOGIN);
+				break;
 			case (int)R.id.menuPrefs:
 				intent = new Intent(this, BPSettingsActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				break;
+			case (int)R.id.menuHelp:
+				intent = new Intent(this, BPHelpActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 				break;
@@ -375,13 +391,25 @@ public class Buddypress extends SherlockListActivity {
 		return true;
 	}	
 
+	public static final int RESULT_USER = 0;
+	public static final int RESULT_LOGIN = 1;
+	
 	protected void  onActivityResult (int requestCode, int resultCode, Intent  data) {
 		
-		if(resultCode == Activity.RESULT_OK)
-			return;
-		
-		if(requestCode == RESULT_USER)
+		if(requestCode == RESULT_USER && resultCode != Activity.RESULT_OK)		
 			refreshStream(new HashMap<String, Object>());
+		else if(requestCode == RESULT_LOGIN && resultCode == Activity.RESULT_OK) {
+			String ws = data.getStringExtra("website");
+			String un = data.getStringExtra("username");
+			String pw = data.getStringExtra("password");
+
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString("website", ws);
+			editor.putString("username", un);
+			editor.putString("password", pw);
+			editor.commit();
+			refreshStream(new HashMap<String, Object>());
+		}
 	}
 
 	@Override
@@ -637,8 +665,6 @@ public class Buddypress extends SherlockListActivity {
 	public static final int MSG_SYNC = 2;
 	public static final int MSG_MESSAGES = 3;
 
-	public static final int RESULT_USER = 0;
-	
 	private Handler mHandler = new Handler() {
 		
 

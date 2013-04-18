@@ -43,6 +43,12 @@ https://github.com/yuttadhammo/buddydroid
 Changelog
 =================
 
+2.3
+- moved user prefs to dedicated login/register screen
+
+2.1
+- added user profiles
+
 2.0
 - switched to password instead of api key - requires server update!
 - bug fixes
