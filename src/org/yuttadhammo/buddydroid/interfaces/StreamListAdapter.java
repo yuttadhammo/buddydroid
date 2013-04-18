@@ -48,6 +48,7 @@ public class StreamListAdapter extends ArrayAdapter<Object> {
 	protected String TAG = "StreamListAdapter";
 	public SparseIntArray expanded = new SparseIntArray();
 	private StreamListAdapter tclass;
+	private HashMap<String,Boolean> admin;
 	
 	public StreamListAdapter(Activity activity, Object[] rss) {
 		super(activity, 0, rss);
@@ -111,7 +112,7 @@ public class StreamListAdapter extends ArrayAdapter<Object> {
 				public void onClick(View v) {
 					Intent intent = new Intent(activity, BPUserActivity.class);
 					intent.putExtra("user_id", (String)entryMap.get("user_id"));
-					activity.startActivity(intent);
+					activity.startActivityForResult(intent, Buddypress.RESULT_USER);
 				}
         	});
         	

@@ -67,75 +67,65 @@
 				</LinearLayout>
 			</LinearLayout>
 		</RelativeLayout>
-		<RelativeLayout
+		<LinearLayout
 			android:id="@+id/submit_pane"
 			android:layout_height="fill_parent"
 	        android:layout_width="0dp"
 	        android:layout_weight="0.5"
-			android:background="#E9E9E9"
+			android:background="#ffffff"
+			android:orientation="vertical"
 		    >
 		    <ScrollView
 				android:id="@+id/content_parent"
 			    android:layout_width="fill_parent"
-			    android:layout_height="fill_parent"
+			    android:layout_height="0dp"
+			    android:layout_weight="1"
 				android:overScrollMode="always"
 				android:fillViewport="true"
 				android:background="#ffffff"
-				android:layout_marginBottom="80dp"
 				>
-				<LinearLayout 
-					android:id="@+id/edit_parent" 
-					android:orientation="horizontal"
-				    android:layout_width="fill_parent"
-				    android:layout_height="wrap_content"
-				    >
-			   		<EditText 
-						android:id="@+id/text_content"
-						android:hint="@string/statusHint"
-						android:layout_width="match_parent" 
-						android:layout_height="fill_parent"
-						android:gravity="top"
-						android:autoLink="web"
-						android:linksClickable="false"
-						android:padding="20dip"
-						android:scrollHorizontally="false"
-						android:inputType="textMultiLine"
-						android:singleLine="false"
-						android:textSize="20sp"
-						android:background="#FFFFFF"
-						android:textColor="#000000"
-						android:textCursorDrawable="@null"
-						/>
-				</LinearLayout>
+		   		<EditText 
+					android:id="@+id/text_content"
+					android:hint="@string/statusHint"
+					android:layout_width="match_parent" 
+					android:layout_height="wrap_content"
+					android:gravity="top"
+					android:autoLink="web"
+					android:linksClickable="false"
+					android:padding="20dip"
+					android:scrollHorizontally="false"
+					android:inputType="textMultiLine"
+					android:singleLine="false"
+					android:textSize="20sp"
+					android:background="#FFFFFF"
+					android:textColor="#000000"
+					android:textCursorDrawable="@null"
+					/>
 			</ScrollView>
-			<Button 
-			    android:text="@string/submit" 
-			    android:id="@+id/submit"
-				android:layout_width="match_parent" 
-				android:layout_height="wrap_content"
-				android:width="150dip" 
-				android:textSize="25sp" 
-				android:height="80dip"
-				android:layout_alignParentBottom="true"
-				android:background="#FFFFFF"
-				android:textColor="#000000"
-				/>
-			<ImageView
+		    <ImageView
 				android:layout_width="match_parent" 
 				android:layout_height="2dp"
-				android:layout_above="@id/submit"
-				android:layout_centerHorizontal="true"
 				android:layout_marginLeft="20dp"
 				android:layout_marginRight="20dp"
 				android:background="#DDDDDD"
 				/>
-		</RelativeLayout>
+			<Button 
+				    android:text="@string/submit" 
+				    android:id="@+id/submit"
+					android:layout_width="match_parent" 
+					android:layout_height="wrap_content"
+					android:textSize="20sp" 
+					android:background="#FFFFFF"
+					android:textColor="#000000"
+					android:padding="10dp"
+					/>
+		</LinearLayout>
 		
 	</LinearLayout>
 	 <SlidingDrawer
 		android:id="@+id/drawer"
 		android:layout_width="match_parent"
-		android:layout_height="300dp"
+		android:layout_height="250dp"
 		android:handle="@+id/handle"
 		android:content="@+id/contents"
 		android:layout_alignParentBottom="true"
@@ -148,67 +138,57 @@
 			android:layout_width="match_parent"
 			android:layout_height="20dp"
 			/>
-		<RelativeLayout
+		<LinearLayout
 			android:layout_height="match_parent"
 	        android:layout_width="match_parent"
-			android:background="#E9E9E9"
+			android:background="#ffffff"
 			android:id="@+id/contents"
+			android:orientation="vertical"
 		    >
 		    <ScrollView
 				android:id="@+id/content_drawer"
 			    android:layout_width="fill_parent"
-			    android:layout_height="fill_parent"
+			    android:layout_height="0dp"
+			    android:layout_weight="1"
 				android:overScrollMode="always"
 				android:fillViewport="true"
 				android:background="#ffffff"
-				android:layout_marginBottom="80dp"
 				>
-				<LinearLayout 
-					android:id="@+id/edit_drawer" 
-					android:orientation="horizontal"
-				    android:layout_width="fill_parent"
-				    android:layout_height="wrap_content"
-				    >
-			   		<EditText 
-						android:id="@+id/text_drawer"
-						android:hint="@string/statusHint"
-						android:layout_width="match_parent" 
-						android:layout_height="fill_parent"
-						android:gravity="top"
-						android:autoLink="web"
-						android:linksClickable="false"
-						android:padding="20dip"
-						android:scrollHorizontally="false"
-						android:inputType="textMultiLine"
-						android:singleLine="false"
-						android:textSize="20sp"
-						android:background="#FFFFFF"
-						android:textColor="#000000"
-						android:textCursorDrawable="@null"
-						/>
-				</LinearLayout>
+		   		<EditText 
+					android:id="@+id/text_drawer"
+					android:hint="@string/statusHint"
+					android:layout_width="match_parent" 
+					android:layout_height="wrap_content"
+					android:gravity="top"
+					android:autoLink="web"
+					android:linksClickable="false"
+					android:padding="20dip"
+					android:scrollHorizontally="false"
+					android:inputType="textMultiLine"
+					android:singleLine="false"
+					android:textSize="20sp"
+					android:background="#FFFFFF"
+					android:textColor="#000000"
+					android:textCursorDrawable="@null"
+					/>
 			</ScrollView>
-			<Button 
-			    android:text="@string/submit" 
-			    android:id="@+id/submit_drawer"
-				android:layout_width="match_parent" 
-				android:layout_height="wrap_content"
-				android:width="150dip" 
-				android:textSize="25sp" 
-				android:height="80dip"
-				android:layout_alignParentBottom="true"
-				android:background="#FFFFFF"
-				android:textColor="#000000"
-				/>
-			<ImageView
+		    <ImageView
 				android:layout_width="match_parent" 
 				android:layout_height="2dp"
-				android:layout_above="@id/submit_drawer"
-				android:layout_centerHorizontal="true"
 				android:layout_marginLeft="20dp"
 				android:layout_marginRight="20dp"
 				android:background="#DDDDDD"
 				/>
-		</RelativeLayout>
+			<Button 
+				    android:text="@string/submit" 
+				    android:id="@+id/submit_drawer"
+					android:layout_width="match_parent" 
+					android:layout_height="wrap_content"
+					android:textSize="20sp" 
+					android:background="#FFFFFF"
+					android:textColor="#000000"
+					android:padding="10dp"
+					/>
+		</LinearLayout>
  	</SlidingDrawer>
 </RelativeLayout>

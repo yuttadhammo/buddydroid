@@ -4,4 +4,5 @@
     <item android:title="@string/comment" android:id="@+id/comment"/>
     <item android:title="@string/share_link" android:id="@+id/share_link"/>
     <item android:title="@string/share_text" android:id="@+id/share_text"/>
+    <item android:title="@string/delete" android:id="@+id/delete"/>
 </menu>

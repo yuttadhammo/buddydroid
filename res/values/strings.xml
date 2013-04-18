@@ -25,7 +25,7 @@
 	<string name="share_text">Share Text</string>
 	<string name="share_via">Share Via…</string>
 	<string name="delete">Delete</string>
-	<string name="really_delete">Do you want to delete this item?</string>
+	<string name="really_delete">Really delete?</string>
 
 	<string name="comment_options">Comment Options</string>
 
@@ -70,7 +70,14 @@
 	<!-- User -->
 	
 	<string name="sprofile">%1$s\'s Profile</string>  
+	<string name="message">Message</string>  
+	<string name="close">Close</string>  
 	
+	<!-- Message -->
+	<string name="send_message">Send Message</string>  
+	<string name="subject_hint">Subject…</string>  
+	<string name="message_hint">Message…</string>  
+					
 	<!-- Help -->
 		
 	<string name="help">Instructions</string>
@@ -85,11 +92,13 @@
 	<string name="posted">Update posted</string>
 	<string name="updated">Stream updated</string>
 	<string name="messages">Retrieved %d messages</string>
-	<string name="deleted">Post deleted</string>
+	<string name="post_deleted">Post deleted</string>
+	<string name="user_deleted">User deleted</string>
 	<string name="commented">Comment posted</string>
 	<string name="error">Something went wrong; please check your setup and the system log</string>
 	<string name="registered">Service registered.  Visit the user\'s settings page to accept the service.</string>
-		
+	<string name="sent">Message Sent</string>  
+			
 	<!-- Ongoing -->
 	
 	<string name="connecting">Connecting…</string>

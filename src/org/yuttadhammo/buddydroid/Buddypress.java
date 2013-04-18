@@ -14,11 +14,11 @@ import org.yuttadhammo.buddydroid.interfaces.StreamListAdapter;
 import com.actionbarsherlock.app.SherlockListActivity;
 import android.app.NotificationManager;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -46,12 +46,10 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -61,7 +59,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.SlidingDrawer;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -88,7 +85,7 @@ public class Buddypress extends SherlockListActivity {
 
 	private SlidingDrawer submitDrawer;
 
-	private RelativeLayout submitPane;
+	private LinearLayout submitPane;
 
 	private Button submitDrawerButton;
 
@@ -109,11 +106,18 @@ public class Buddypress extends SherlockListActivity {
 
 	private LinearLayout filterPane;
 
-	private ImageView msgs;
-
 	private MenuItem refreshItem;
 	private boolean refreshing;
 
+	protected ArrayList<CharSequence> notificationStrings;
+	protected ArrayList<String> notificationLinks;
+
+	protected HashMap<String,Boolean> adminRights = new HashMap<String,Boolean>();
+
+	private boolean isLandscape = true;
+
+	protected boolean submitting;
+	
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -130,7 +134,7 @@ public class Buddypress extends SherlockListActivity {
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		submitDrawer = (SlidingDrawer)findViewById(R.id.drawer);
-		submitPane = (RelativeLayout)findViewById(R.id.submit_pane);
+		submitPane = (LinearLayout)findViewById(R.id.submit_pane);
 		submitButton = (Button)findViewById(R.id.submit);
 		submitDrawerButton = (Button)findViewById(R.id.submit_drawer);
 
@@ -195,7 +199,7 @@ public class Buddypress extends SherlockListActivity {
 
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
-				// TODO Auto-generated method stub
+
 				if(scrollState == OnScrollListener.SCROLL_STATE_IDLE && listView.getFirstVisiblePosition() == 0)
 					doSlideDown(filterPane);
 			}
@@ -222,7 +226,6 @@ public class Buddypress extends SherlockListActivity {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
 				
 			}
     		
@@ -374,9 +377,11 @@ public class Buddypress extends SherlockListActivity {
 
 	protected void  onActivityResult (int requestCode, int resultCode, Intent  data) {
 		
-		if(data != null && data.hasExtra("123")) {
-
-		}
+		if(resultCode == Activity.RESULT_OK)
+			return;
+		
+		if(requestCode == RESULT_USER)
+			refreshStream(new HashMap<String, Object>());
 	}
 
 	@Override
@@ -389,7 +394,23 @@ public class Buddypress extends SherlockListActivity {
             menu.setHeaderTitle(getString(R.string.message_options));
 		}
 		else {
-			inflater.inflate(R.menu.stream_longclick, menu);
+			
+			// check if moderator
+			
+			if(adminRights.containsKey("can_moderate") && adminRights.get("can_moderate"))
+				inflater.inflate(R.menu.stream_longclick_admin, menu);
+			else { // check if self
+				AdapterView.AdapterContextMenuInfo info =
+			            (AdapterView.AdapterContextMenuInfo) menuInfo;
+				Adapter adapter = getListAdapter();
+				final HashMap<?,?> entryMap = (HashMap<?, ?>) adapter.getItem(info.position);
+
+				if(entryMap.containsKey("self") && (Boolean) entryMap.get("self"))
+					inflater.inflate(R.menu.stream_longclick_admin, menu);
+				else
+					inflater.inflate(R.menu.stream_longclick, menu);
+			}
+			
             menu.setHeaderTitle(getString(R.string.post_options));
 		}
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -532,9 +553,6 @@ public class Buddypress extends SherlockListActivity {
 	    super.onCreateDialog (id);
 	    final Buddypress activity = this;
     	final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    	downloadProgressDialog = new ProgressDialog(activity);
-        downloadProgressDialog.setCancelable(true);
-        downloadProgressDialog.setIndeterminate(true);
 
 		switch(id) {
 		    case DIALOG_NOTIFY:
@@ -579,13 +597,6 @@ public class Buddypress extends SherlockListActivity {
 		activity.startActivity(i);
 	}
  
-	
-	private ProgressDialog downloadProgressDialog;
-
-	protected ArrayList<CharSequence> notificationStrings;
-
-	protected ArrayList<String> notificationLinks;
-
 	public void refreshStream(HashMap<String, Object> data) {
 		if(getWebsite() == null || prefs.getString("username", null) == null || prefs.getString("password", null) == null) {
 			Toast.makeText(Buddypress.this, R.string.error,
@@ -625,6 +636,8 @@ public class Buddypress extends SherlockListActivity {
 	public static final int MSG_STREAM = 1;
 	public static final int MSG_SYNC = 2;
 	public static final int MSG_MESSAGES = 3;
+
+	public static final int RESULT_USER = 0;
 	
 	private Handler mHandler = new Handler() {
 		
@@ -651,23 +664,30 @@ public class Buddypress extends SherlockListActivity {
 					
 					if(submitting)
 						activeEditText.setText("");
-					
+
 					map = (HashMap<?, ?>) msg.obj;
 					obj = map.get("activities");
 					
 					list = (Object[]) obj;
-					
-					adapter = new StreamListAdapter(activity,list);
-					setListAdapter(adapter);
-					toast = getString(R.string.updated);
-					
+
 					if(map.containsKey("user_data") && map.get("user_data") instanceof HashMap){
 						Log.i(TAG ,"got user data");
 						Map<?,?> user = (HashMap<?, ?>) map.get("user_data");
+
+						if(user.get("can_delete_user") instanceof Boolean)
+							adminRights.put("can_delete_user", (Boolean) user.get("can_delete_user"));
+						if(user.get("can_moderate") instanceof Boolean)
+							adminRights.put("can_moderate", (Boolean) user.get("can_moderate"));
+							 
 						Object nfoo = user.get("notifications");
 						processNotifications(nfoo);
 					}
 
+					adapter = new StreamListAdapter(activity,list);
+					setListAdapter(adapter);
+					toast = getString(R.string.updated);
+
+					
 					if(fromNotify)
 						showDialog(DIALOG_NOTIFY);
 
@@ -718,10 +738,6 @@ public class Buddypress extends SherlockListActivity {
 			
 		}
     };
-
-	private boolean isLandscape = true;
-
-	protected boolean submitting;
 
 
 	private void adjustLayout() {
@@ -819,7 +835,14 @@ public class Buddypress extends SherlockListActivity {
 	private String getWebsite() {
 		String website = CUSTOM_WEBSITE  != null ? CUSTOM_WEBSITE : prefs.getString("website", "");
 		if(website.length() == 0)
-			website = null;
+			return null;
+		
+		if(!website.startsWith("http"))
+			website = "http://"+website;
+
+		if(!website.endsWith("/"))
+			website = website+"/";
+		
 		return website;
 	}
 

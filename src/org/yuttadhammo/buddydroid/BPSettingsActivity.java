@@ -153,7 +153,14 @@ public class BPSettingsActivity extends SherlockPreferenceActivity {
 	private static String getWebsite() {
 		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", "");
 		if(website.length() == 0)
-			website = null;
+			return null;
+		
+		if(!website.startsWith("http"))
+			website = "http://"+website;
+
+		if(!website.endsWith("/"))
+			website = website+"/";
+
 		return website;
 	}	
 }

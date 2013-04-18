@@ -8,6 +8,8 @@ import org.yuttadhammo.buddydroid.interfaces.BPRequest;
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,10 +18,13 @@ import android.os.Message;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,8 +35,10 @@ public class BPUserActivity extends Activity {
 	protected String TAG = "BPUserActivity";
 	private BPUserActivity activity;
 	private LinearLayout listView;
-	public static final int MSG_USER = 4;
-	
+	public static final int MSG_USER = 1;
+	public static final int MSG_DELETE = 2;
+	public static final int MSG_MESSAGE = 3;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -45,7 +52,6 @@ public class BPUserActivity extends Activity {
 		HashMap<String, Object> data = new HashMap<String, Object>();
 
 		if(getIntent().hasExtra("user_id")) { // stream click
-			Log.d(TAG,"getting user id " + getIntent().getStringExtra("user_id"));
 			data.put("user_id", getIntent().getStringExtra("user_id"));
 			
 			BPRequest stream = new BPRequest(this, mHandler, "bp.getMemberInfo", data, MSG_USER);
@@ -55,6 +61,18 @@ public class BPUserActivity extends Activity {
 			
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+		// don't do refresh on back to exit
+		
+		if (keyCode == KeyEvent.KEYCODE_BACK) 
+		    setResult(Activity.RESULT_OK, new Intent());
+
+		return super.onKeyDown(keyCode, event);
+	}
+
+	
 	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
 		
@@ -65,9 +83,9 @@ public class BPUserActivity extends Activity {
 			final HashMap<?, ?> map;
 			Object obj;
 			Object[] list;
-			LayoutInflater inflater = activity.getLayoutInflater();
+			final LayoutInflater inflater = activity.getLayoutInflater();
 			
-			String toast = null;
+			String error = null;
 			
 			boolean fromNotify = getIntent().hasExtra("notification");
 			if(fromNotify)
@@ -119,6 +137,87 @@ public class BPUserActivity extends Activity {
 						}
 						
 					});
+
+					// buttons
+					
+					Button message = (Button) header.findViewById(R.id.message);
+					message.setVisibility(View.VISIBLE);
+					message.setOnClickListener(new OnClickListener(){
+
+						@Override
+						public void onClick(View arg0) {
+							LinearLayout messageLayout = (LinearLayout) inflater.inflate(R.layout.message, null);
+							final EditText subject = (EditText) messageLayout.findViewById(R.id.subject);
+							final EditText body = (EditText) messageLayout.findViewById(R.id.body);
+
+							new AlertDialog.Builder(activity)
+						    .setTitle(R.string.send_message)
+						    .setView(messageLayout)
+						    .setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog, int whichButton) {
+									HashMap<String, Object> data = new HashMap<String, Object>();
+									data.put("thread_id", false);
+									data.put("subject", subject.getText().toString());
+									data.put("recipients", getIntent().getStringExtra("user_id"));
+									data.put("content", body.getText().toString());
+									BPRequest stream = new BPRequest(activity, mHandler, "bp.sendMessage", data, MSG_MESSAGE);
+									stream.execute();
+						        }
+						    }).setNegativeButton(android.R.string.no, null).show();	
+							
+						}
+					});
+
+					Button close = (Button) header.findViewById(R.id.close);
+					close.setVisibility(View.VISIBLE);
+					close.setOnClickListener(new OnClickListener(){
+
+						@Override
+						public void onClick(View arg0) {
+						    setResult(Activity.RESULT_OK, new Intent());
+							finish();
+						}
+					});
+
+					
+					// add admin button
+					
+					if(map.containsKey("can_delete_user") && (Boolean)map.get("can_delete_user")) { 
+						LinearLayout admin = (LinearLayout) header.findViewById(R.id.admin);
+						admin.setVisibility(View.VISIBLE);
+						Button delete = (Button) admin.findViewById(R.id.delete); 
+						delete.setOnClickListener(new OnClickListener(){
+
+							@Override
+							public void onClick(View arg0) {
+
+						        new AlertDialog.Builder(activity)
+						        .setIcon(android.R.drawable.ic_dialog_alert)
+						        .setTitle(R.string.delete)
+						        .setMessage(R.string.really_delete)
+						        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+						            @Override
+						            public void onClick(DialogInterface dialog, int which) {
+										HashMap<String, Object> data = new HashMap<String, Object>();
+										data.put("user_id", getIntent().getStringExtra("user_id"));
+										
+										BPRequest stream = new BPRequest(activity, mHandler, "bp.deleteMember", data, MSG_DELETE);
+										stream.execute();
+									}
+
+						        })
+						        .setNegativeButton(android.R.string.no, null)
+						        .show();	
+
+								
+								
+							}
+							
+						});
+					}
+					
 					
 					listView.addView(header);
 					
@@ -149,18 +248,44 @@ public class BPUserActivity extends Activity {
 					
 					
 					break;
+				case MSG_DELETE:
+					if(!(msg.obj instanceof HashMap)) 
+						break;
+					
+					map = (HashMap<?, ?>) msg.obj;
+					obj = map.get("confirmation");
+					if(obj instanceof Boolean && (Boolean)obj) {
+						Toast.makeText(activity, R.string.user_deleted, Toast.LENGTH_LONG).show();
+						finish();
+					}
+					else
+						Toast.makeText(activity, R.string.error, Toast.LENGTH_LONG).show();
+					break;
+				case MSG_MESSAGE:
+					if(!(msg.obj instanceof HashMap)) 
+						break;
+					
+					map = (HashMap<?, ?>) msg.obj;
+					obj = map.get("confirmation");
+
+					if(obj instanceof Boolean && (Boolean)obj)
+						Toast.makeText(activity, R.string.sent, Toast.LENGTH_LONG).show();
+					else
+						Toast.makeText(activity, R.string.error, Toast.LENGTH_LONG).show();
+					
+					break;
 				default: 
 					if(msg.obj instanceof String)
-						toast = (String) msg.obj;
+						error = (String) msg.obj;
 					else
-						toast = getString(R.string.error);
+						error = getString(R.string.error);
 					break;
 			}
 			
-			if(toast != null) {
-				TextView error = (TextView) inflater.inflate(R.layout.user_group_title, null);
-				error.setText(toast);
-				listView.addView(error);				
+			if(error != null) {
+				TextView errorView = (TextView) inflater.inflate(R.layout.user_group_title, null);
+				errorView.setText(error);
+				listView.addView(errorView);				
 			}
 			
 			Animation slideDown = BPAnimations.slideDown(); 
