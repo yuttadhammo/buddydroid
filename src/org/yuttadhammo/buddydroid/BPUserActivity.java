@@ -195,7 +195,7 @@ public class BPUserActivity extends Activity {
 						        new AlertDialog.Builder(activity)
 						        .setIcon(android.R.drawable.ic_dialog_alert)
 						        .setTitle(R.string.delete)
-						        .setMessage(R.string.really_delete)
+						        .setMessage(R.string.really_delete_user)
 						        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
 						            @Override

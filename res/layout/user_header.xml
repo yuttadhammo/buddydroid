@@ -61,12 +61,17 @@
 		android:textColor="#000000"
 		android:textSize="14sp"
 	    />
+	<ImageView
+		android:layout_height="1dp" 
+		android:layout_width="match_parent"
+		android:layout_marginTop="10dp"
+		android:layout_marginBottom="2dp"
+		android:background="#EEEEEE"
+		/>
 	<LinearLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="horizontal"
-	    android:gravity="center_horizontal"
-	    android:paddingTop="8dp"
 		>
 		<Button 
 		    android:text="@string/message" 
@@ -122,4 +127,11 @@
 			/>
 			
 	</LinearLayout>
+	<ImageView
+		android:layout_height="1dp" 
+		android:layout_width="match_parent"
+		android:layout_marginTop="2dp"
+		android:layout_marginBottom="2dp"
+		android:background="#EEEEEE"
+		/>
 </LinearLayout>

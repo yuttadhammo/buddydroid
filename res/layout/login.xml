@@ -16,7 +16,7 @@
 		    android:text="@string/login"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:textColor="#000000"
+			android:textColor="#FFFFFF"
 			android:textSize="22sp"
 			android:textStyle="bold"
 			android:gravity="left"
@@ -25,11 +25,12 @@
 		    android:text="@string/login_instructions"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:textColor="#000000"
+			android:textColor="#FFFFFF"
 			android:textSize="12sp"
 			android:paddingBottom="8dp"
+			android:paddingTop="4dp"
 		    />
-		<LinearLayout 
+		<RelativeLayout 
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:orientation="horizontal" 
@@ -37,9 +38,11 @@
 			<TextView
 			    android:id="@+id/website_label"
 			    android:text="@string/website"
-				android:layout_width="wrap_content"
+				android:layout_width="100dp"
 				android:layout_height="wrap_content"
-				android:textColor="#000000"
+				android:gravity="center"
+				android:layout_centerVertical="true"
+				android:textColor="#FFFFFF"
 				android:textSize="14sp"
 				android:textStyle="bold"
 				android:paddingRight="8dp"
@@ -47,15 +50,15 @@
 			<EditText
 			    android:id="@+id/website"
 			    android:inputType="textUri"
-				android:layout_width="200dp"
+			    android:layout_toRightOf="@id/website_label"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:textColor="#000000"
 				android:textSize="14sp"
 				android:hint="@string/website_hint"
 			    />
-		</LinearLayout>
+		</RelativeLayout>
 				
-		<LinearLayout 
+		<RelativeLayout 
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:orientation="horizontal" 
@@ -63,9 +66,11 @@
 			<TextView
 			    android:id="@+id/user_label"
 			    android:text="@string/username"
-				android:layout_width="wrap_content"
+				android:layout_width="100dp"
 				android:layout_height="wrap_content"
-				android:textColor="#000000"
+				android:gravity="center"
+				android:layout_centerVertical="true"
+				android:textColor="#FFFFFF"
 				android:textSize="14sp"
 				android:textStyle="bold"
 				android:paddingRight="8dp"
@@ -73,13 +78,13 @@
 			<EditText
 			    android:id="@+id/username"
 			    android:inputType="text"
-				android:layout_width="200dp"
+			    android:layout_toRightOf="@id/user_label"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:textColor="#000000"
 				android:textSize="14sp"
 			    />
-		</LinearLayout>
-		<LinearLayout 
+		</RelativeLayout>
+		<RelativeLayout 
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:orientation="horizontal" 
@@ -87,9 +92,11 @@
 			<TextView
 			    android:id="@+id/pass_label"
 			    android:text="@string/password"
-				android:layout_width="wrap_content"
+				android:layout_width="100dp"
 				android:layout_height="wrap_content"
-				android:textColor="#000000"
+				android:gravity="center"
+				android:layout_centerVertical="true"
+				android:textColor="#FFFFFF"
 				android:textSize="14sp"
 				android:textStyle="bold"
 				android:paddingRight="8dp"
@@ -97,16 +104,18 @@
 			<EditText
 			    android:id="@+id/password"
 			    android:inputType="textPassword"
-				android:layout_width="200dp"
+			    android:layout_toRightOf="@id/pass_label"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:textColor="#000000"
 				android:textSize="14sp"
 			    />
-		</LinearLayout>
+		</RelativeLayout>
 		<LinearLayout 
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:orientation="horizontal" 
+		    android:orientation="horizontal"
+		    android:layout_gravity="center_horizontal"
+		    android:layout_marginTop="8dp"
 		    >
 			<Button
 			    android:id="@+id/cancel"

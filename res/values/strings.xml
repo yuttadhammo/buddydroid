@@ -37,8 +37,9 @@
 	<string name="share_text">Share Text</string>
 	<string name="share_via">Share Via…</string>
 	<string name="delete">Delete</string>
-	<string name="really_delete">Really delete?</string>
-
+	<string name="really_delete_post">Really delete post?</string>
+	<string name="really_delete_message">Really delete message thread?</string>
+	
 	<string name="comment_options">Comment Options</string>
 
 	<string name="message_options">Message Options</string>
@@ -80,6 +81,7 @@
 	<string name="sprofile">%1$s\'s Profile</string>  
 	<string name="message">Message</string>  
 	<string name="close">Close</string>  
+	<string name="really_delete_user">Really delete user account?</string>
 	
 	<!-- Message -->
 	<string name="send_message">Send Message</string>  

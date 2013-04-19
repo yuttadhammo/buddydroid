@@ -133,11 +133,7 @@ public class Buddypress extends SherlockListActivity {
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-		if(prefs.getBoolean("first_run", true)) {
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.putBoolean("first_run", false);
-			editor.commit();
-			
+		if(prefs.getString("username", null) == null) {
 			Intent i = new Intent(this, BPLoginActivity.class);
 			startActivityForResult(i, RESULT_LOGIN);
 		}
@@ -494,7 +490,7 @@ public class Buddypress extends SherlockListActivity {
 		        new AlertDialog.Builder(this)
 		        .setIcon(android.R.drawable.ic_dialog_alert)
 		        .setTitle(R.string.delete)
-		        .setMessage(R.string.really_delete)
+		        .setMessage(R.string.really_delete_post)
 		        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
 		            @Override
@@ -514,7 +510,7 @@ public class Buddypress extends SherlockListActivity {
 		        new AlertDialog.Builder(this)
 		        .setIcon(android.R.drawable.ic_dialog_alert)
 		        .setTitle(R.string.delete)
-		        .setMessage(R.string.really_delete)
+		        .setMessage(R.string.really_delete_message)
 		        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
 		            @Override

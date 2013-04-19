@@ -6,7 +6,7 @@
 		android:startColor="#9d1715"
 		android:centerColor="#bd3331"
 		android:endColor="#e34d4f"
-		android:angle="90" />
+		android:angle="270" />
     <padding android:left="7dp" android:top="7dp"
             android:right="7dp" android:bottom="7dp" />
     <corners android:radius="12dp" />
