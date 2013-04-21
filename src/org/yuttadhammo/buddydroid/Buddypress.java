@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.yuttadhammo.buddydroid.interfaces.BPAnimations;
 import org.yuttadhammo.buddydroid.interfaces.BPRequest;
+import org.yuttadhammo.buddydroid.interfaces.BPWebsite;
 import org.yuttadhammo.buddydroid.interfaces.MessageListAdapter;
 import org.yuttadhammo.buddydroid.interfaces.NoticeService;
 import org.yuttadhammo.buddydroid.interfaces.StreamListAdapter;
@@ -47,6 +48,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Adapter;
@@ -65,9 +67,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Buddypress extends SherlockListActivity {
-	
-	// set this if you are hardcoding a website into your app
-	public final static String CUSTOM_WEBSITE = null;
 	
 	protected String TAG = "Buddypress";
 
@@ -241,7 +240,7 @@ public class Buddypress extends SherlockListActivity {
     	registerForContextMenu(listView);
     	
     	activity = this;
-    	website = getWebsite();
+    	website = BPWebsite.getWebsite(this);
 
     	adjustLayout();
     	
@@ -275,7 +274,7 @@ public class Buddypress extends SherlockListActivity {
 		registerReceiver(onNotice, filter);
 		
     	activity = this;
-    	String newWebsite = getWebsite();
+    	String newWebsite = BPWebsite.getWebsite(this);
     	adjustLayout();
 
     	if(intent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -355,7 +354,7 @@ public class Buddypress extends SherlockListActivity {
 	            return true;
 
 			case (int)R.id.menuStream:
-		    	if(getWebsite() == null) {
+		    	if(BPWebsite.getWebsite(this) == null) {
 					Toast.makeText(this, getString(R.string.noWebsite),
 							Toast.LENGTH_LONG).show();
 					return true;
@@ -612,7 +611,7 @@ public class Buddypress extends SherlockListActivity {
 	    }
 	}
 	public void redirectTo(String string) {
-		String site = getWebsite();
+		String site = BPWebsite.getWebsite(this);
 		if(site == null)
 			return;
 		Uri url = Uri.parse(site+"index.php?bp_xmlrpc=true&bp_xmlrpc_redirect="+string);
@@ -622,7 +621,7 @@ public class Buddypress extends SherlockListActivity {
 	}
  
 	public void refreshStream(HashMap<String, Object> data) {
-		if(getWebsite() == null || prefs.getString("username", null) == null || prefs.getString("password", null) == null) {
+		if(BPWebsite.getWebsite(this) == null || prefs.getString("username", null) == null || prefs.getString("password", null) == null) {
 			Toast.makeText(Buddypress.this, R.string.error,
 					Toast.LENGTH_LONG).show();
 			return;
@@ -819,12 +818,18 @@ public class Buddypress extends SherlockListActivity {
 
 		public void onClick(View v)
 		{
+			InputMethodManager inputManager = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE); 
+
+			inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                       InputMethodManager.HIDE_NOT_ALWAYS);
+			
 			submitDrawer.close();
 			String text = activeEditText.getText().toString();
 			if(text.length() == 0)
 				return;
 
-			if(getWebsite() == null || prefs.getString("password", null) == null || prefs.getString("username", null) == null) {
+			if(BPWebsite.getWebsite(activity) == null || prefs.getString("password", null) == null || prefs.getString("username", null) == null) {
 				Toast.makeText(Buddypress.this, R.string.error,
 						Toast.LENGTH_LONG).show();
 				return;
@@ -853,20 +858,6 @@ public class Buddypress extends SherlockListActivity {
 			abortBroadcast();
 		}
 	};
-
-	private String getWebsite() {
-		String website = CUSTOM_WEBSITE  != null ? CUSTOM_WEBSITE : prefs.getString("website", "");
-		if(website.length() == 0)
-			return null;
-		
-		if(!website.startsWith("http"))
-			website = "http://"+website;
-
-		if(!website.endsWith("/"))
-			website = website+"/";
-		
-		return website;
-	}
 
 	public void doSlideDown(View view){
 		if(view.getVisibility() == View.VISIBLE || view.getAnimation() != null)

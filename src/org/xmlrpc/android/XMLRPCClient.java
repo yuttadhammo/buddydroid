@@ -344,10 +344,10 @@ public class XMLRPCClient {
 			}
 			serializer.endTag(null, TAG_METHOD_CALL);
 			serializer.endDocument();
-			Log.i(TAG, "Serialized");
+			//Log.i(TAG, "Serialized: "+bodyWriter.toString());
 			
 			HttpEntity entity = new StringEntity(bodyWriter.toString());
-			//Log.i("WordPress", bodyWriter.toString());
+
 			postMethod.setEntity(entity);
 			
 

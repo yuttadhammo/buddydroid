@@ -1,6 +1,11 @@
 package org.yuttadhammo.buddydroid;
 
+import java.net.URI;
+
+import org.yuttadhammo.buddydroid.interfaces.BPWebsite;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -8,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -29,10 +35,10 @@ public class BPLoginActivity extends Activity {
 		final EditText password = (EditText) findViewById(R.id.password);
 		
 		
-		if(Buddypress.CUSTOM_WEBSITE != null)
+		if(BPWebsite.CUSTOM_WEBSITE != null)
 			website.setEnabled(false);
 		
-		website.setText(getWebsite());
+		website.setText(BPWebsite.getWebsite(this));
 		username.setText(prefs.getString("username", ""));
 		password.setText(prefs.getString("password", ""));
 		
@@ -48,12 +54,16 @@ public class BPLoginActivity extends Activity {
 					return;
 				}
 				
-				if(!link.startsWith("http"))
-					link = "http://"+link;
-				if(!link.endsWith("/"))
-					link = link+"/";
+				link = BPWebsite.sanitizeWebsite(link);
+				
+				website.setText(link);
 				
 				link = link+"index.php?bp_xmlrpc=true&bp_xmlrpc_redirect=register";
+
+				if(!BPWebsite.isValidWebsite(link)) {
+					Toast.makeText(activity, R.string.missing_website, Toast.LENGTH_LONG).show();
+					return;
+				}
 				
 				Uri url = Uri.parse(link);
 				Intent i = new Intent(Intent.ACTION_VIEW, url);
@@ -65,17 +75,36 @@ public class BPLoginActivity extends Activity {
 		cancel.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE); 
+
+				inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                           InputMethodManager.HIDE_NOT_ALWAYS);
 				finish();
 			}
 		});
 		login.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				if(website.getText().toString().equals("") || username.getText().toString().equals("") || password.getText().toString().equals("")) {
+				
+				InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE); 
+
+				inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                           InputMethodManager.HIDE_NOT_ALWAYS);
+				
+				String website_string = website.getText().toString();
+				if(website_string.equals("") || username.getText().toString().equals("") || password.getText().toString().equals("")) {
 					Toast.makeText(activity, R.string.missing_value,
 							Toast.LENGTH_LONG).show();
 					return;
 				}
+				
+				if(!BPWebsite.isValidWebsite(website_string)) {
+					Toast.makeText(activity, R.string.missing_website, Toast.LENGTH_LONG).show();
+					return;
+				}
+				
 				Intent i = new Intent();
 				i.putExtra("website", website.getText().toString());
 				i.putExtra("username", username.getText().toString());
@@ -86,18 +115,7 @@ public class BPLoginActivity extends Activity {
 		});
 		
 	}
-	private String getWebsite() {
-		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", "");
-		if(website.length() == 0)
-			return null;
-		
-		if(!website.startsWith("http"))
-			website = "http://"+website;
+	
 
-		if(!website.endsWith("/"))
-			website = website+"/";
-		
-		return website;
-	}
 	
 }

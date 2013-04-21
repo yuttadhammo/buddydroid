@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.webkit.URLUtil;
 
 public class BPRequest {
 
@@ -88,7 +89,7 @@ public class BPRequest {
 			
 			String password = prefs.getString("password", null);
 			String username = prefs.getString("username", null);
-			String website = getWebsite();
+			String website = BPWebsite.getWebsite(context);
 			
 			if(username == null || website == null || password == null)
 				return false;
@@ -100,7 +101,22 @@ public class BPRequest {
 				password,
 				data 
 			};
-			XMLRPCClient client = new XMLRPCClient(URI.create(website+"index.php?bp_xmlrpc=true"),
+			
+			String uris = website+"index.php?bp_xmlrpc=true";
+			
+			URI uri;
+			
+			try {
+				uri = URI.create(uris);
+				
+			} catch(Exception e) {
+				error = context.getString(R.string.websiteSyntaxError);
+				return false;
+			}
+			
+
+			
+			XMLRPCClient client = new XMLRPCClient(uri,
 					username, password); // not used
 			try {
 				obj = client.call(protocol, params);
@@ -124,19 +140,4 @@ public class BPRequest {
 	    }
 	    return false;
 	}
-
-	private static String getWebsite() {
-		String website = Buddypress.CUSTOM_WEBSITE  != null ? Buddypress.CUSTOM_WEBSITE : prefs.getString("website", null);
-		if(website.length() == 0)
-			return null;
-		
-		if(!website.startsWith("http"))
-			website = "http://"+website;
-
-		if(!website.endsWith("/"))
-			website = website+"/";
-
-		return website;
-	}
-	
 }
