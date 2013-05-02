@@ -79,6 +79,9 @@
 	<!-- User -->
 	
 	<string name="sprofile">%1$s\'s Profile</string>  
+	<string name="friend">Befriend</string>  
+	<string name="unfriend">Unfriend</string>  
+	<string name="friending">Friending</string>  
 	<string name="message">Message</string>  
 	<string name="close">Close</string>  
 	<string name="really_delete_user">Really delete user account?</string>
@@ -102,7 +105,7 @@
 		</body>
 		]]>
 	</string>
-	<!-- Messages -->
+	<!-- Toasts -->
 	
 	<string name="posted">Update posted</string>
 	<string name="updated">Stream updated</string>
@@ -113,7 +116,8 @@
 	<string name="error">Something went wrong; please check your setup and the system log</string>
 	<string name="registered">Service registered.  Visit the user\'s settings page to accept the service.</string>
 	<string name="sent">Message Sent</string>  
-			
+	<string name="notifications">Retrieved %s notifications</string>
+				
 	<!-- Ongoing -->
 	
 	<string name="connecting">Connecting…</string>

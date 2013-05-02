@@ -42,10 +42,8 @@ public class BPHelpActivity extends SherlockActivity {
 		
 		int api = Build.VERSION.SDK_INT;
 		
-		if (api >= 14) {
-			getActionBar().setHomeButtonEnabled(true);
-			getActionBar().setDisplayHomeAsUpEnabled(true);
-		}	
+		getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
 	

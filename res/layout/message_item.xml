@@ -1,61 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout 
+<RelativeLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" 
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:background="#FFFFFF"
-	android:padding="6dp"
 	>
 	<LinearLayout 
-		android:orientation="horizontal" 
+		android:orientation="vertical" 
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:paddingBottom="6dp"
+		android:background="#FFFFFFFF"
+		android:padding="6dp"
 		>
-		<TextView android:id="@+id/sender" 
-			android:layout_width="0dp"
-			android:layout_weight="0.5"
+		<LinearLayout 
+			android:orientation="horizontal" 
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingBottom="6dp"
+			>
+			<TextView android:id="@+id/sender" 
+				android:layout_width="0dp"
+				android:layout_weight="0.5"
+				android:layout_height="wrap_content" 
+				android:textSize="14sp"
+				android:textIsSelectable="true"
+				android:textColor="#000000"
+				android:textStyle="bold"
+				/>
+			<TextView android:id="@+id/date" 
+				android:layout_width="0dp"
+				android:layout_weight="0.5"
+				android:layout_height="wrap_content" 
+				android:textSize="12sp"
+				android:textStyle="italic"
+				android:textIsSelectable="true"
+				android:textColor="#000000"
+				android:gravity="right"
+				/>
+		</LinearLayout>
+		<ImageView
+			android:layout_width="match_parent" 
+			android:layout_height="1dp"
+			android:background="#DDDDDD"
+			/>
+		<TextView android:id="@+id/subject" 
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" 
+			android:textSize="16sp"
+			android:textStyle="bold"
+			android:textIsSelectable="true"
+			android:textColor="#000000"
+			android:paddingTop="6dp"
+			/>
+		<TextView android:id="@+id/text" 
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content" 
 			android:textSize="14sp"
 			android:textIsSelectable="true"
+			android:linksClickable="true"
 			android:textColor="#000000"
-			android:textStyle="bold"
-			/>
-		<TextView android:id="@+id/date" 
-			android:layout_width="0dp"
-			android:layout_weight="0.5"
-			android:layout_height="wrap_content" 
-			android:textSize="12sp"
-			android:textStyle="italic"
-			android:textIsSelectable="true"
-			android:textColor="#000000"
-			android:gravity="right"
+			android:gravity="fill_horizontal"
+			android:paddingTop="6dp"
 			/>
 	</LinearLayout>
 	<ImageView
-		android:layout_width="match_parent" 
+	    android:background="#AAAAAA"
+		android:layout_width="match_parent"
 		android:layout_height="1dp"
-		android:background="#DDDDDD"
-		/>
-	<TextView android:id="@+id/subject" 
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content" 
-		android:textSize="16sp"
-		android:textStyle="bold"
-		android:textIsSelectable="true"
-		android:textColor="#000000"
-		android:paddingTop="6dp"
-		/>
-	<TextView android:id="@+id/text" 
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content" 
-		android:textSize="14sp"
-		android:textIsSelectable="true"
-		android:linksClickable="true"
-		android:textColor="#000000"
-		android:gravity="fill_horizontal"
-		android:paddingTop="6dp"
-		/>
-</LinearLayout>
+		android:layout_alignParentBottom="true"
+	    />
+</RelativeLayout>	

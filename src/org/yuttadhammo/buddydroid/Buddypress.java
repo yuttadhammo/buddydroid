@@ -10,6 +10,7 @@ import org.yuttadhammo.buddydroid.interfaces.BPRequest;
 import org.yuttadhammo.buddydroid.interfaces.BPWebsite;
 import org.yuttadhammo.buddydroid.interfaces.MessageListAdapter;
 import org.yuttadhammo.buddydroid.interfaces.NoticeService;
+import org.yuttadhammo.buddydroid.interfaces.NotificationListAdapter;
 import org.yuttadhammo.buddydroid.interfaces.StreamListAdapter;
 
 import com.actionbarsherlock.app.SherlockListActivity;
@@ -41,6 +42,7 @@ import android.view.ContextMenu;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuInflater;
+import com.slidingmenu.lib.SlidingMenu;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +56,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -80,8 +83,6 @@ public class Buddypress extends SherlockListActivity {
 
 	private ListView listView;
 
-	private TextView nf;
-
 	private SlidingDrawer submitDrawer;
 
 	private LinearLayout submitPane;
@@ -90,7 +91,7 @@ public class Buddypress extends SherlockListActivity {
 
 	protected static String scope;
 
-	private static Spinner filters;
+	private static ListView filters;
 
 	public static int NOTIFY_ID = 0;
 
@@ -103,7 +104,6 @@ public class Buddypress extends SherlockListActivity {
 
 	private Intent intent;
 
-	private LinearLayout filterPane;
 
 	private MenuItem refreshItem;
 	private boolean refreshing;
@@ -116,6 +116,8 @@ public class Buddypress extends SherlockListActivity {
 	private boolean isLandscape = true;
 
 	protected boolean submitting;
+
+	private SlidingMenu slideMenu;
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -123,12 +125,9 @@ public class Buddypress extends SherlockListActivity {
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
-		int api = Build.VERSION.SDK_INT;
 		
-		if (api >= 14) {
-			getActionBar().setHomeButtonEnabled(true);
-		}
+		getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -151,91 +150,43 @@ public class Buddypress extends SherlockListActivity {
 		
 		intent = this.getIntent();
 		
-    	if(intent.hasExtra(Intent.EXTRA_TEXT)) {
-    		Log.i("Buddypress","Got text: "+intent.getStringExtra(Intent.EXTRA_TEXT));
-    		textContent.setText(intent.getStringExtra(Intent.EXTRA_TEXT));
-    		intent.removeExtra(Intent.EXTRA_TEXT);
-    	}
-    	
-    	filterPane = (LinearLayout)findViewById(R.id.filter_pane);
-    	
     	LinearLayout header = (LinearLayout) getLayoutInflater().inflate(R.layout.list_header, null);
     	LinearLayout footer = (LinearLayout) getLayoutInflater().inflate(R.layout.list_footer, null);
     	listView = (ListView)findViewById(android.R.id.list);
-    	listView.addHeaderView(header);
+    	//listView.addHeaderView(header);
     	listView.addFooterView(footer);
-    	listView.setOnScrollListener(new OnScrollListener(){
 
-        	int lastScroll = 0;
-        	int lvi = 0;
-        	@Override
-			public void onScroll(AbsListView view, int firstVisibleItem,
-					int visibleItemCount, int totalItemCount) {
-        		
-        		int TOLERANCE = 10;
-        		
-        		View fc = listView.getChildAt(0);
-        		if(fc == null)
-        			return;
-
-        		int newScroll = fc.getTop();
-        		
-        		// small movements add up but don't count alone
-        		
-        		if(Math.abs(lastScroll - newScroll) < TOLERANCE)
-        			return;
-        		
-        		// different child or reversal
-        		
-        		if(newScroll * lastScroll < 0 || firstVisibleItem != lvi) {
-        			lvi = firstVisibleItem;
-        			lastScroll = newScroll;
-        		}
-        		
-        		if(newScroll < lastScroll || firstVisibleItem == 0) {
-					doSlideDown(filterPane);
-        		}
-				else if(newScroll > lastScroll) {
-					doSlideUp(filterPane);
-				}
-				lastScroll = newScroll;
-			}
-
-			@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-				if(scrollState == OnScrollListener.SCROLL_STATE_IDLE && listView.getFirstVisiblePosition() == 0)
-					doSlideDown(filterPane);
-			}
-		});
     	
     	scope = "sitewide";
     	
-    	filters = (Spinner) findViewById(R.id.filters);
-    	filters.setOnItemSelectedListener(new OnItemSelectedListener(){
+        slideMenu = new SlidingMenu(this);
+        slideMenu.setMode(SlidingMenu.LEFT);
+        slideMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        //menu.setShadowWidthRes(0);
+        //menu.setShadowDrawable(R.drawable.shadow);
+        slideMenu.setBehindWidthRes(R.dimen.slide_width);
+        slideMenu.setFadeDegree(0.35f);
+        slideMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+        slideMenu.setMenu(R.layout.slide);
+
+        filters = (ListView) slideMenu.getMenu().findViewById(R.id.slide_l);
+    	final String[] filterStrings = getResources().getStringArray(R.array.filters);
+		ArrayAdapter<CharSequence> slideAdapter = new ArrayAdapter<CharSequence>(this,android.R.layout.simple_list_item_1, filterStrings);
+		filters.setAdapter(slideAdapter);
+
+    	filters.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
 				Log.d(TAG,"changed");
-				if (!filters.getSelectedItem().toString().equals(scope)) {
-					scope = filters.getSelectedItem().toString().replace(" ","_");
-					
-					if(scope.equals("messages"))
-						getMessages(new HashMap<String, Object>());
-					else
-						refreshStream(new HashMap<String, Object>());
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				
+				String which = filterStrings[arg2].replace(" ", "_");
+				refreshStream(which);
+			
 			}
     		
     	});
 
-		nf = (TextView) findViewById(R.id.notifications);
 		
     	registerForContextMenu(listView);
     	
@@ -245,8 +196,7 @@ public class Buddypress extends SherlockListActivity {
     	adjustLayout();
     	
     	if(prefs.getBoolean("auto_update", true) && !getIntent().hasExtra("notification"))
-   			refreshStream(new HashMap<String, Object>());
-    	
+			refreshStream(scope);
 	}
 	
 	@Override
@@ -298,8 +248,10 @@ public class Buddypress extends SherlockListActivity {
     		website = newWebsite;
     	}
 
-    	if(getIntent().hasExtra("notification"))
-			refreshStream(new HashMap<String, Object>());
+    	if(getIntent().hasExtra("notification")) {
+    		getIntent().removeExtra("notification");
+			getNotifications(new HashMap<String, Object>());
+    	}
 	}
 	
 	@Override
@@ -334,7 +286,8 @@ public class Buddypress extends SherlockListActivity {
 	    inflater.inflate(R.menu.menu_main, menu);
 	    refreshItem = menu.findItem(R.id.menuStream);
 	    if(refreshing) {
-	    	refreshing = false;
+	    	refreshing = false;			
+			refreshStream(scope);
 	    	showRefresh();
 	    }
 	    return true;
@@ -350,7 +303,7 @@ public class Buddypress extends SherlockListActivity {
 		switch (item.getItemId()) {
 	        case android.R.id.home:
 	            // app icon in action bar clicked; go home
-	            finish();
+	            slideMenu.toggle();
 	            return true;
 
 			case (int)R.id.menuStream:
@@ -359,10 +312,7 @@ public class Buddypress extends SherlockListActivity {
 							Toast.LENGTH_LONG).show();
 					return true;
 		    	}
-			if(scope == "messages")
-				getMessages(new HashMap<String, Object>());
-			else
-				refreshStream(new HashMap<String, Object>());
+				refreshStream(scope);
 				break;
 			case (int)R.id.menuLogin:
 				intent = new Intent(this, BPLoginActivity.class);
@@ -392,7 +342,7 @@ public class Buddypress extends SherlockListActivity {
 	protected void  onActivityResult (int requestCode, int resultCode, Intent  data) {
 		
 		if(requestCode == RESULT_USER && resultCode != Activity.RESULT_OK)		
-			refreshStream(new HashMap<String, Object>());
+			refreshStream(scope);
 		else if(requestCode == RESULT_LOGIN && resultCode == Activity.RESULT_OK) {
 			String ws = data.getStringExtra("website");
 			String un = data.getStringExtra("username");
@@ -403,7 +353,7 @@ public class Buddypress extends SherlockListActivity {
 			editor.putString("username", un);
 			editor.putString("password", pw);
 			editor.commit();
-			refreshStream(new HashMap<String, Object>());
+			refreshStream(scope);
 		}
 	}
 
@@ -469,7 +419,7 @@ public class Buddypress extends SherlockListActivity {
 						data.put("action", "comment");
 						data.put("action_id", entryMap.get("activity_id").toString());
 						data.put("action_data", input.getText().toString());
-						refreshStream(data);
+						getActivities(data,scope);
 			        }
 			    }).setNegativeButton(android.R.string.no, null).show();	
 				return true;
@@ -497,7 +447,7 @@ public class Buddypress extends SherlockListActivity {
 						HashMap<String, Object> data = new HashMap<String, Object>();
 						data.put("action", "delete");
 						data.put("action_id", entryMap.get("activity_id").toString());
-						refreshStream(data);						
+						getActivities(data,scope);						
 					}
 
 		        })
@@ -568,48 +518,21 @@ public class Buddypress extends SherlockListActivity {
     }
 
 
-	private final int DIALOG_NOTIFY = 0;
-	private final int DIALOG_COMMENTING = 2;
+	protected void refreshStream(String which) {
+		Log.d(TAG,"getting for scope of "+which);
+		scope = which;
+		
+		if(which.equals("messages"))
+			getMessages(new HashMap<String, Object>());
+		else if(which.equals("notifications"))
+			getNotifications(new HashMap<String, Object>());
+		else
+			getActivities(new HashMap<String, Object>(), which);
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-	    super.onCreateDialog (id);
-	    final Buddypress activity = this;
-    	final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		slideMenu.showContent(true);
 
-		switch(id) {
-		    case DIALOG_NOTIFY:
-		    	 builder.setTitle(R.string.notify_prompt);
-		    	 builder.setAdapter(new ArrayAdapter<CharSequence>(this,android.R.layout.simple_list_item_1, notificationStrings), 
-		    			 new DialogInterface.OnClickListener(){
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Uri url = Uri.parse(notificationLinks.get(which));
-						Intent i = new Intent(Intent.ACTION_VIEW);
-						i.setData(url);
-						startActivity(i);
-						removeDialog(DIALOG_NOTIFY);
-					}
-		    	 });
-		    	 
-			    return builder.create();
-
-		}
-		return null;
 	}
-
-	@Override
-	protected void onPrepareDialog(int id, final Dialog dialog) {
-	    super.onPrepareDialog (id, dialog);
-	    switch(id) {
-    		case DIALOG_NOTIFY:
-    			ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,android.R.layout.simple_list_item_1, notificationStrings);
-                AlertDialog ad = (AlertDialog) dialog;
-                ad.getListView().setAdapter(adapter);
-                break;
-	    }
-	}
+	
 	public void redirectTo(String string) {
 		String site = BPWebsite.getWebsite(this);
 		if(site == null)
@@ -620,7 +543,7 @@ public class Buddypress extends SherlockListActivity {
 		activity.startActivity(i);
 	}
  
-	public void refreshStream(HashMap<String, Object> data) {
+	public void getActivities(HashMap<String, Object> data, String ascope) {
 		if(BPWebsite.getWebsite(this) == null || prefs.getString("username", null) == null || prefs.getString("password", null) == null) {
 			Toast.makeText(Buddypress.this, R.string.error,
 					Toast.LENGTH_LONG).show();
@@ -629,10 +552,10 @@ public class Buddypress extends SherlockListActivity {
 		
 		Log.i(TAG ,"refreshing stream");
 		
-		if(scope == null)
-			scope = filters.getSelectedItem().toString().replace(" ","_");
+		if(ascope == null)
+			ascope = filters.getSelectedItem().toString().replace(" ","_");
 
-		data.put("scope", scope);
+		data.put("scope", ascope);
 		data.put("user_data", "true");
 		data.put("max", Integer.parseInt(prefs.getString("stream_max", "20")));
 		
@@ -655,10 +578,22 @@ public class Buddypress extends SherlockListActivity {
 		showRefresh();
 
 	}
+
+
+	private void getNotifications(HashMap<String, Object> data){
+		data.put("type","object");
+		data.put("status","is_new");
+		BPRequest stream = new BPRequest(activity, mHandler, "bp.getNotifications", data, MSG_SYNC);
+		stream.execute();
+
+		showRefresh();
+
+	}
 	
 	public static final int MSG_STREAM = 1;
 	public static final int MSG_SYNC = 2;
 	public static final int MSG_MESSAGES = 3;
+	public static final int MSG_SCOPE = 4;
 
 	private Handler mHandler = new Handler() {
 		
@@ -674,23 +609,28 @@ public class Buddypress extends SherlockListActivity {
 			
 			String toast = null;
 			
-			boolean fromNotify = getIntent().hasExtra("notification");
-			if(fromNotify)
-				getIntent().removeExtra("notification");
-			
 			switch(msg.what) {
 				case MSG_STREAM:
-					if(!(msg.obj instanceof HashMap)) 
+					if(!(msg.obj instanceof HashMap)) { 
+						if(msg.obj instanceof String)
+							toast = (String) msg.obj;
 						break;
+					}
 					
 					if(submitting)
 						activeEditText.setText("");
 
 					map = (HashMap<?, ?>) msg.obj;
-					obj = map.get("activities");
+					obj = map.get("message");
+					
+					if(!(obj instanceof Object[])) {
+						if(obj instanceof String)
+							toast = (String) obj;
+						break;
+					}
 					
 					list = (Object[]) obj;
-
+					
 					if(map.containsKey("user_data") && map.get("user_data") instanceof HashMap){
 						Log.i(TAG ,"got user data");
 						Map<?,?> user = (HashMap<?, ?>) map.get("user_data");
@@ -701,16 +641,12 @@ public class Buddypress extends SherlockListActivity {
 							adminRights.put("can_moderate", (Boolean) user.get("can_moderate"));
 							 
 						Object nfoo = user.get("notifications");
-						processNotifications(nfoo);
+						//processNotifications(nfoo);
 					}
 
 					adapter = new StreamListAdapter(activity,list);
 					setListAdapter(adapter);
 					toast = getString(R.string.updated);
-
-					
-					if(fromNotify)
-						showDialog(DIALOG_NOTIFY);
 
 					break;
 				case MSG_MESSAGES:
@@ -719,13 +655,25 @@ public class Buddypress extends SherlockListActivity {
 					
 					map = (HashMap<?, ?>) msg.obj;
 					obj = map.get("message");
-
-					int total = (Integer) map.get("total");
-					
-					if(total == 0) {
+					if(!(obj instanceof Object[])) {
 						if(obj instanceof String)
-							toast = (String)obj;
+							toast = (String) obj;
 						break;
+					}
+					
+					int total = 0;
+					
+					try {
+						total = (Integer) map.get("total");
+						
+						if(total == 0) {
+							if(obj instanceof String)
+								toast = (String)obj;
+							break;
+						}
+					}
+					catch(Exception e){
+						
 					}
 					
 					list = (Object[]) obj;
@@ -741,8 +689,17 @@ public class Buddypress extends SherlockListActivity {
 						
 					map = (HashMap<?, ?>) msg.obj;
 					obj = map.get("message");
-					
+					if(!(obj instanceof Object[])) {
+						if(obj instanceof String)
+							toast = (String) obj;
+						break;
+					}
+
 					processNotifications(obj);
+					return;
+				case MSG_SCOPE:
+					if((msg.obj instanceof String)) 
+						refreshStream((String) msg.obj);
 					return;
 				default: 
 					if(msg.obj instanceof String)
@@ -790,29 +747,20 @@ public class Buddypress extends SherlockListActivity {
 		notificationLinks = new ArrayList<String>();
 		if(nfoo instanceof Object[] && !(((Object[])nfoo)[0] instanceof Boolean)) {
 			Object[] nfo = (Object[]) nfoo;
-			String nfs = Integer.toString(nfo.length);
-			nf.setBackgroundColor(0xFF00DD00);
-			nf.setText(nfs);
-			for(Object anf : nfo){
-				notificationLinks.add(((String) anf).replaceFirst("^<a href=\"([^\"]*)\".*", "$1"));
-				notificationStrings.add(Html.fromHtml((String) anf).toString());
-			}
-			nf.setOnClickListener(new OnClickListener(){
-
-				@Override
-				public void onClick(View v) {
-					showDialog(DIALOG_NOTIFY);
-				}
-				
-			});
+			//String nfs = Integer.toString(nfo.length);
+			NotificationListAdapter madapter = new NotificationListAdapter(activity,nfo, mHandler);
+			setListAdapter(madapter);
+			//String toast = String.format(getString(R.string.notifications),nfs);
 		}
 		else {
-			nf.setBackgroundColor(0xFF555555);
-			nf.setText(R.string.zero);
-			nf.setOnClickListener(null);
+			setEmptyList();
 		}
 	}
 
+
+	private void setEmptyList() {
+		setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1));
+	}
 
 	private OnClickListener mSubmitListener = new OnClickListener() {
 
@@ -840,7 +788,7 @@ public class Buddypress extends SherlockListActivity {
 			HashMap<String, Object> data = new HashMap<String, Object>();
 			data.put("action", "update");
 			data.put("action_data", text);
-			refreshStream(data);
+			refreshStream(scope);
 		}
 	};
 	

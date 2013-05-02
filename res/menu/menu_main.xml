@@ -3,7 +3,7 @@
 	<item 
 		android:icon="@android:drawable/ic_menu_rotate"
 		android:title="@string/refresh"
-  		android:showAsAction="ifRoom|withText" 
+  		android:showAsAction="always" 
         android:orderInCategory="2"
 		android:id="@+id/menuStream"/>
     <item 

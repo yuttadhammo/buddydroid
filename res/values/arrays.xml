@@ -8,13 +8,13 @@
         <item>sitewide</item>
         <item>activity update</item>
         <item>favorites</item>
-        <item>following</item>
         <item>friends</item>
         <item>new member</item>
         <item>just me</item>
         <item>mentions</item>
         <item>groups</item>
         <item>my groups</item>
+        <item>notifications</item>
         <item>messages</item>
 	</string-array>
 </resources>

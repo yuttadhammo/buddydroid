@@ -10,63 +10,20 @@
 		android:layout_height="fill_parent"
 		android:background="#DDDDDD"
 		>
-		<RelativeLayout 
-			android:id="@+id/list_pane"
+	    <ListView android:id="@+id/android:list"
 		    android:layout_width="0dp"
 		    android:layout_weight="0.5"
 			android:layout_height="match_parent"
-		    >
-		    <ListView android:id="@+id/android:list"
-		        android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:clipToPadding="false"
-				android:fadingEdge="none"
-				android:paddingLeft="10dp"
-				android:paddingRight="10dp"
-				android:dividerHeight="10dp"
-		        android:divider="@drawable/divider"
-		        android:headerDividersEnabled="false"
-		        android:cacheColorHint="#00000000"
-		       	/>
-		   	<LinearLayout 
-				android:id="@+id/filter_pane"
-			    android:layout_width="match_parent"
-				android:layout_height="47dp"
-				android:paddingRight="10dp"
-				android:paddingLeft="10dp"
-				android:orientation="horizontal"
-				android:background="@drawable/filter_back"
-			    >
-		        <Spinner
-			        android:id="@+id/filters"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:entries="@array/filters"
-			        android:prompt="@string/filter_prompt" 
-			        android:layout_gravity="left|center_vertical"
-					/>
-		   		<LinearLayout 
-					android:id="@+id/site_links"
-				    android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:orientation="horizontal"
-					android:gravity="right"
-				    >
-		   		    <TextView 
-				        android:id="@+id/notifications"
-				        android:layout_width="30dp"
-				        android:layout_height="30dp"
-				        android:textSize="16sp"
-				        android:textStyle="bold"
-				        android:gravity="center"
-				        android:layout_gravity="center_vertical"
-				        android:textColor="#FFFFFF"
-						android:background="#555555"
-						android:text="@string/zero"
-			            />
-				</LinearLayout>
-			</LinearLayout>
-		</RelativeLayout>
+			android:clipToPadding="false"
+			android:fadingEdge="none"
+			android:paddingLeft="10dp"
+			android:paddingRight="10dp"
+			android:dividerHeight="10dp"
+	        android:divider="@drawable/divider"
+	        android:headerDividersEnabled="false"
+	        android:cacheColorHint="#00000000"
+	       	/>
+
 		<LinearLayout
 			android:id="@+id/submit_pane"
 			android:layout_height="fill_parent"

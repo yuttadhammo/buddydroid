@@ -43,7 +43,7 @@ import android.widget.TextView;
 
 public class MessageListAdapter extends ArrayAdapter<Object> {
 
-	protected String TAG = "StreamListAdapter";
+	protected String TAG = "MessageListAdapter";
 	public SparseIntArray expanded = new SparseIntArray();
 	
 	public MessageListAdapter(Activity activity, Object[] rss) {

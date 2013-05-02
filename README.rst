@@ -43,6 +43,11 @@ https://github.com/yuttadhammo/buddydroid
 Changelog
 =================
 
+2.4
+- fixed home icon for compat
+- moved filters to sidemenu
+- added friending to user profiles
+
 2.3
 - moved user prefs to dedicated login/register screen
 
