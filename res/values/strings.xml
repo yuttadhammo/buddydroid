@@ -27,7 +27,13 @@
 	<string name="website_hint">www.yoursite.com</string>
 	<string name="missing_value">Please fill all fields</string>
 	<string name="missing_website">Please enter a valid website</string>
-					
+	
+	<!-- Filters -->
+	<string name="activity">Activity</string>
+	<string name="friends">Friends</string>
+	<string name="groups">Groups</string>
+	<string name="messages">Messages</string>
+			
 	<!-- Context Menu -->
 
 	<string name="post_options">Post Options</string>
@@ -88,6 +94,7 @@
 	
 	<!-- Message -->
 	<string name="send_message">Send Message</string>  
+	<string name="recipients_hint">Recipients (comma-separated)…</string>  
 	<string name="subject_hint">Subject…</string>  
 	<string name="message_hint">Message…</string>  
 					
@@ -109,7 +116,7 @@
 	
 	<string name="posted">Update posted</string>
 	<string name="updated">Stream updated</string>
-	<string name="messages">Retrieved %d messages</string>
+	<string name="got_messages">Retrieved %d messages</string>
 	<string name="post_deleted">Post deleted</string>
 	<string name="user_deleted">User deleted</string>
 	<string name="commented">Comment posted</string>

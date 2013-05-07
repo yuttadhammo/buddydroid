@@ -45,16 +45,17 @@ public class MessageListAdapter extends ArrayAdapter<Object> {
 
 	protected String TAG = "MessageListAdapter";
 	public SparseIntArray expanded = new SparseIntArray();
+	private Activity activity;
 	
-	public MessageListAdapter(Activity activity, Object[] rss) {
-		super(activity, 0, rss);
+	public MessageListAdapter(Activity _activity, Object[] rss) {
+		super(_activity, 0, rss);
+		activity = _activity;
 	}
 
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 
-		final Activity activity = (Activity) getContext();
 		LayoutInflater inflater = activity.getLayoutInflater();
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
 

@@ -6,6 +6,14 @@
     android:orientation="vertical" 
     >
 	<EditText
+	    android:id="@+id/recipients"
+	    android:hint="@string/recipients_hint"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textColor="#000000"
+		android:textSize="16sp"
+	    />
+	<EditText
 	    android:id="@+id/subject"
 	    android:hint="@string/subject_hint"
 		android:layout_width="match_parent"

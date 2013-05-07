@@ -6,7 +6,13 @@
   		android:showAsAction="always" 
         android:orderInCategory="2"
 		android:id="@+id/menuStream"/>
-    <item 
+	<item 
+  		android:showAsAction="always" 
+        android:orderInCategory="1"
+		android:id="@+id/menuNotification"
+		android:visible="false"
+		/>
+	<item 
 		android:icon="@android:drawable/ic_menu_add"
 		android:title="@string/login"
   		android:showAsAction="never" 

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -75,11 +76,9 @@ public class BPLoginActivity extends Activity {
 		cancel.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(Context.INPUT_METHOD_SERVICE); 
-
-				inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                           InputMethodManager.HIDE_NOT_ALWAYS);
+				InputMethodManager imm = (InputMethodManager)getSystemService(
+					      Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 				finish();
 			}
 		});
@@ -87,12 +86,10 @@ public class BPLoginActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(Context.INPUT_METHOD_SERVICE); 
-
-				inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                           InputMethodManager.HIDE_NOT_ALWAYS);
-				
+				InputMethodManager imm = (InputMethodManager)getSystemService(
+					      Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+					
 				String website_string = website.getText().toString();
 				if(website_string.equals("") || username.getText().toString().equals("") || password.getText().toString().equals("")) {
 					Toast.makeText(activity, R.string.missing_value,
