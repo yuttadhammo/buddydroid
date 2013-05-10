@@ -11,6 +11,9 @@ import org.yuttadhammo.buddydroid.interfaces.BPAnimations;
 import org.yuttadhammo.buddydroid.interfaces.BPRequest;
 import org.yuttadhammo.buddydroid.interfaces.BPWebsite;
 import org.yuttadhammo.buddydroid.interfaces.FilterArrayAdapter;
+import org.yuttadhammo.buddydroid.interfaces.FiltersExpandableListAdapter;
+import org.yuttadhammo.buddydroid.interfaces.FriendsListAdapter;
+import org.yuttadhammo.buddydroid.interfaces.GroupsListAdapter;
 import org.yuttadhammo.buddydroid.interfaces.MessageListAdapter;
 import org.yuttadhammo.buddydroid.interfaces.NoticeService;
 import org.yuttadhammo.buddydroid.interfaces.NotificationListAdapter;
@@ -30,6 +33,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -59,6 +63,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -89,7 +96,7 @@ public class Buddypress extends SherlockListActivity {
 
 	protected static String currentScope;
 
-	private static LinearLayout filters;
+	private static ExpandableListView filters;
 
 	public static int NOTIFY_ID = 0;
 
@@ -117,7 +124,7 @@ public class Buddypress extends SherlockListActivity {
 	protected boolean submitting;
 
 	private SlidingMenu slideMenu;
-	private ArrayList<String> filterStrings;
+	private ArrayList<Integer> filterArray;
 
 	private MenuItem notificationItem;
 
@@ -169,7 +176,7 @@ public class Buddypress extends SherlockListActivity {
         slideMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         slideMenu.setMenu(R.layout.slide);
 
-        filters = (LinearLayout) slideMenu.getMenu().findViewById(R.id.filters);
+        filters = (ExpandableListView) slideMenu.getMenu().findViewById(R.id.filters);
         
     	registerForContextMenu(listView);
     	
@@ -352,6 +359,34 @@ public class Buddypress extends SherlockListActivity {
 			inflater.inflate(R.menu.message_longclick, menu);
             menu.setHeaderTitle(getString(R.string.message_options));
 		}
+		else if(currentScope.equals("friends_friends")) {
+        	inflater.inflate(R.menu.friends_my_longclick, menu);
+
+	        menu.setHeaderTitle(getString(R.string.friend_options));
+		}
+		else if(currentScope.equals("friends_friend_requests")) {
+        	inflater.inflate(R.menu.friends_request_longclick, menu);
+
+	        menu.setHeaderTitle(getString(R.string.friend_request_options));
+		}		
+		else if(currentScope.startsWith("groups_")) {
+			
+	        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+	        int position = info.position;
+		    final HashMap<?,?> entryMap = (HashMap<?, ?>) getListView().getItemAtPosition(position);
+	        if((Boolean) entryMap.get("is_member"))
+	        	inflater.inflate(R.menu.group_my_longclick, menu);
+	        else 
+	        	inflater.inflate(R.menu.group_longclick, menu);
+
+			// check if moderator
+			
+			if(!adminRights.containsKey("can_moderate") || !adminRights.get("can_moderate"))
+				menu.findItem(R.id.delete).setVisible(false);
+	        
+	        menu.setHeaderTitle(getString(R.string.group_options));
+            
+		}
 		else {
 			
 			// check if moderator
@@ -488,7 +523,63 @@ public class Buddypress extends SherlockListActivity {
 						getMessages(data, "inbox");
 			        }
 			    }).setNegativeButton(android.R.string.no, null).show();	
-				return true;				
+				return true;
+			case R.id.join:
+				data = new HashMap<String, Object>();
+				data.put("action", "join");
+				data.put("action_id", entryMap.get("id").toString());
+				getGroups(data, currentScope);	
+				return true;					
+			case R.id.leave:
+				data = new HashMap<String, Object>();
+				data.put("action", "leave");
+				data.put("action_id", entryMap.get("id").toString());
+				getGroups(data, currentScope);	
+				return true;
+			case R.id.gview:
+				link = (String)entryMap.get("group_domain");
+				url = Uri.parse(link);
+				i = new Intent(Intent.ACTION_VIEW, url);
+				activity.startActivity(i);
+				return true;
+			case R.id.gdelete:
+		        new AlertDialog.Builder(this)
+		        .setIcon(android.R.drawable.ic_dialog_alert)
+		        .setTitle(R.string.delete)
+		        .setMessage(R.string.really_delete_group)
+		        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+		            @Override
+		            public void onClick(DialogInterface dialog, int which) {
+						HashMap<String, Object> data = new HashMap<String, Object>();
+						data.put("action", "delete");
+						data.put("action_id", entryMap.get("id").toString());
+						getGroups(data, currentScope);	
+					}
+
+		        })
+		        .setNegativeButton(android.R.string.no, null)
+		        .show();	
+
+				return true;
+			case R.id.fview:
+				link = (String)entryMap.get("user_domain");
+				url = Uri.parse(link);
+				i = new Intent(Intent.ACTION_VIEW, url);
+				activity.startActivity(i);
+				return true;
+			case R.id.accept:
+				data = new HashMap<String, Object>();
+				data.put("action", "accept");
+				data.put("action_id", entryMap.get("friendship_id").toString());
+				getFriends(data, "friends_friends");	
+				return true;
+			case R.id.unfriend:
+				data = new HashMap<String, Object>();
+				data.put("action", "unfriend");
+				data.put("action_id", entryMap.get("id").toString());
+				getFriends(data, currentScope);	
+				return true;
 			default:
 				break;
 		}
@@ -503,6 +594,88 @@ public class Buddypress extends SherlockListActivity {
         adjustLayout();
     }
 
+	
+	protected void updateFilters(HashMap<?,?> map) {
+		Log.d(TAG,"updating filters");
+		if(!map.containsKey("active_components"))
+			return;
+
+		filterArray = new ArrayList<Integer>();
+
+		final ArrayList<String> activities = new ArrayList<String>();
+		
+		Object[] obj = (Object[]) map.get("active_components");
+		for(Object comp : obj) {
+			String cs = (String) comp;
+			
+			if(cs.equals("activity")) {
+				filterArray.add(R.string.activity);
+				String[] acts = getResources().getStringArray(R.array.main_filters);
+				List<String> acta = Arrays.asList(acts);
+				activities.addAll(acta);
+			}
+			else if(cs.equals("friends")) {
+				filterArray.add(R.string.friends);
+				activities.add("friends");
+
+			}
+			else if(cs.equals("groups")) {
+				filterArray.add(R.string.groups);
+				String[] acts = getResources().getStringArray(R.array.group_filters);
+				final List<String> acta = Arrays.asList(acts);
+				activities.addAll(acta);
+			}
+			else if(cs.equals("messages")) {
+				filterArray.add(R.string.messages);
+			}
+		}
+		
+		ExpandableListAdapter adapter = new FiltersExpandableListAdapter(this,filterArray, activities);
+		filters.setAdapter(adapter);
+		filters.setOnChildClickListener(new OnChildClickListener() {
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v,
+					int groupPosition, int childPosition, long id) {
+
+				int fid = filterArray.get(groupPosition);
+				String child;
+				String which;
+				switch(fid) {
+					case R.string.activity:
+						child = activities.get(childPosition);
+						which = child.replace(" ", "_");
+						getActivities(new HashMap<String, Object>(), which);
+						break;
+					case R.string.friends:
+						child = activity.getResources().getStringArray(R.array.friends_filters)[childPosition];
+						which = "friends_"+child.replace(" ", "_");
+						getFriends(new HashMap<String, Object>(), which);
+						break;
+					case R.string.groups:
+						child = activity.getResources().getStringArray(R.array.group_filters)[childPosition];
+						which = "groups_"+child.replace(" ", "_");
+						getGroups(new HashMap<String, Object>(), which);
+						break;
+					case R.string.messages:
+						
+						if(childPosition == 2) {
+							//compose
+							showNewMessageDialog();
+							return false;
+						}
+						
+						child = activity.getResources().getStringArray(R.array.message_filters)[childPosition];
+						which = child.replace(" ", "_");
+						getMessages(new HashMap<String, Object>(), which);
+						break;
+				}
+				slideMenu.showContent(true);
+				
+				return false;
+			}
+			
+		});
+	}
 
 	protected void refreshStream(String which) {
 		if(refreshing)
@@ -519,6 +692,12 @@ public class Buddypress extends SherlockListActivity {
 		
 		if(which.equals("messages"))
 			getMessages(new HashMap<String, Object>(), "inbox");
+		else if(which.equals("notifications"))
+			getNotifications(new HashMap<String, Object>());
+		else if(which.startsWith("groups_"))
+			getGroups(new HashMap<String, Object>(),which);
+		else if(which.startsWith("friends_"))
+			getFriends(new HashMap<String, Object>(),which);
 		else if(which.equals("notifications"))
 			getNotifications(new HashMap<String, Object>());
 		else
@@ -590,11 +769,55 @@ public class Buddypress extends SherlockListActivity {
 
 	}
 	
+
+	private void getFriends(HashMap<String, Object> data, String which){
+		if(refreshing)
+			return;
+
+		lastScope = which;
+
+		Log.i(TAG ,"getting friends");
+
+		data.put("user_data", "true");
+		data.put("active_components", "true");
+		if(which.equals("friends_friend_requests"))
+			data.put("requests","true");
+		BPRequest stream = new BPRequest(activity, mHandler, "bp.getMyFriends", data, MSG_FRIENDS);
+		stream.execute();
+
+		showRefresh();
+
+	}
+		
+
+	private void getGroups(HashMap<String, Object> data, String which){
+		if(refreshing)
+			return;
+
+		lastScope = which;
+
+		Log.i(TAG ,"getting groups");
+
+		data.put("user_data", "true");
+		data.put("active_components", "true");
+		if(which.equals("groups_my_groups"))
+			data.put("user",true);
+		data.put("status","is_new");
+		BPRequest stream = new BPRequest(activity, mHandler, "bp.getGroups", data, MSG_GROUPS);
+		stream.execute();
+
+		showRefresh();
+
+	}
+	
+	
 	public static final int MSG_STREAM = 1;
 	public static final int MSG_SYNC = 2;
 	public static final int MSG_MESSAGES = 3;
 	public static final int MSG_MESSAGE = 4;
 	public static final int MSG_SCOPE = 5;
+	public static final int MSG_FRIENDS = 6;
+	public static final int MSG_GROUPS = 7;
 
 	private Handler mHandler = new Handler() {
 		
@@ -615,6 +838,7 @@ public class Buddypress extends SherlockListActivity {
 					if(!(msg.obj instanceof HashMap)) { 
 						if(msg.obj instanceof String)
 							toast = (String) msg.obj;
+						setEmptyList();
 						break;
 					}
 					
@@ -627,6 +851,7 @@ public class Buddypress extends SherlockListActivity {
 					if(!(obj instanceof Object[])) {
 						if(obj instanceof String)
 							toast = (String) obj;
+						setEmptyList();
 						break;
 					}
 					
@@ -662,6 +887,7 @@ public class Buddypress extends SherlockListActivity {
 					if(!(obj instanceof Object[])) {
 						if(obj instanceof String)
 							toast = (String) obj;
+						setEmptyList();
 						break;
 					}
 					
@@ -725,6 +951,7 @@ public class Buddypress extends SherlockListActivity {
 					if(!(obj instanceof Object[])) {
 						if(obj instanceof String)
 							toast = (String) obj;
+						setEmptyList();
 						break;
 					}
 					notificationStrings = new ArrayList<CharSequence>();
@@ -733,12 +960,79 @@ public class Buddypress extends SherlockListActivity {
 						Object[] nfo = (Object[]) obj;
 						NotificationListAdapter nadapter = new NotificationListAdapter(activity,nfo, mHandler);
 						setListAdapter(nadapter);
+						processNotifications(obj);
 						//String toast = String.format(getString(R.string.notifications),nfs);
 					}
 					else {
 						setEmptyList();
 					}
 					currentScope = "notifications";
+					return;
+				case MSG_FRIENDS:
+					if(!(msg.obj instanceof HashMap)) 
+						break;
+						
+					map = (HashMap<?, ?>) msg.obj;
+					obj = map.get("message");
+					if(!(obj instanceof Object[])) {
+						if(obj instanceof String)
+							toast = (String) obj;
+						setEmptyList();
+						break;
+					}
+
+					list = (Object[]) obj;
+					
+					FriendsListAdapter fadapter = new FriendsListAdapter(activity,list);
+					setListAdapter(fadapter);
+
+					if(map.containsKey("user_data") && map.get("user_data") instanceof HashMap){
+						Log.i(TAG ,"got user data");
+						Map<?,?> user = (HashMap<?, ?>) map.get("user_data");
+
+						if(user.get("can_delete_user") instanceof Boolean)
+							adminRights.put("can_delete_user", (Boolean) user.get("can_delete_user"));
+						if(user.get("can_moderate") instanceof Boolean)
+							adminRights.put("can_moderate", (Boolean) user.get("can_moderate"));
+							 
+						Object nfoo = user.get("notifications");
+						processNotifications(nfoo);
+					}
+					
+					currentScope = lastScope;
+					return;					
+				case MSG_GROUPS:
+					if(!(msg.obj instanceof HashMap)) 
+						break;
+						
+					map = (HashMap<?, ?>) msg.obj;
+					obj = map.get("message");
+					if(!(obj instanceof Object[])) {
+						if(obj instanceof String)
+							toast = (String) obj;
+						setEmptyList();
+						break;
+					}
+
+					list = (Object[]) obj;
+					
+					GroupsListAdapter gadapter = new GroupsListAdapter(activity,list);
+					setListAdapter(gadapter);
+
+					if(map.containsKey("user_data") && map.get("user_data") instanceof HashMap){
+						Log.i(TAG ,"got user data");
+						Map<?,?> user = (HashMap<?, ?>) map.get("user_data");
+
+						if(user.get("can_delete_user") instanceof Boolean)
+							adminRights.put("can_delete_user", (Boolean) user.get("can_delete_user"));
+						if(user.get("can_moderate") instanceof Boolean)
+							adminRights.put("can_moderate", (Boolean) user.get("can_moderate"));
+							 
+						Object nfoo = user.get("notifications");
+						processNotifications(nfoo);
+					}
+					
+					currentScope = lastScope;
 					return;
 				case MSG_SCOPE:
 					if((msg.obj instanceof String)) 
@@ -752,13 +1046,14 @@ public class Buddypress extends SherlockListActivity {
 					break;
 			}
 			submitting = false;
-
-			Toast.makeText(activity, (CharSequence) toast,
+			
+			if(toast != null)
+				Toast.makeText(activity, (CharSequence) toast,
 					Toast.LENGTH_LONG).show();
 
-		if(msg.obj instanceof HashMap) 
-			updateFilters((HashMap<?, ?>) msg.obj);
-			
+			if(msg.obj instanceof HashMap)
+				updateFilters((HashMap<?, ?>) msg.obj);
+				
 		}
     };
 
@@ -783,132 +1078,6 @@ public class Buddypress extends SherlockListActivity {
     		activeEditText = textDrawer;
     	}
     	isLandscape  = land;
-	}
-
-	
-	protected void updateFilters(HashMap<?,?> map) {
-		Log.d(TAG,"updating filters");
-		if(!map.containsKey("active_components"))
-			return;
-
-		filterStrings = new ArrayList<String>();
-		
-
-		final ArrayList<String> activities = new ArrayList<String>();
-		
-		Object[] obj = (Object[]) map.get("active_components");
-		for(Object comp : obj) {
-			String cs = (String) comp;
-			if(cs.equals("xprofile") || cs.equals("settings") || cs.equals("blogs"))
-				continue;
-			
-			
-			if(cs.equals("activity")) {
-				filters.findViewById(R.id.activity).setVisibility(View.VISIBLE);
-				String[] acts = getResources().getStringArray(R.array.main_filters);
-				List<String> acta = Arrays.asList(acts);
-				activities.addAll(acta);
-			}
-			else if(cs.equals("friends")) {
-				//filters.findViewById(R.id.friends).setVisibility(View.VISIBLE);
-				activities.add("friends");
-
-				TextView fText = (TextView) filters.findViewById(R.id.friends_text);
-				final ListView fView = (ListView) filters.findViewById(R.id.friends_list);
-				fText.setOnClickListener(new OnClickListener(){
-
-					@Override
-					public void onClick(View v) {
-						doSlideToggle(fView);
-					}
-					
-				});
-				
-				String[] friends = getResources().getStringArray(R.array.friends_filters);
-				final List<String> friendsa = (List<String>) Arrays.asList(friends);
-				fView.setAdapter(new FilterArrayAdapter<String>(this,friendsa));
-				fView.setOnItemClickListener(new OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						String which = friendsa.get(arg2).replace(" ", "_");
-						getActivities(new HashMap<String, Object>(), which);
-						slideMenu.showContent(true);
-					}
-
-				});
-
-
-			}
-			else if(cs.equals("groups")) {
-				//filters.findViewById(R.id.groups).setVisibility(View.VISIBLE);
-				String[] acts = getResources().getStringArray(R.array.group_filters);
-				List<String> acta = Arrays.asList(acts);
-				activities.addAll(acta);
-			}
-			else if(cs.equals("messages")) {
-				filters.findViewById(R.id.messages).setVisibility(View.VISIBLE);
-				TextView mText = (TextView) filters.findViewById(R.id.messages_text);
-				final ListView mView = (ListView) filters.findViewById(R.id.messages_list);
-				mText.setOnClickListener(new OnClickListener(){
-
-					@Override
-					public void onClick(View v) {
-						doSlideToggle(mView);
-					}
-					
-				});
-				
-				String[] messages = getResources().getStringArray(R.array.message_filters);
-				final List<String> messagesa = Arrays.asList(messages);
-				mView.setAdapter(new FilterArrayAdapter<String>(this,messagesa));
-				mView.setOnItemClickListener(new OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						String which = messagesa.get(arg2).replace(" ", "_");
-						if(arg2 == 2) // compose
-							showNewMessageDialog();
-						else {
-							getMessages(new HashMap<String, Object>(), which);
-							slideMenu.showContent(true);
-						}
-					}
-
-				});
-
-			}
-			filterStrings.add((String) comp);
-		}
-		
-		if(!activities.isEmpty()) {
-			TextView actText = (TextView) filters.findViewById(R.id.activity_text);
-			final ListView actView = (ListView) filters.findViewById(R.id.activity_list);
-
-			actText.setOnClickListener(new OnClickListener(){
-
-				@Override
-				public void onClick(View v) {
-					doSlideToggle(actView);
-				}
-				
-			});
-			
-			actView.setAdapter(new FilterArrayAdapter<String>(this,activities));
-			actView.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					String which = activities.get(arg2).replace(" ", "_");
-					getActivities(new HashMap<String, Object>(), which);
-					slideMenu.showContent(true);
-				}
-
-			});
-		}
 	}
 
 	protected void doSlideToggle(View view) {

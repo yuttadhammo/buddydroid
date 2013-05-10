@@ -43,6 +43,15 @@ https://github.com/yuttadhammo/buddydroid
 Changelog
 =================
 
+2.6
+- groups and friends
+- proper expanded list for filters
+
+2.5
+- grouped filters
+- messaging
+- bugfixes
+
 2.4
 - fixed home icon for compat
 - moved filters to sidemenu
@@ -83,3 +92,4 @@ Credits
 - Wordpress, Buddypress, Android, et al
 - Koushik Dutta for URLImageViewHelper
 - Jake Wharton for ActionBarSherlock
+- Jeremy Feinstein for SlidingMenu

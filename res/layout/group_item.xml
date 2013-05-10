@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="#FFFFFF"
+	>
+	<LinearLayout 
+		android:orientation="vertical" 
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="6dp"
+		>
+		<LinearLayout 
+			android:orientation="horizontal" 
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			>
+			<ImageView android:id="@+id/feed_image"
+				android:layout_width="50dp" 
+				android:layout_height="50dp"
+				android:contentDescription="@string/avatar"
+				/>
+			<TextView android:id="@+id/title" 
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" 
+				android:textSize="16sp"
+				android:textStyle="bold"
+				android:textIsSelectable="true"
+				android:linksClickable="true"
+				android:textColor="#000000"
+				android:paddingLeft="10dp"
+				/>
+		</LinearLayout>
+		<TextView android:id="@+id/description" 
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" 
+			android:textSize="16sp"
+			android:textIsSelectable="true"
+			android:linksClickable="true"
+			android:textColor="#000000"
+			android:gravity="fill_horizontal"
+			android:paddingTop="6dp"
+			/>
+		<LinearLayout 
+		    android:id="@+id/info_pane"
+			android:orientation="horizontal" 
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="4dp"
+			>
+			<TextView android:id="@+id/members" 
+				android:layout_width="0dp"
+				android:layout_weight="0.5"
+				android:layout_height="wrap_content" 
+				android:textSize="12sp"
+				android:textIsSelectable="true"
+				android:textColor="#000000"
+				/>
+			<TextView android:id="@+id/status" 
+				android:layout_width="0dp"
+				android:layout_weight="0.5"
+				android:layout_height="wrap_content" 
+				android:textSize="12sp"
+				android:textIsSelectable="true"
+				android:gravity="right"
+				android:textColor="#000000"
+				/>
+		</LinearLayout>
+	</LinearLayout>
+	<ImageView
+	    android:background="#AAAAAA"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:layout_alignParentBottom="true"
+	    />
+</RelativeLayout>

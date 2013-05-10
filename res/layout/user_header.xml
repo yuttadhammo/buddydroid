@@ -98,7 +98,7 @@
 				android:background="#EEEEEE"
 				/>
 			<Button 
-			    android:text="@string/friend" 
+			    android:text="@string/befriend" 
 			    android:id="@+id/friend"
 				android:layout_width="wrap_content" 
 				android:layout_height="wrap_content"

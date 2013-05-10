@@ -56,6 +56,7 @@ public class BPUserActivity extends Activity {
 			Log.d(TAG,"got userid: "+getIntent().getStringExtra("user_id"));
 			if(getIntent().hasExtra("action")) {
 				data.put("action", getIntent().getStringExtra("action"));
+				data.put("action_id", getIntent().getStringExtra("action_id"));
 				Log.d(TAG,"got action: "+getIntent().getStringExtra("action"));
 			}
 			data.put("user_id", getIntent().getStringExtra("user_id"));
@@ -269,6 +270,7 @@ public class BPUserActivity extends Activity {
 					public void onClick(View v) {
 						Intent intent = new Intent(activity, BPUserActivity.class);
 						intent.putExtra("action", "unfriend");
+						intent.putExtra("action_id", getIntent().getStringExtra("user_id"));
 						intent.putExtra("user_id", getIntent().getStringExtra("user_id"));
 						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						activity.startActivity(intent);
@@ -283,6 +285,7 @@ public class BPUserActivity extends Activity {
 					public void onClick(View v) {
 						Intent intent = new Intent(activity, BPUserActivity.class);
 						intent.putExtra("action", "friend");
+						intent.putExtra("action_id", getIntent().getStringExtra("user_id"));
 						intent.putExtra("user_id", getIntent().getStringExtra("user_id"));
 						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						activity.startActivity(intent);
