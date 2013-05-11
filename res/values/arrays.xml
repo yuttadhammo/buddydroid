@@ -15,6 +15,7 @@
     <string-array name="group_filters">
         <item>groups</item>
         <item>my groups</item>
+        <item>new group</item>
     </string-array>
     <string-array name="friends_filters">
         <item>friends</item>
@@ -24,5 +25,10 @@
         <item>inbox</item>
         <item>sentbox</item>
         <item>compose</item>
+	</string-array>
+    <string-array name="group_types">
+        <item>public</item>
+        <item>private</item>
+        <item>hidden</item>
 	</string-array>
 </resources>

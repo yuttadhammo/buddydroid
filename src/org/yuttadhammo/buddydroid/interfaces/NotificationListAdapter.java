@@ -34,41 +34,55 @@ public class NotificationListAdapter extends ArrayAdapter<Object> {
 
 		final Activity activity = (Activity) getContext();
 		LayoutInflater inflater = activity.getLayoutInflater();
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
 		final HashMap<?,?> entryMap = (HashMap<?, ?>) getItem(position);
 
 		// Inflate the views from XML
 		View rowView = inflater.inflate(R.layout.notification_item, null);
 		
-		TextView tv = (TextView) rowView.findViewById(R.id.text);
+		try{
+			TextView tv = (TextView) rowView.findViewById(R.id.text);
 		
-		tv.setText((CharSequence) entryMap.get("content"));
-		
-		String component = (String) entryMap.get("component");
-		String action = (String) entryMap.get("action");
-		String ascope = "sitewide";
-		if(component.equals("messages"))
-			ascope = "messages";
-		else if(component.equals("groups"))
-			ascope = "my_groups";
-		else if(component.equals("activity") && action.equals("new_at_mention"))
-			ascope = "mentions";
-		
-		final String scope = ascope; 
-		rowView.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Message msg = new Message();
-				msg.obj = scope;
-				msg.what = Buddypress.MSG_SCOPE;
-
-				handler.sendMessage(msg);
-			}
+			tv.setText((CharSequence) entryMap.get("content"));
 			
-		});
-		
-		return rowView;
+			String component = (String) entryMap.get("component");
+			String action = (String) entryMap.get("action");
+			String ascope = (String) entryMap.get("href");
+			
+			if(component.equals("messages"))
+				ascope = "messages";
+			else if(component.equals("groups")) {
+				if(action.equals("membership_request_rejected"))
+					ascope = "groups_groups";
+				else if(!action.equals("new_membership_request"))
+					ascope = "groups_my_groups";
+			}
+			else if(component.equals("activity") && action.equals("new_at_mention"))
+				ascope = "mentions";
+			else if(component.equals("friends") && action.equals("friendship_request"))
+				ascope = "friends_friend_requests";
+			else if(component.equals("friends"))
+				ascope = "friends_friends";
+			
+			final String scope = ascope; 
+			rowView.setOnClickListener(new OnClickListener() {
+	
+				@Override
+				public void onClick(View v) {
+					Message msg = new Message();
+					msg.obj = scope;
+					msg.what = Buddypress.MSG_SCOPE;
+	
+					handler.sendMessage(msg);
+				}
+				
+			});
+			
+			return rowView;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 
 	}
 

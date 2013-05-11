@@ -70,6 +70,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SlidingDrawer;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,7 +78,7 @@ public class Buddypress extends SherlockListActivity {
 	
 	protected String TAG = "Buddypress";
 
-	public static String versionName = "2.4";
+	public static String versionName = "2.7";
 	
 	private static SharedPreferences prefs;
 	private EditText activeEditText;
@@ -156,7 +157,6 @@ public class Buddypress extends SherlockListActivity {
 		
 		intent = this.getIntent();
 		
-    	LinearLayout header = (LinearLayout) getLayoutInflater().inflate(R.layout.list_header, null);
     	LinearLayout footer = (LinearLayout) getLayoutInflater().inflate(R.layout.list_footer, null);
     	listView = (ListView)findViewById(android.R.id.list);
     	//listView.addHeaderView(header);
@@ -622,8 +622,8 @@ public class Buddypress extends SherlockListActivity {
 			else if(cs.equals("groups")) {
 				filterArray.add(R.string.groups);
 				String[] acts = getResources().getStringArray(R.array.group_filters);
-				final List<String> acta = Arrays.asList(acts);
-				activities.addAll(acta);
+				activities.add(acts[0]);
+				activities.add(acts[1]);
 			}
 			else if(cs.equals("messages")) {
 				filterArray.add(R.string.messages);
@@ -652,6 +652,11 @@ public class Buddypress extends SherlockListActivity {
 						getFriends(new HashMap<String, Object>(), which);
 						break;
 					case R.string.groups:
+						if(childPosition == 2) {
+							// new group
+							showNewGroupDialog();
+							return false;
+						}
 						child = activity.getResources().getStringArray(R.array.group_filters)[childPosition];
 						which = "groups_"+child.replace(" ", "_");
 						getGroups(new HashMap<String, Object>(), which);
@@ -1035,8 +1040,15 @@ public class Buddypress extends SherlockListActivity {
 					currentScope = lastScope;
 					return;
 				case MSG_SCOPE:
-					if((msg.obj instanceof String)) 
-						refreshStream((String) msg.obj);
+					if((msg.obj instanceof String)) { 
+						if(((String) msg.obj).startsWith("http")) {
+							Uri url = Uri.parse((String) msg.obj);
+							Intent i = new Intent(Intent.ACTION_VIEW, url);
+							activity.startActivity(i);							
+						}
+						else
+							refreshStream((String) msg.obj);
+					}
 					return;
 				default: 
 					if(msg.obj instanceof String)
@@ -1111,6 +1123,33 @@ public class Buddypress extends SherlockListActivity {
 	    }).setNegativeButton(android.R.string.no, null).show();			
 	}
 
+
+	protected void showNewGroupDialog() {
+		LayoutInflater inflater = activity.getLayoutInflater();
+		LinearLayout groupLayout = (LinearLayout) inflater.inflate(R.layout.group_new, null);
+		final Spinner status = (Spinner) groupLayout.findViewById(R.id.status);
+		final EditText name = (EditText) groupLayout.findViewById(R.id.name);
+		final EditText desc = (EditText) groupLayout.findViewById(R.id.desc);
+		new AlertDialog.Builder(activity)
+	    .setTitle(R.string.new_group)
+	    .setView(groupLayout)
+	    .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int whichButton) {
+				HashMap<String, Object> data = new HashMap<String, Object>();
+				data.put("action", "create");
+				
+				HashMap<String, Object> group = new HashMap<String, Object>();
+				group.put("name", name.getText().toString());
+				group.put("desc", desc.getText().toString());
+				group.put("status", status.getSelectedItem().toString());
+				
+				data.put("group", group);
+				getGroups(data,"groups_groups");
+	        }
+	    }).setNegativeButton(android.R.string.no, null).show();			
+	}
+	
 	protected void processNotifications(Object obj) {
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		Button b = (Button) inflater.inflate(R.layout.notifications, null);

@@ -72,6 +72,10 @@
 	
     <string name="x_members">%1$s Members</string>  
     <string name="one_member">1 Member</string>  
+    <string name="new_group">Create Group</string>  
+    <string name="create">Create</string>  
+    <string name="name_hint">Group Name…</string>  
+    <string name="desc_hint">Description…</string>  
     	
 	<!-- Notification -->
 	

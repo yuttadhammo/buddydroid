@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.yuttadhammo.buddydroid"
-      android:versionName="2.6" 
+      android:versionName="2.7" 
       android:versionCode="34">
     
 	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="17" />

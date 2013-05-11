@@ -8,11 +8,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.yuttadhammo.buddydroid.BPUserActivity;
+import org.yuttadhammo.buddydroid.Buddypress;
 import org.yuttadhammo.buddydroid.R;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
@@ -20,6 +23,7 @@ import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -64,6 +68,17 @@ public class FriendsListAdapter extends ArrayAdapter<Object> {
         		String imgurl = (String)avatars.get("full");
             	ImageView iv = (ImageView) rowView.findViewById(R.id.feed_image);
             	UrlImageViewHelper.setUrlDrawable(iv, imgurl);
+            	
+            	iv.setOnClickListener(new OnClickListener(){
+
+    				@Override
+    				public void onClick(View v) {
+    					Intent intent = new Intent(activity, BPUserActivity.class);
+    					intent.putExtra("user_id", (String)entryMap.get("id"));
+    					activity.startActivityForResult(intent, Buddypress.RESULT_USER);
+    				}
+            	});
+            	
         	}
         	
         	// add date
@@ -103,7 +118,8 @@ public class FriendsListAdapter extends ArrayAdapter<Object> {
 
 	}
 	private String sanitizeText(String string) {
-		string = string.replace("\\\"", "\"").replace("\\'", "'");
+		if(string != null)
+			string = string.replace("\\\"", "\"").replace("\\'", "'");
 		return string;
 	} 
 }

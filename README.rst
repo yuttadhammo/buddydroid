@@ -43,6 +43,12 @@ https://github.com/yuttadhammo/buddydroid
 Changelog
 =================
 
+2.7
+- added clicks to friend avatar
+- group creation
+- better notification handling
+- bug fixes
+
 2.6
 - groups and friends
 - proper expanded list for filters

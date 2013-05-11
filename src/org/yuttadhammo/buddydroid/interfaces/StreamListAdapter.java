@@ -227,7 +227,8 @@ public class StreamListAdapter extends ArrayAdapter<Object> {
 
 
 	private String sanitizeText(String string) {
-		string = string.replace("\\\"", "\"").replace("\\'", "'");
+		if(string != null)
+			string = string.replace("\\\"", "\"").replace("\\'", "'");
 		return string;
 	} 
 
