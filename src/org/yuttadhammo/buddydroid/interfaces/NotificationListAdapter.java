@@ -7,9 +7,11 @@ import org.yuttadhammo.buddydroid.R;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,22 +49,29 @@ public class NotificationListAdapter extends ArrayAdapter<Object> {
 			String component = (String) entryMap.get("component");
 			String action = (String) entryMap.get("action");
 			String ascope = (String) entryMap.get("href");
-			
-			if(component.equals("messages"))
+			Drawable left = activity.getResources().getDrawable(R.drawable.icon_rss);
+;
+			if(component.equals("messages")) {
 				ascope = "messages";
+				left = activity.getResources().getDrawable(R.drawable.icon_email);
+			}
 			else if(component.equals("groups")) {
 				if(action.equals("membership_request_rejected"))
 					ascope = "groups_groups";
 				else if(!action.equals("new_membership_request"))
 					ascope = "groups_my_groups";
+				left = activity.getResources().getDrawable(R.drawable.icon_groups);
 			}
 			else if(component.equals("activity") && action.equals("new_at_mention"))
 				ascope = "mentions";
-			else if(component.equals("friends") && action.equals("friendship_request"))
-				ascope = "friends_friend_requests";
-			else if(component.equals("friends"))
-				ascope = "friends_friends";
-			
+			else if(component.equals("friends")) {
+				if(action.equals("friendship_request"))
+					ascope = "friends_friend_requests";
+				else
+					ascope = "friends_friends";
+
+				left = activity.getResources().getDrawable(R.drawable.icon_friends);
+			}
 			final String scope = ascope; 
 			rowView.setOnClickListener(new OnClickListener() {
 	
@@ -77,6 +86,9 @@ public class NotificationListAdapter extends ArrayAdapter<Object> {
 				
 			});
 			
+			left.setBounds(0, 0, 32, 32);
+			
+			tv.setCompoundDrawables(left, null,null,null);
 			return rowView;
 		}
 		catch(Exception e) {

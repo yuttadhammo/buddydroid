@@ -950,7 +950,7 @@ public class Buddypress extends SherlockListActivity {
 				case MSG_SYNC:
 					if(!(msg.obj instanceof HashMap)) 
 						break;
-						
+					notificationItem.setVisible(false);
 					map = (HashMap<?, ?>) msg.obj;
 					obj = map.get("message");
 					if(!(obj instanceof Object[])) {
@@ -965,14 +965,14 @@ public class Buddypress extends SherlockListActivity {
 						Object[] nfo = (Object[]) obj;
 						NotificationListAdapter nadapter = new NotificationListAdapter(activity,nfo, mHandler);
 						setListAdapter(nadapter);
-						processNotifications(obj);
 						//String toast = String.format(getString(R.string.notifications),nfs);
+						processNotifications(obj);
 					}
 					else {
 						setEmptyList();
 					}
 					currentScope = "notifications";
-					return;
+					break;
 				case MSG_FRIENDS:
 					if(!(msg.obj instanceof HashMap)) 
 						break;
@@ -1005,7 +1005,7 @@ public class Buddypress extends SherlockListActivity {
 					}
 					
 					currentScope = lastScope;
-					return;					
+					break;					
 				case MSG_GROUPS:
 					if(!(msg.obj instanceof HashMap)) 
 						break;
@@ -1038,7 +1038,7 @@ public class Buddypress extends SherlockListActivity {
 					}
 					
 					currentScope = lastScope;
-					return;
+					break;
 				case MSG_SCOPE:
 					if((msg.obj instanceof String)) { 
 						if(((String) msg.obj).startsWith("http")) {
@@ -1152,7 +1152,8 @@ public class Buddypress extends SherlockListActivity {
 	
 	protected void processNotifications(Object obj) {
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		Button b = (Button) inflater.inflate(R.layout.notifications, null);
+		LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.notifications, null);
+		Button b = (Button) ll.findViewById(R.id.count);
 
 		if(obj instanceof Object[] && !(((Object[])obj)[0] instanceof Boolean)) {
 			Object[] nfo = (Object[]) obj;
@@ -1169,8 +1170,11 @@ public class Buddypress extends SherlockListActivity {
 			});
 			notificationItem.setActionView(b).setVisible(true);
 		}
-		else
+		else {
 			notificationItem.setVisible(false);
+			//b.setText("0");
+			//notificationItem.setActionView(b).setVisible(true);
+		}
 	}
 
 
