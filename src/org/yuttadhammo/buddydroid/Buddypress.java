@@ -382,7 +382,7 @@ public class Buddypress extends SherlockListActivity {
 			// check if moderator
 			
 			if(!adminRights.containsKey("can_moderate") || !adminRights.get("can_moderate"))
-				menu.findItem(R.id.delete).setVisible(false);
+				menu.findItem(R.id.gdelete).setVisible(false);
 	        
 	        menu.setHeaderTitle(getString(R.string.group_options));
             
@@ -532,9 +532,26 @@ public class Buddypress extends SherlockListActivity {
 				return true;					
 			case R.id.leave:
 				data = new HashMap<String, Object>();
-				data.put("action", "leave");
+				data.put("action", "post");
 				data.put("action_id", entryMap.get("id").toString());
+				data.put("action_data", entryMap.get("id").toString());
 				getGroups(data, currentScope);	
+				return true;
+			case R.id.post_group:
+				input = new EditText(this);
+				new AlertDialog.Builder(this)
+			    .setTitle(R.string.post_group)
+			    .setView(input)
+			    .setPositiveButton(R.string.submit, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int whichButton) {
+						input.clearFocus();
+						HashMap<String, Object> data = new HashMap<String, Object>();
+						data.put("action", "post");
+						data.put("action_id", entryMap.get("id").toString());
+						data.put("action_data", input.getText().toString());
+						getGroups(data, currentScope);	
+			        }
+			    }).setNegativeButton(android.R.string.no, null).show();	
 				return true;
 			case R.id.gview:
 				link = (String)entryMap.get("group_domain");

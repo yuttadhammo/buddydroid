@@ -74,6 +74,7 @@
     <string name="one_member">1 Member</string>  
     <string name="new_group">Create Group</string>  
     <string name="create">Create</string>  
+    <string name="post_group">Post to Group</string>  
     <string name="name_hint">Group Name…</string>  
     <string name="desc_hint">Description…</string>  
     	

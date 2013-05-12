@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/post_group" android:id="@+id/post_group"/>
     <item android:title="@string/leave" android:id="@+id/leave"/>
     <item android:title="@string/view" android:id="@+id/gview"/>
     <item android:title="@string/delete" android:id="@+id/gdelete"/>
