@@ -43,6 +43,10 @@ https://github.com/yuttadhammo/buddydroid
 Changelog
 =================
 
+3.1
+- show descriptive title
+- internationalization of filters
+
 2.8
 - notification bugfixes
 

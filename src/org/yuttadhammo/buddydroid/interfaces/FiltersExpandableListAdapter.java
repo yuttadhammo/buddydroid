@@ -27,9 +27,9 @@ public class FiltersExpandableListAdapter implements ExpandableListAdapter {
 
 	private ArrayList<Integer> filters;
 	private Activity activity;
-	private ArrayList<String> activities;
+	private ArrayList<Integer> activities;
 
-	public FiltersExpandableListAdapter(Activity _activity, ArrayList<Integer> _filters, ArrayList<String> _activities) {
+	public FiltersExpandableListAdapter(Activity _activity, ArrayList<Integer> _filters, ArrayList<Integer> _activities) {
 		super();
 		activity = _activity;
 		filters = _filters;
@@ -48,16 +48,16 @@ public class FiltersExpandableListAdapter implements ExpandableListAdapter {
 		String text = "";
 		switch(id) {
 			case R.string.activity:
-				text = activities.get(childPosition);
+				text = activity.getString(BPStrings.getFilterDisplayString(activities.get(childPosition)));
 				break;
 			case R.string.friends:
-				text = activity.getResources().getStringArray(R.array.friends_filters)[childPosition];
+				text = activity.getString(BPStrings.getFilterDisplayString(BPStrings.FRIENDS_ARRAY[childPosition]));
 				break;
 			case R.string.groups:
-				text = activity.getResources().getStringArray(R.array.group_filters)[childPosition];
+				text = activity.getString(BPStrings.getFilterDisplayString(BPStrings.GROUPS_ARRAY[childPosition]));
 				break;
 			case R.string.messages:
-				text = activity.getResources().getStringArray(R.array.message_filters)[childPosition];
+				text = activity.getString(BPStrings.getFilterDisplayString(BPStrings.MESSAGES_ARRAY[childPosition]));
 				break;
 		}
 		return text;
@@ -88,13 +88,13 @@ public class FiltersExpandableListAdapter implements ExpandableListAdapter {
 				count = activities.size();
 				break;
 			case R.string.friends:
-				count = activity.getResources().getStringArray(R.array.friends_filters).length;
+				count = BPStrings.FRIENDS_ARRAY.length;
 				break;
 			case R.string.groups:
-				count = activity.getResources().getStringArray(R.array.group_filters).length;
+				count = BPStrings.GROUPS_ARRAY.length;
 				break;
 			case R.string.messages:
-				count = activity.getResources().getStringArray(R.array.message_filters).length;
+				count = BPStrings.MESSAGES_ARRAY.length;
 				break;
 		}
 		return count;

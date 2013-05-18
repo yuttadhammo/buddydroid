@@ -170,4 +170,21 @@
 
 	<string name="avatar">Avatar</string>
 	
+	<!-- Filters -->
+	
+	<string name="sitewide">Sitewide</string>
+	<string name="activity_update">Activity Updates</string>
+	<string name="favorites">Favorites</string>
+	<string name="new_member">New Members</string>
+	<string name="just_me">Just Me</string>
+	<string name="mentions">Mentions</string>
+	<string name="groups">Groups</string>
+	<string name="my_groups">My Groups</string>
+	<string name="new_group">New Group</string>
+	<string name="friends">Friends</string>
+	<string name="friend_requests">Friend Requests</string>
+	<string name="inbox">Inbox</string>
+	<string name="sentbox">Sentbox</string>
+	<string name="compose">Compose</string>
+	
 </resources>

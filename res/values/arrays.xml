@@ -4,28 +4,6 @@
         <item>Delete</item>
         <item>Reply</item>
 	</string-array>
-    <string-array name="main_filters">
-        <item>sitewide</item>
-        <item>activity update</item>
-        <item>favorites</item>
-        <item>new member</item>
-        <item>just me</item>
-        <item>mentions</item>
-	</string-array>
-    <string-array name="group_filters">
-        <item>groups</item>
-        <item>my groups</item>
-        <item>new group</item>
-    </string-array>
-    <string-array name="friends_filters">
-        <item>friends</item>
-        <item>friend requests</item>
-    </string-array>
-    <string-array name="message_filters">
-        <item>inbox</item>
-        <item>sentbox</item>
-        <item>compose</item>
-	</string-array>
     <string-array name="group_types">
         <item>public</item>
         <item>private</item>

@@ -48,37 +48,44 @@ public class NotificationListAdapter extends ArrayAdapter<Object> {
 			
 			String component = (String) entryMap.get("component");
 			String action = (String) entryMap.get("action");
-			String ascope = (String) entryMap.get("href");
+			String alink = (String) entryMap.get("href");
 			Drawable left = activity.getResources().getDrawable(R.drawable.icon_rss);
-;
+			int ascope = 0;
+			
 			if(component.equals("messages")) {
-				ascope = "messages";
+				ascope = BPStrings.INBOX;
 				left = activity.getResources().getDrawable(R.drawable.icon_email);
 			}
 			else if(component.equals("groups")) {
 				if(action.equals("membership_request_rejected"))
-					ascope = "groups_groups";
+					ascope = BPStrings.GROUPS;
 				else if(!action.equals("new_membership_request"))
-					ascope = "groups_my_groups";
+					ascope = BPStrings.MY_GROUPS;
 				left = activity.getResources().getDrawable(R.drawable.icon_groups);
 			}
 			else if(component.equals("activity") && action.equals("new_at_mention"))
-				ascope = "mentions";
+				ascope = BPStrings.MENTIONS;
 			else if(component.equals("friends")) {
 				if(action.equals("friendship_request"))
-					ascope = "friends_friend_requests";
+					ascope = BPStrings.FRIEND_REQUESTS;
 				else
-					ascope = "friends_friends";
+					ascope = BPStrings.FRIENDS;
 
 				left = activity.getResources().getDrawable(R.drawable.icon_friends);
 			}
-			final String scope = ascope; 
-			rowView.setOnClickListener(new OnClickListener() {
+			final String link = alink; 
+			final int scope = ascope; 
+			tv.setOnClickListener(new OnClickListener() {
 	
 				@Override
 				public void onClick(View v) {
 					Message msg = new Message();
-					msg.obj = scope;
+					if(scope == 0)
+						msg.obj = scope;
+					else {
+						msg.obj = false;
+						msg.arg1 = scope;
+					}
 					msg.what = Buddypress.MSG_SCOPE;
 	
 					handler.sendMessage(msg);
