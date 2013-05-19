@@ -59,6 +59,8 @@ public class BPStrings {
 				return R.string.sentbox;
 			case COMPOSE:
 				return R.string.compose;
+			case NOTIFICATIONS:
+				return R.string.notifications;
 		}
 		
 		return string;

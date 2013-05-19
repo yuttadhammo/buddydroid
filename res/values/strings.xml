@@ -5,16 +5,7 @@
 	<string name="app_name">BuddyDroid</string>
 	<string name="statusHint">Enter status update here…</string>
 	<string name="submit">Submit</string>
-	<string name="stream">Stream</string>
 	<string name="refresh">Refresh</string>
-	<string name="status">Status</string>
-	<string name="comments">Comments</string>
-
-	<string name="filter_by">Filter by:</string>
-	<string name="visit_site">Visit Site</string>
-	<string name="filter_prompt">Choose a filter</string>
-	<string name="zero">0</string>
-	<string name="notify_prompt">Notifications</string>
 				
 	<!-- Login -->
 	
@@ -28,13 +19,6 @@
 	<string name="missing_value">Please fill all fields</string>
 	<string name="missing_website">Please enter a valid website</string>
 	
-	<!-- Filters -->
-	
-	<string name="activity">Activity</string>
-	<string name="friends">Friends</string>
-	<string name="groups">Groups</string>
-	<string name="messages">Messages</string>
-			
 	<!-- Context Menu -->
 
 	<string name="post_options">Post Options</string>
@@ -147,21 +131,11 @@
 	<string name="error">Something went wrong; please check your setup and the system log</string>
 	<string name="registered">Service registered.  Visit the user\'s settings page to accept the service.</string>
 	<string name="sent">Message Sent</string>  
-	<string name="notifications">Retrieved %s notifications</string>
+	<string name="got_notifications">Retrieved %s notifications</string>
 				
-	<!-- Ongoing -->
-	
-	<string name="connecting">Connecting…</string>
-	<string name="updating">Updating Stream…</string>
-	<string name="posting">Posting Update…</string>
-	<string name="commenting">Posting Comment…</string>
-	<string name="registering">Registering Service…</string>
-	<string name="deleting">Deleting Entry…</string>
-
 	<!-- Errors -->				
 	
 	<string name="checkSetupInternet">No internet connection.</string>
-	<string name="error_upload">Sorry, an error occurred while uploading the %s. Please try again later.</string>
 	<string name="noWebsite">Please specify a website in preferences.</string>
 	<string name="websiteSyntaxError">Invalid website URL</string>
 	<string name="connectionRejected">Connection rejected - check username</string>
@@ -169,7 +143,14 @@
 	<!-- Misc -->	
 
 	<string name="avatar">Avatar</string>
+
+	<!-- Components -->
 	
+	<string name="activity">Activity</string>
+	<string name="friends">Friends</string>
+	<string name="groups">Groups</string>
+	<string name="messages">Messages</string>
+		
 	<!-- Filters -->
 	
 	<string name="sitewide">Sitewide</string>
@@ -186,5 +167,6 @@
 	<string name="inbox">Inbox</string>
 	<string name="sentbox">Sentbox</string>
 	<string name="compose">Compose</string>
-	
+	<string name="notifications">Notifications</string>
+		
 </resources>

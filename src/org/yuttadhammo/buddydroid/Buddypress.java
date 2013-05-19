@@ -135,6 +135,59 @@ public class Buddypress extends SherlockListActivity {
 
 	private ActionBar actionBar;
 
+	OnItemClickListener mItemClickListener = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+		    final HashMap<?,?> entryMap = (HashMap<?, ?>) getListView().getItemAtPosition(arg2);
+
+			if(currentScope == BPStrings.NOTIFICATIONS) {
+				try{
+					String component = (String) entryMap.get("component");
+					String action = (String) entryMap.get("action");
+					String alink = (String) entryMap.get("href");
+					int ascope = 0;					
+
+					if(component.equals("messages")) {
+						ascope = BPStrings.INBOX;
+					}
+					else if(component.equals("groups")) {
+						if(action.equals("membership_request_rejected"))
+							ascope = BPStrings.GROUPS;
+						else if(!action.equals("new_membership_request"))
+							ascope = BPStrings.MY_GROUPS;
+					}
+					else if(component.equals("activity") && action.equals("new_at_mention"))
+						ascope = BPStrings.MENTIONS;
+					else if(component.equals("friends")) {
+						if(action.equals("friendship_request"))
+							ascope = BPStrings.FRIEND_REQUESTS;
+						else
+							ascope = BPStrings.FRIENDS;
+	
+					}
+					Message msg = new Message();
+					if(ascope == 0)
+						msg.obj = alink;
+					else {
+						msg.obj = false;
+						msg.arg1 = ascope;
+					}
+					msg.what = Buddypress.MSG_SCOPE;
+	
+					mHandler.sendMessage(msg);
+	
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
+		
+	};
+	
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -185,8 +238,10 @@ public class Buddypress extends SherlockListActivity {
         filters = (ExpandableListView) slideMenu.getMenu().findViewById(R.id.filters);
         
     	registerForContextMenu(listView);
-    	
-    	activity = this;
+		listView.setOnItemClickListener(mItemClickListener);
+	    listView.setTextFilterEnabled(true);
+	    
+	    activity = this;
     	website = BPWebsite.getWebsite(this);
 
     	adjustLayout();

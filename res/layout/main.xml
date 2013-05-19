@@ -22,6 +22,7 @@
 	        android:divider="@drawable/divider"
 	        android:headerDividersEnabled="false"
 	        android:cacheColorHint="#00000000"
+	        android:clickable="true"
 	       	/>
 
 		<LinearLayout
